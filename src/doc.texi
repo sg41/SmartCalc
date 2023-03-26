@@ -1,0 +1,81 @@
+    \input texinfo
+
+    @setfilename example.info
+
+    @settitle Texinfo Example
+
+   
+
+    @ifinfo
+
+    @node Top
+
+    @top test
+
+    Document exaple Texinfo.
+
+    @end ifinfo
+
+   
+
+    @menu
+
+    * Introduction:: Definitions, Меры, Сложность
+
+    * Calculations::  Simple operations
+
+    @end menu
+
+   
+
+    @node Introduction
+
+    @chapter Introduction
+
+This is sample text
+
+   
+
+    @menu
+
+    * Definitions:: Basics
+
+    * Effectiveness:: How to measure Effectiveness
+
+    * Complexity restrictions:: Typical Complexity restrictions
+
+    @end menu
+
+   
+
+    @node Definitions
+
+    @section Definitions
+
+    ...
+
+   
+
+    @node Effectiveness
+
+    @section Effectiveness
+
+    ...
+
+   
+
+    @node Complexity restrictions
+
+    @section Complexity restrictions
+
+    ...
+
+   
+
+    @node Calculations
+
+    @chapter Calculations
+
+    ...
+
+    @bye
