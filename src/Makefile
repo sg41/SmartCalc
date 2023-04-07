@@ -1,11 +1,12 @@
-LDOPTS = -L. -lm -lcheck
+LDOPTS = -L.
 CCOPTS = -Wall -Werror -Wextra -DNDEBUG -g
 GTK_OPTS = -g -rdynamic `pkg-config --cflags gtk+-3.0`
 GTK_LIBS = `pkg-config --libs gtk+-3.0`
-CC = gcc
+CC = g++
 APP_ARGS = "sin(cos(x^2)^(1*-100))*x"
 TEST_APP = test.app
 TEST_C = tests/test.c
+GTEST_C = tests/gtest.cc
 DOCKER_NAME=calc:1.01
 RELEASE_NAME=s21_SmartCalc-1.01
 TEXI2DVI=texi2dvi
@@ -15,6 +16,7 @@ TEXI2DVI=texi2dvi
 ROOT := ../
 GCOV=-fprofile-arcs -ftest-coverage
 OS=$(shell uname)
+CHECK_LIBS=$(shell pkg-config --libs gtest) -lgtest -lm
 ifeq ($(OS), Linux)
 	LIBS=-lcheck -lpthread -lrt -lm -lsubunit
 	LEAKS=CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
@@ -69,30 +71,34 @@ gtk.app: gtk.c	$(LIB)
 	$(CC) $(GTK_OPTS) gtk.c -o gtk.app $(LDOPTS) -l$(LIB) $(LIBS) $(GTK_LIBS)
 
 graph: $(LIB) graph.c graph.h rpr/llist.h rpr/stack.h
-	gcc $(CCOPTS) -DTXT_VERSION graph.c -o $(APP) -l$(LIB) $(LDOPTS)
+	$(CC) $(CCOPTS) -DTXT_VERSION graph.c -o $(APP) -l$(LIB) $(LDOPTS)
 
 $(APP): graph
 
 graph.o: graph.c graph.h rpr/llist.h
-	gcc $(CCOPTS) $(LDOPTS) -c graph.c
+	$(CC) $(CCOPTS) $(LDOPTS) -c graph.c
 
 rpr/llist.o: rpr/llist.c rpr/llist.h graph.h
-	gcc $(CCOPTS) $(LDOPTS) -c rpr/llist.c -o rpr/llist.o
+	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/llist.c -o rpr/llist.o
 
 rpr/stack.o: rpr/stack.c rpr/stack.h
-	gcc $(CCOPTS) $(LDOPTS) -c rpr/stack.c -o rpr/stack.o
+	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/stack.c -o rpr/stack.o
 
 rpr/expr.o: rpr/expr.c rpr/expr.h
-	gcc $(CCOPTS) $(LDOPTS) -c rpr/expr.c -o rpr/expr.o
+	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/expr.c -o rpr/expr.o
 
 rpr/core.o: rpr/core.c rpr/core.h
-	gcc $(CCOPTS) $(LDOPTS) -c rpr/core.c -o rpr/core.o
+	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/core.c -o rpr/core.o
 
 $(TEST_C): tests/*.check
 	checkmk tests/*.check > $(TEST_C)
 
-tests: $(TEST_C) $(LIB)
+check_tests: $(TEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(TEST_C) -o $(TEST_APP) $(LDOPTS) $(LIBS) -l$(LIB)
+	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
+
+tests: $(GTEST_C) $(LIB)
+	$(CC) $(CCOPTS) $(GTEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
 	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
 
 check: $(SOURCES) graph.c $(HEADERS) graph.h

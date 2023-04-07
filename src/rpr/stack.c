@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 struct stk *stk_new(void) {
-  struct stk *k = malloc(sizeof(*k));
+  struct stk *k = (struct stk *)malloc(sizeof(*k));
   if (k != NULL) {
     k->depth = 0;
     k->top = NULL;

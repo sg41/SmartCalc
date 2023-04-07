@@ -27,7 +27,7 @@ int is_digit(char c) {
 int is_alpha(char c) { return c >= 'A' && c <= 'z'; }
 
 struct expr *expr_new(void) {
-  struct expr *e = malloc(sizeof(*e));
+  struct expr *e = (struct expr *)malloc(sizeof(*e));
   if (e != NULL) {
     e->length = 0;
     e->head = NULL;

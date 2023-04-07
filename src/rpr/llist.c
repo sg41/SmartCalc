@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 struct ll_node *ll_node_new(const unsigned int s, const double d) {
-  struct ll_node *n = malloc(sizeof(*n));
+  struct ll_node *n = (struct ll_node *)malloc(sizeof(*n));
   if (n != NULL) {
     n->state = s;
     n->datum = d;

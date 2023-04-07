@@ -44,7 +44,7 @@ void get_entry_value(GtkWidget *widget, double *value, double min, double max,
 }
 
 extern void on_set_graph_size(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
   const gchar *name = gtk_widget_get_name(widget);
 
   if (strcmp(name, "graph_size_box") == 0) {
@@ -959,12 +959,12 @@ int main(int argc, char *argv[]) {
     e = 1;
   }
   if (!e) {
-    //Теперь получаем виджет из Builder
-    // В данном случае ищем виджет окна
+    // Теперь получаем виджет из Builder
+    //  В данном случае ищем виджет окна
     GtkWidget *window =
         GTK_WIDGET(gtk_builder_get_object(builder, "calc_window"));
 
-    //Подключаем сигналы)
+    // Подключаем сигналы)
     gtk_builder_connect_signals(builder, NULL);
 
     // Разрешаем отображение
@@ -973,7 +973,7 @@ int main(int argc, char *argv[]) {
     // освобождение памяти
     g_object_unref(G_OBJECT(builder));
 
-    //Пошла программа
+    // Пошла программа
     gtk_main();
 
     // освобождение памяти
