@@ -932,29 +932,15 @@ int main(int argc, char *argv[]) {
 
   if (gtk_init_check(&argc, &argv) == FALSE) {
     run_tex_version(argv[0]);
-    // get_path(argv[0], path);
-    // strcat(path, "graph.app");
-    // fprintf(stderr,
-    //         "Trying to use text version: %s\nPlease enter expression: ",
-    //         path);
-    // execl(path, path, NULL);
-    // fprintf(stderr, "Something wrong, exiting\n");
     e = 1;
   }
 
   /* Construct a GtkBuilder instance and load our UI description */
   builder = gtk_builder_new();
-  // if (gtk_builder_add_from_file(builder, "newversion-v9.ui", &error) == 0) {
   if (!e && gtk_builder_add_from_file(builder, path, &error) == 0) {
     g_printerr("Error loading file: %s\n", error->message);
     g_clear_error(&error);
     run_tex_version(argv[0]);
-    // get_path(argv[0], path);
-    // strcat(path, "graph.app");
-    // fprintf(stderr,
-    //         "Trying to use text version: %s\nPlease enter expression: ",
-    //         path);
-    // execl(path, path, NULL);
     fprintf(stderr, "Something wrong, exiting\n");
     e = 1;
   }

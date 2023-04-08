@@ -16,11 +16,12 @@ TEXI2DVI=texi2dvi
 ROOT := ../
 GCOV=-fprofile-arcs -ftest-coverage
 OS=$(shell uname)
-CHECK_LIBS=$(shell pkg-config --libs gtest) -lgtest -lm
 ifeq ($(OS), Linux)
+	CHECK_LIBS=$(shell pkg-config --libs gtest) -lgtest -lm
 	LIBS=-lcheck -lpthread -lrt -lm -lsubunit
 	LEAKS=CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
 else
+	CHECK_LIBS= -lgtest -lm
 	LIBS=-lcheck
 	LEAKS=CK_FORK=no leaks --atExit -- 
 endif
@@ -153,6 +154,10 @@ ifeq ($(OS), Linux)
 		rm -rf report
 		sudo docker build . -t $(DOCKER_NAME)
 		sudo docker run -p 80:80 --rm $(DOCKER_NAME)
+else
+		rm -rf report
+		docker build . -t $(DOCKER_NAME)
+		docker run -p 80:80 --rm $(DOCKER_NAME)
 endif
 
 docker_bash: clean
