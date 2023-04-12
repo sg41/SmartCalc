@@ -7,6 +7,7 @@ APP_ARGS = "sin(cos(x^2)^(1*-100))*x"
 TEST_APP = test.app
 TEST_C = tests/test.c
 GTEST_C = tests/gtest.cc
+NEW_TEST_C = tests/new_test.cc
 DOCKER_NAME=calc:1.01
 RELEASE_NAME=s21_SmartCalc-1.01
 TEXI2DVI=texi2dvi
@@ -94,12 +95,16 @@ rpr/core.o: rpr/core.c rpr/core.h
 $(TEST_C): tests/*.check
 	checkmk tests/*.check > $(TEST_C)
 
-check_tests: $(TEST_C) $(LIB)
+tests_libcheck: $(TEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(TEST_C) -o $(TEST_APP) $(LDOPTS) $(LIBS) -l$(LIB)
 	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
 
-tests: $(GTEST_C) $(LIB)
+tests_gtest: $(GTEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(GTEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
+	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
+
+tests: $(NEW_TEST_C) $(LIB)
+	$(CC) $(CCOPTS) $(NEW_TEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
 	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
 
 check: $(SOURCES) graph.c $(HEADERS) graph.h
