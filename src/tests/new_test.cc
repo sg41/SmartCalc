@@ -2,10 +2,22 @@
 
 #include "../models/graphModel.h"
 
+class TestObserver : public CalcObserverInterface<GraphModelData> {
+ public:
+  void update(ModelObservableInterface<GraphModelData> *d) override {
+    std::cout << "Updated" << std::endl;
+    std::cout << d->get_data().clip_x1() << std::endl;
+  };
+};
+
 TEST(CalcTest, model) {
-  CalcObserver<GraphModelData> o;
+  TestObserver o;
   GraphModel m1;
-  m1.register_observer(o);
+  m1.register_observer(&o);
+  m1.notify_observers();
+  m1.remove_observer(&o);
+  m1.notify_observers();
+  // EXPECT_EQ()
 }
 
 int main(int argc, char **argv) {

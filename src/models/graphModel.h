@@ -3,11 +3,12 @@
 
 #include <vector>
 
-#include "calcModel.h"
+#include "baseModel.h"
 
-class GraphModelData : public CalcData {
+class GraphModelData : public BaseCalcData {
  public:
-  GraphModelData(){};
+  using BaseCalcData::BaseCalcData;
+  GraphModelData() { init_data(); };
   double clip_x1() const { return clip_x1_; };
   double clip_y1() const { return clip_y1_; };
   double clip_x2() const { return clip_x2_; };
@@ -25,8 +26,8 @@ class GraphModelData : public CalcData {
   double dy;
   std::vector<double> y;
 
-  void init_data() {
-    CalcData::init_data();
+  void init_data() override {
+    BaseCalcData::init_data();
     x = 0;
     clip_x1_ = 0;
     clip_y1_ = 0;
@@ -38,15 +39,16 @@ class GraphModelData : public CalcData {
   };
 };
 
-class GraphModel : public CalcModel<GraphModelData> {
+class GraphModel : public BaseCalcModel<GraphModelData> {
  public:
-  GraphModel(){};
+  // GraphModel(){};
+  using BaseCalcModel<GraphModelData>::BaseCalcModel;
   int validate_data(GraphModelData &d) override {
     int err = 0;
-    if (d.clip_x1() >= CalcData::VERY_MIN_X &&
-        d.clip_y1() >= CalcData::VERY_MIN_Y &&
-        d.clip_x2() <= CalcData::VERY_MAX_X &&
-        d.clip_y2() <= CalcData::VERY_MAX_Y)
+    if (d.clip_x1() >= BaseCalcData::VERY_MIN_X &&
+        d.clip_y1() >= BaseCalcData::VERY_MIN_Y &&
+        d.clip_x2() <= BaseCalcData::VERY_MAX_X &&
+        d.clip_y2() <= BaseCalcData::VERY_MAX_Y)
       err = 0;
     else
       err = 1;

@@ -3,12 +3,15 @@
 #include <list>
 #include <string>
 
-class CalcData {
+class BaseCalcData {
  public:
-  CalcData() { init_data(); };
-  void set_error(int);
-  void set_error(int, std::string);
-  virtual void init_data();
+  BaseCalcData() { this->init_data(); };
+  virtual void init_data() { this->error = 0; };
+  void set_error(int e) { this->error = e; };
+  void set_error(int e, std::string errMessage) {
+    set_error(e);
+    this->error_message = errMessage;
+  };
 
  public:
   static const int MAXSTR = 1024;
@@ -34,40 +37,35 @@ class CalcData {
   int error;
 };
 
-void CalcData::init_data() { this->error = 0; };
-void CalcData::set_error(int e) { this->error = e; };
-void CalcData::set_error(int e, std::string errMessage) {
-  set_error(e);
-  this->error_message = errMessage;
+template <class D>
+class ModelObservableInterface;
+
+template <class D>
+class CalcObserverInterface {
+ public:
+  virtual void update(ModelObservableInterface<D> *){};
 };
 
 template <class D>
-class CalcModel;
-
-template <class D>
-class CalcObserver {
+class ModelObservableInterface {
  public:
-  virtual void update(CalcModel<D> *){};
-};
-
-template <class D>
-class ModelObservable {
- public:
-  void register_observer(CalcObserver<D> &o) { observers.push_back(o); };
-  void remove_observer(CalcObserver<D> &o) { observers.remove(o); };
+  void register_observer(CalcObserverInterface<D> *o) {
+    observers.push_back(o);
+  };
+  void remove_observer(CalcObserverInterface<D> *o) { observers.remove(o); };
   void notify_observers() {
-    for (auto o : observers) o.update(this);
+    for (auto o : observers) o->update(this);
   };
   virtual const D &get_data() const = 0;
 
  protected:
-  std::list<CalcObserver<D>> observers;
+  std::list<CalcObserverInterface<D> *> observers;
 };
 
 template <class D>
-class CalcModel : public ModelObservable<D> {
+class BaseCalcModel : public ModelObservableInterface<D> {
  public:
-  CalcModel(){};
+  using ModelObservableInterface<D>::ModelObservableInterface;
   virtual void calculate(){};
   virtual int validate_data(D &d) = 0;
 
