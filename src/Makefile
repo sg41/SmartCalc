@@ -125,7 +125,7 @@ check2: $(SOURCES) graph.c $(HEADERS) graph.h
 
 clean:
 	rm -rf $(OBJECTS) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
-	rm -rf *.o $(TEST_APP) lib$(LIB).a $(OBJECTS) *.a *.gcno *.gcda *.gcov *.info CPPLINT.cfg .clang-format *.app *.log *.aux *.dvi *.toc
+	rm -rf *.o $(TEST_APP) lib$(LIB).a $(OBJECTS) *.a *.gcno *.gcda *.gcov *.info CPPLINT.cfg .clang-format *.app *.log *.aux *.dvi *.toc report
 
 rebuild: clean all
 
@@ -137,10 +137,10 @@ leaks_test: test_leaks
 test_leaks: tests
 	$(LEAKS) ./$(TEST_APP) $(APP_ARGS)
 
-gcov_report: clean $(TEST_C)
+gcov_report: clean $(NEW_TEST_C)
 	$(CC) $(CCOPTS) --coverage -c $(SOURCES)
 	ar rc lib$(LIB).a *.o
-	$(CC) $(CCOPTS) $(TEST_C) -L./ -l$(LIB) $(LIBS) -lgcov -o $(TEST_APP)
+	$(CC) $(CCOPTS) --coverage $(NEW_TEST_C) -L./ -l$(LIB) $(LIBS) $(LDOPTS) $(CHECK_LIBS)  -lgcov -o $(TEST_APP)
 	-CK_TIMEOUT_MULTIPLIER=5 ./$(TEST_APP)
 	gcov *.gcda
 	lcov -t "gcov_report" -o gcov_report.info -c -d .

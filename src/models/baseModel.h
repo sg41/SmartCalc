@@ -6,6 +6,7 @@
 class BaseCalcData {
  public:
   BaseCalcData() { this->init_data(); };
+  virtual ~BaseCalcData(){};
   virtual void init_data() { this->error = 0; };
   void set_error(int e) { this->error = e; };
   void set_error(int e, std::string errMessage) {
@@ -32,7 +33,7 @@ class BaseCalcData {
   static const int VERY_MAX_Y = 1000000;
   static const int EPS = 1e-7;
 
- protected:
+ public:
   std::string error_message;
   int error;
 };
@@ -56,7 +57,7 @@ class ModelObservableInterface {
   void notify_observers() {
     for (auto o : observers) o->update(this);
   };
-  virtual const D &get_data() const = 0;
+  virtual const D *get_data() const = 0;
 
  protected:
   std::list<CalcObserverInterface<D> *> observers;
@@ -66,15 +67,18 @@ template <class D>
 class BaseCalcModel : public ModelObservableInterface<D> {
  public:
   using ModelObservableInterface<D>::ModelObservableInterface;
+  BaseCalcModel() { data = new D; };
+  ~BaseCalcModel() { delete data; };
   virtual void calculate(){};
-  virtual int validate_data(D &d) = 0;
+  // virtual int validate_data(D *d) = 0;
+  virtual int validate_data() = 0;
 
   void set_data(D &d) { data = d; };
-  const D &get_data() const override { return (const D &)data; };
-  void clear_data() { data.init_data(); };
+  const D *get_data() const override { return (const D *)data; };
+  void clear_data() { data->init_data(); };
 
  protected:
-  D data;
+  D *data;
 };
 
 #endif  // _CALCDATA_H

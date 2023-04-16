@@ -14,7 +14,7 @@ class GraphModelData : public BaseCalcData {
   double clip_x2() const { return clip_x2_; };
   double clip_y2() const { return clip_y1_; };
 
- protected:
+ public:
   int iteration;
   std::string str;
   double x;
@@ -43,12 +43,12 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
  public:
   // GraphModel(){};
   using BaseCalcModel<GraphModelData>::BaseCalcModel;
-  int validate_data(GraphModelData &d) override {
+  int validate_data(/*GraphModelData *d*/) override {
     int err = 0;
-    if (d.clip_x1() >= BaseCalcData::VERY_MIN_X &&
-        d.clip_y1() >= BaseCalcData::VERY_MIN_Y &&
-        d.clip_x2() <= BaseCalcData::VERY_MAX_X &&
-        d.clip_y2() <= BaseCalcData::VERY_MAX_Y)
+    if (data->clip_x1() >= BaseCalcData::VERY_MIN_X &&
+        data->clip_y1() >= BaseCalcData::VERY_MIN_Y &&
+        data->clip_x2() <= BaseCalcData::VERY_MAX_X &&
+        data->clip_y2() <= BaseCalcData::VERY_MAX_Y)
       err = 0;
     else
       err = 1;
