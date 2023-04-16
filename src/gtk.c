@@ -64,7 +64,7 @@ extern void on_set_graph_size(GtkWidget *widget, gpointer data) {
   }
 }
 extern void on_get_graph_size(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
   const gchar *name = gtk_widget_get_name(widget);
 
   if (strcmp(name, "graph_size_box") == 0) {
@@ -72,19 +72,19 @@ extern void on_get_graph_size(GtkWidget *widget, gpointer data) {
   }
   if (strcmp(name, "min_x") == 0) {
     get_entry_value(widget, &d->clip_x1, VERY_MIN_X, VERY_MAX_X, MINX, d,
-                    "Can't read min x");
+                    (char *)"Can't read min x");
   }
   if (strcmp(name, "max_x") == 0) {
     get_entry_value(widget, &d->clip_x2, VERY_MIN_X, VERY_MAX_X, MAXX, d,
-                    "Can't read max x");
+                    (char *)"Can't read max x");
   }
   if (strcmp(name, "min_y") == 0) {
     get_entry_value(widget, &d->clip_y1, VERY_MIN_Y, VERY_MAX_Y, MINY, d,
-                    "Can't read min y");
+                    (char *)"Can't read min y");
   }
   if (strcmp(name, "max_y") == 0) {
     get_entry_value(widget, &d->clip_y2, VERY_MIN_Y, VERY_MAX_Y, MAXY, d,
-                    "Can't read max y");
+                    (char *)"Can't read max y");
   }
 }
 
@@ -117,7 +117,7 @@ extern void get_graph_size(GtkWidget *widget, gpointer data) {
 void draw_grid_new(GtkWidget *widget, cairo_t *cr, gpointer data, int width,
                    int height) {
   cairo_save(cr);
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
 
   double dx, dy;
 
@@ -178,7 +178,7 @@ void draw_grid_new(GtkWidget *widget, cairo_t *cr, gpointer data, int width,
 
 extern gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
   /* Prepare formula */
-  GtkLabel *history_label = data;
+  GtkLabel *history_label = (GtkLabel *)data;
   char expr[MAXSTR] = {0};
   copy_expr_from_label(expr, gtk_label_get_text(history_label));
   GdkRectangle da;            /* GtkDrawingArea size */
@@ -233,7 +233,7 @@ extern gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 }
 
 extern void func_button_clicked(GtkButton *button, gpointer data) {
-  GtkEntry *src_str_entry = data;
+  GtkEntry *src_str_entry = (GtkEntry *)data;
   int cur_pos = gtk_editable_get_position((GtkEditable *)src_str_entry);
   const char *func_name = gtk_button_get_label(button);
   const char *src_str = gtk_entry_get_text(src_str_entry);
@@ -279,7 +279,7 @@ extern void func_button_clicked(GtkButton *button, gpointer data) {
 }
 
 extern void get_history(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
   const gchar *name = gtk_widget_get_name(widget);
 
   if (strcmp(name, "last_expr_label") == 0) {
@@ -288,7 +288,7 @@ extern void get_history(GtkWidget *widget, gpointer data) {
 }
 
 extern void historybutton_clicked(GtkButton *button, gpointer data) {
-  GtkEntry *src_str_entry = data;
+  GtkEntry *src_str_entry = (GtkEntry *)data;
   calc_data d;
 
   GtkContainer *history_box =
@@ -303,7 +303,7 @@ extern void historybutton_clicked(GtkButton *button, gpointer data) {
 }
 
 extern void backspace_clicked(GtkButton *button, gpointer data) {
-  GtkEntry *src_str_entry = data;
+  GtkEntry *src_str_entry = (GtkEntry *)data;
   const char *src_str = gtk_entry_get_text(src_str_entry);
   int cur_pos;
   int new_pos;
@@ -349,7 +349,7 @@ void init_calc_data(calc_data *d) {
 }
 
 extern void calculate(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
 
   const char *src_str_ptr = gtk_entry_get_text((GtkEntry *)widget);
   strcpy(d->str, src_str_ptr);  // Save formula
@@ -378,7 +378,7 @@ extern void calculate(GtkWidget *widget, gpointer data) {
 }
 
 extern void on_calculate(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
   const gchar *name = gtk_widget_get_name(widget);
 
   if (d->iteration == 0 && strcmp(name, "src_str_entry") == 0) {
@@ -393,7 +393,7 @@ extern void on_calculate(GtkWidget *widget, gpointer data) {
 }
 
 extern void set_credit_result(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
   const gchar *name = gtk_widget_get_name(widget);
   char buf[MAXSTR];
   int prec = 2;
@@ -435,7 +435,7 @@ extern void set_credit_result(GtkWidget *widget, gpointer data) {
 }
 
 extern void set_deposit_result(GtkWidget *widget, gpointer data) {
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
   const gchar *name = gtk_widget_get_name(widget);
   char buf[MAXSTR];
   int prec = 2;
@@ -489,11 +489,11 @@ extern int x_focus_out(GtkWidget *widget, GdkEventFocus event, gpointer data) {
 
 extern void get_x_value(GtkWidget *widget, gpointer data) {
   const gchar *name = gtk_widget_get_name(widget);
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
 
   if (strcmp(name, "X_value_entry") == 0) {
     get_entry_value(widget, &d->x, VERY_MIN_X, VERY_MAX_X, 0, d,
-                    "Can't read X value");
+                    (char *)"Can't read X value");
   }
 }
 
@@ -513,20 +513,20 @@ void get_combo_value(GtkComboBox *widget, int *value, int def, calc_data *d,
 
 extern void get_credit_calc_data(GtkWidget *widget, gpointer data) {
   const gchar *name = gtk_widget_get_name(widget);
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
 
   if (strcmp(name, "amount_entry") == 0) {
     get_entry_value(widget, &d->amount, 0.01, 10000000000., DEFAULT_AMOUNT, d,
-                    "Error reading amount,\nplease enter values in range "
+                    (char*)"Error reading amount,\nplease enter values in range "
                     "0-10000000000\n");
   }
   if (strcmp(name, "duration_combo") == 0) {
     get_combo_value((GtkComboBox *)widget, &(d->duration), DEFAULT_DURATION, d,
-                    "Error reading term\nPlease select one\n");
+                    (char *)"Error reading term\nPlease select one\n");
   }
   if (strcmp(name, "type_combo") == 0) {
     get_combo_value((GtkComboBox *)widget, &(d->type), ANNUITET, d,
-                    "Error reading type\nPlease select one\n");
+                    (char *)"Error reading type\nPlease select one\n");
   }
   if (strcmp(name, "round_checkbutton") == 0) {
     d->round = gtk_toggle_button_get_active((GtkToggleButton *)widget);
@@ -534,26 +534,27 @@ extern void get_credit_calc_data(GtkWidget *widget, gpointer data) {
   if (strcmp(name, "rate_entry") == 0) {
     get_entry_value(
         widget, &d->rate, 0.01, 999., 9.5, d,
-        "Error reading % rate\nPlease enter values in range 0.01-999\n");
+        (char
+             *)"Error reading % rate\nPlease enter values in range 0.01-999\n");
   }
 }
 
 extern void get_deposit_calc_data(GtkWidget *widget, gpointer data) {
   const gchar *name = gtk_widget_get_name(widget);
-  calc_data *d = data;
+  calc_data *d = (calc_data *)data;
 
   if (strcmp(name, "dep_amount_entry") == 0) {
     get_entry_value(widget, &d->amount, 0.01, 10000000000., 700000, d,
-                    "Error reading amount,\nplease enter values in range "
+                    (char*)"Error reading amount,\nplease enter values in range "
                     "0-10000000000\n");
   }
   if (strcmp(name, "dep_duration_combo") == 0) {
     get_combo_value((GtkComboBox *)widget, &(d->duration), DEFAULT_DURATION, d,
-                    "Error reading term\nPlease select one\n");
+                    (char *)"Error reading term\nPlease select one\n");
   }
   if (strcmp(name, "dep_pay_period_combo") == 0) {
     get_combo_value((GtkComboBox *)widget, &(d->pay_period), DEFAULT_PAY_PERIOD,
-                    d, "Error reading pay period\nPlease select one\n");
+                    d, (char *)"Error reading pay period\nPlease select one\n");
   }
   if (strcmp(name, "dep_round_checkbutton") == 0) {
     d->round = gtk_toggle_button_get_active((GtkToggleButton *)widget);
@@ -564,28 +565,29 @@ extern void get_deposit_calc_data(GtkWidget *widget, gpointer data) {
   if (strcmp(name, "dep_rate_entry") == 0) {
     get_entry_value(
         widget, &d->rate, 0.01, 999., 8, d,
-        "Error reading % rate\nPlease enter values in range 0.01-999\n");
+        (char
+             *)"Error reading % rate\nPlease enter values in range 0.01-999\n");
   }
   if (strcmp(name, "dep_tax_rate_entry") == 0) {
     get_entry_value(
         widget, &d->tax_rate, 0.00, 100., 0, d,
-        "Error reading tax rate\nPlease enter values in range 0.01-100\n");
+        (char*)"Error reading tax rate\nPlease enter values in range 0.01-100\n");
   }
   if (strcmp(name, "replenishment_entry") == 0) {
     get_entry_value(widget, &d->replenishment, 0.00, 1000000., 0, d,
-                    "Error reading replenishment amount\nPlease enter values "
+                    (char*)"Error reading replenishment amount\nPlease enter values "
                     "in range 0.00-1000000\n");
   }
   if (strcmp(name, "withdrawal_entry") == 0) {
     get_entry_value(widget, &d->withdrawal, 0.00, 1000000., 0, d,
-                    "Error reading replenishment amount\nPlease enter values "
+                    (char*)"Error reading replenishment amount\nPlease enter values "
                     "in range 0.00-1000000\n");
   }
 }
 
 extern void calc_button_clicked(GtkButton *button, gpointer data) {
   calc_data d;
-  GtkContainer *calc_main_box = data;
+  GtkContainer *calc_main_box = (GtkContainer *)data;
   GtkContainer *keyboard_grid =
       (GtkContainer *)gtk_widget_get_parent((GtkWidget *)button);
 
@@ -599,7 +601,7 @@ extern void calc_button_clicked(GtkButton *button, gpointer data) {
 
 extern void credit_calc_button_clicked(GtkButton *button, gpointer data) {
   calc_data d;
-  GtkContainer *result_grid = data;
+  GtkContainer *result_grid = (GtkContainer *)data;
   GtkContainer *source_grid =
       (GtkContainer *)gtk_widget_get_parent((GtkWidget *)button);
 
@@ -620,7 +622,7 @@ extern void credit_calc_button_clicked(GtkButton *button, gpointer data) {
     d.overpayment = (d.monthly_payment) * d.duration - d.amount;
     d.total_payment = (d.monthly_payment) * d.duration;
   } else {  // DIFFERENTIATED
-    double *mp = malloc(sizeof(*mp) * d.duration);
+    double *mp = (double *)malloc(sizeof(*mp) * d.duration);
     sprintf(monthly_payment_expr, "%lf/%d+(%lf-(%lf/%d)*x)*(%lf/100/12)",
             d.amount, d.duration, d.amount, d.amount, d.duration, d.rate);
     int good;
@@ -803,7 +805,7 @@ double complex_interest_calc(calc_data *d) {
 
 extern void deposit_calc_button_clicked(GtkButton *button, gpointer data) {
   calc_data d;
-  GtkContainer *result_grid = data;
+  GtkContainer *result_grid = (GtkContainer *)data;
   GtkContainer *source_grid =
       (GtkContainer *)gtk_widget_get_parent((GtkWidget *)button);
 
@@ -831,7 +833,7 @@ int check_graph_sizes(calc_data *d) {
 extern void apply_button_clicked(GtkButton *button, gpointer data) {
   calc_data d;
   init_calc_data(&d);
-  GtkWidget *graph_area = data;
+  GtkWidget *graph_area = (GtkWidget *)data;
   get_graph_size((GtkWidget *)graph_area, &d);
   if (d.error != 0 || check_graph_sizes(&d) != 1) {
     d.clip_x1 = MINX;
@@ -845,7 +847,7 @@ extern void apply_button_clicked(GtkButton *button, gpointer data) {
 }
 
 extern void graph_button_clicked(GtkButton *button, gpointer data) {
-  GtkWidget *graph_box = data;
+  GtkWidget *graph_box = (GtkWidget *)data;
   if (gtk_toggle_button_get_active((GtkToggleButton *)button)) {
     gtk_widget_hide(graph_box);
   } else {
@@ -854,7 +856,7 @@ extern void graph_button_clicked(GtkButton *button, gpointer data) {
 }
 
 extern void AC_button_clicked(GtkButton *button, gpointer data) {
-  GtkEntry *src_str_entry = data;
+  GtkEntry *src_str_entry = (GtkEntry *)data;
   char new_str[MAXSTR] = {0};
   gtk_entry_set_text(src_str_entry, new_str);
 }

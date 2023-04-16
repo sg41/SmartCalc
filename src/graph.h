@@ -23,6 +23,6 @@
 #define MIDDLEJ 13
 
 int input(char *s);
-int draw_txt_graph();
-
+int draw_txt_graph(double (*calc)(const struct expr *, double),
+                   struct expr *postfix);
 #endif  // SRC_GRAPH_H_

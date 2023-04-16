@@ -62,7 +62,7 @@ int input(char *s) {
   return strlen(s);
 }
 
-int draw_txt_graph(double (*calc)(struct expr *, double),
+int draw_txt_graph(double (*calc)(const struct expr *, double),
                    struct expr *postfix) {
   double scalex = (double)(MAXX - MINX) / MAXI;
   double scaley = (double)MAXJ / (MAXY - MINY);
