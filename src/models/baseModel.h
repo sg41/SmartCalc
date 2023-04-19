@@ -8,6 +8,7 @@ class BaseCalcData {
   BaseCalcData() { this->init_data(); };
   virtual ~BaseCalcData(){};
   virtual void init_data() { this->error = 0; };
+  virtual int validate_data() { return 0; };
   void set_error(int e) { this->error = e; };
   void set_error(int e, std::string errMessage) {
     set_error(e);
@@ -66,19 +67,35 @@ class ModelObservableInterface {
 template <class D>
 class BaseCalcModel : public ModelObservableInterface<D> {
  public:
-  using ModelObservableInterface<D>::ModelObservableInterface;
   BaseCalcModel() { data = new D; };
+  BaseCalcModel(const BaseCalcModel &m) {
+    data = new D;
+    *data = *m.data;
+  }
+  BaseCalcModel(BaseCalcModel &&m) {
+    data = m.data;
+    m.data = nullptr;
+  };
+  BaseCalcModel &operator=(const BaseCalcModel &m) {
+    if (this != &m) *data = *m.data;
+  }
+  BaseCalcModel &operator=(BaseCalcModel &&m) {
+    if (this != &m) {
+      delete data;
+      data = m.data;
+      m.data = nullptr;
+    }
+  }
   ~BaseCalcModel() { delete data; };
   virtual void calculate(){};
-  // virtual int validate_data(D *d) = 0;
-  virtual int validate_data() = 0;
+  int validate_data() { return data->validate_data(); };
 
   void set_data(D &d) { data = d; };
   const D *get_data() const override { return (const D *)data; };
   void clear_data() { data->init_data(); };
 
  protected:
-  D *data;
+  D *data = nullptr;
 };
 
 #endif  // _CALCDATA_H

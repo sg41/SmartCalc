@@ -6,7 +6,7 @@ class TestObserver : public CalcObserverInterface<GraphModelData> {
  public:
   void update(ModelObservableInterface<GraphModelData> *d) override {
     std::cout << "Updated" << std::endl;
-    std::cout << d->get_data()->clip_x1() << std::endl;
+    std::cout << d->get_data()->clip_x1 << std::endl;
   };
 };
 
@@ -19,12 +19,14 @@ TEST(CalcTest, model) {
   m1.notify_observers();
   GraphModelData *d = (GraphModelData *)m1.get_data();
   EXPECT_EQ(m1.validate_data(), 0);
-  d->clip_x2_ = GraphModelData::VERY_MAX_X + 10;
-  EXPECT_GT(d->clip_x2(), GraphModelData::VERY_MAX_X + 0);
+  d->clip_x2 = GraphModelData::VERY_MAX_X + 10;
+  EXPECT_GT(d->clip_x2, GraphModelData::VERY_MAX_X + 0);
   EXPECT_NE(m1.validate_data(), 0);
-  // GraphModel m2(m1);
-  // GraphModelData *d2 = (GraphModelData *)m2.get_data();
-  // EXPECT_GT(d2->clip_x2(), GraphModelData::VERY_MAX_X + 0);
+  GraphModel m2(m1);
+  GraphModelData *d2 = (GraphModelData *)m2.get_data();
+  EXPECT_GT(d2->clip_x2, GraphModelData::VERY_MAX_X + 0);
+  d2->x = 999;
+  EXPECT_NE(d->x, d2->x);
 }
 
 int main(int argc, char **argv) {
