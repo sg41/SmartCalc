@@ -8,7 +8,7 @@
 class GraphModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
-  GraphModelData() { init_data(); };
+  GraphModelData() { GraphModelData::init_data(); };
   int validate_data() override {
     int err = 0;
     if (clip_x1 >= VERY_MIN_X && clip_y1 >= VERY_MIN_Y &&

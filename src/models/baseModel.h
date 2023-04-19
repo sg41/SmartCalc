@@ -90,7 +90,7 @@ class BaseCalcModel : public ModelObservableInterface<D> {
   virtual void calculate(){};
   int validate_data() { return data->validate_data(); };
 
-  void set_data(D &d) { data = d; };
+  void set_data(D *d) { *data = *d; };
   const D *get_data() const override { return (const D *)data; };
   void clear_data() { data->init_data(); };
 
