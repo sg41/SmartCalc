@@ -1,14 +1,24 @@
 #ifndef SRC_RPR_LLIST_H_
 #define SRC_RPR_LLIST_H_
 
-#include <assert.h>
+// #include <assert.h>
+#include <list>
 
-#include "expr.h"
+// #include "expr.h"
 
 struct ll_node {
   unsigned int state;
   double datum;
-  struct ll_node *next;
+};
+
+class CalcList : public std::list<ll_node> {
+ public:
+  CalcList(const unsigned int s, const double d) : state(s), datum(d){};
+  ClacList *get_last_node() { return std::iterator }
+
+ protected:
+  unsigned int state;
+  double datum;
 };
 
 struct ll_node *ll_node_new(const unsigned int s, const double d);

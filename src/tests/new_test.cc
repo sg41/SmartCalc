@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "../models/graphModel.h"
+#include "../rpn_cpp/core.h"
 
 class TestObserver : public CalcObserverInterface<GraphModelData> {
  public:
@@ -28,7 +29,7 @@ TEST(CalcTest, model) {
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
 }
-
+TEST(CalcTest, calcEngine) {}
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
