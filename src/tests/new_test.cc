@@ -29,7 +29,7 @@ TEST(CalcTest, model) {
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
 }
-TEST(CalcTest, calcEngine) {}
+TEST(CalcTest, calcEngine) { CalcEngine c; }
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

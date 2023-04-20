@@ -26,7 +26,8 @@ class ExprToken {
   ExprToken(){};
   ExprToken(token_type s, double d) : state_(s), data_(d){};
   virtual double &data() { return data_; };
-  const token_type state() const { return state_; };
+  virtual const double &cdata() const { return data_; };
+  token_type state() const { return state_; };
   void setState(token_type s) { state_ = s; };
 
  protected:
@@ -36,11 +37,24 @@ class ExprToken {
 
 class VarExprToken : public ExprToken {
   using ExprToken::ExprToken;
-  VarExprToken(token_type s, double &v) : ExprToken(s, 0), var_ref_(v){};
+  VarExprToken(token_type s, double &v, char n)
+      : ExprToken(s, 0), var_ref_(v), var_name_(n){};
   double &data() override { return var_ref_; };
+  const double &cdata() const override { return var_ref_; };
 
  protected:
   double &var_ref_;
+  char var_name_;
+};
+
+using func_type = double (*)(double, ...);
+class FuncExprToken : public ExprToken {
+  using ExprToken::ExprToken;
+  FuncExprToken(token_type s, func_type v) : ExprToken(s, 0), fnc_(v){};
+
+ protected:
+  int n_args = 1;
+  func_type fnc_;
 };
 
 class CalcEngine {
@@ -80,7 +94,7 @@ class CalcEngine {
 
  public:
   CalcEngine() { rpn_expr_.clear(); };
-  int make_rpn_expr(std::string s) {
+  void make_rpn_expr(std::string s) {
     std::list<ExprToken *> infix;
     expr_from_string(infix, s);
     expr_shunt(infix);
