@@ -1,6 +1,7 @@
 #ifndef SRC_RPR_CORE_H_
 #define SRC_RPR_CORE_H_
 #include <math.h>
+#include <stdarg.h>
 
 #include <list>
 #include <string>
@@ -24,11 +25,14 @@ enum token_type {
 class ExprToken {
  public:
   ExprToken(){};
+  virtual ~ExprToken(){};
   ExprToken(token_type s, double d) : state_(s), data_(d){};
   virtual double &data() { return data_; };
   virtual const double &cdata() const { return data_; };
   token_type state() const { return state_; };
   void setState(token_type s) { state_ = s; };
+  virtual double calc(double, double) { return data_; };
+  virtual double calc(double) { return data_; };
 
  protected:
   token_type state_ = ERROR;
@@ -36,25 +40,44 @@ class ExprToken {
 };
 
 class VarExprToken : public ExprToken {
+ public:
   using ExprToken::ExprToken;
-  VarExprToken(token_type s, double &v, char n)
+  VarExprToken(token_type s, double *v, char n)
       : ExprToken(s, 0), var_ref_(v), var_name_(n){};
-  double &data() override { return var_ref_; };
-  const double &cdata() const override { return var_ref_; };
+  double &data() override { return *var_ref_; };
+  const double &cdata() const override { return *var_ref_; };
+  // double calc(double, double) override { return *var_ref_; };
 
  protected:
-  double &var_ref_;
-  char var_name_;
+  double *var_ref_ = nullptr;
+  char var_name_ = 'x';
 };
 
-using func_type = double (*)(double, ...);
+using func_type = double (*)(double);
 class FuncExprToken : public ExprToken {
+ public:
   using ExprToken::ExprToken;
-  FuncExprToken(token_type s, func_type v) : ExprToken(s, 0), fnc_(v){};
+  FuncExprToken(token_type s, func_type v, int n = 1)
+      : ExprToken(s, 0), fnc_(v), n_args_(n){};
+  // double calc(double a, double) override { return fnc_(a); };
+  double calc(double a) override { return fnc_(a); };
 
  protected:
-  int n_args = 1;
-  func_type fnc_;
+  func_type fnc_ = nullptr;
+  int n_args_ = 1;
+};
+
+using oper_type = double (*)(double, double);
+class OperExprToken : public ExprToken {
+ public:
+  using ExprToken::ExprToken;
+  OperExprToken(token_type s, oper_type v, int n = 2)
+      : ExprToken(s, 0), fnc_(v), n_args_(n){};
+  double calc(double a, double b) override { return fnc_(a, b); };
+
+ protected:
+  oper_type fnc_;
+  int n_args_ = 2;
 };
 
 class CalcEngine {
@@ -93,7 +116,10 @@ class CalcEngine {
   void expr_shunt(std::list<ExprToken *> &infix);
 
  public:
-  CalcEngine() { rpn_expr_.clear(); };
+  CalcEngine(){};
+  ~CalcEngine() {
+    for (auto l : rpn_expr_) delete l;
+  };
   void make_rpn_expr(std::string s) {
     std::list<ExprToken *> infix;
     expr_from_string(infix, s);
@@ -105,7 +131,7 @@ class CalcEngine {
     return res;
   };
 
- protected:
+ public:
   std::list<ExprToken *> rpn_expr_;
 };
 
