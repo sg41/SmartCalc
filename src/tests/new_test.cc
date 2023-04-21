@@ -34,12 +34,12 @@ double sum(double a, double b) { return a + b; }
 
 TEST(CalcTest, calcEngine) {
   CalcEngine c;
-
   c.rpn_expr_.push_back(new ExprToken(OPERAND, 2));
   c.rpn_expr_.push_back(new ExprToken(OPERAND, 5));
   c.rpn_expr_.push_back(new OperExprToken(OPERATOR, sum));
   EXPECT_EQ(c.calc(0), 7);
 }
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

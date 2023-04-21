@@ -19,9 +19,11 @@ double CalcEngine::rpn_reduce(double x) {
       a = k.top().data();
       k.pop();
       if (i->state() == OPERATOR)
-        k.emplace(OPERAND, i->calc(a, b));
+        k.emplace(OPERAND, i->oper(a, b));
+      else if (i->state() == UNARYOPERATOR || i->state() == FUNCTION)
+        k.emplace(OPERAND, i->func(a));
       else
-        k.emplace(OPERAND, i->calc(a));
+        throw std::invalid_argument("Wrong expressin token");
     }
   }
   double res = k.top().data();

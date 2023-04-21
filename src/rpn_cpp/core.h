@@ -15,10 +15,10 @@ enum token_type {
   OPERAND,
   OPERATOR,
   UNARYOPERATOR,
+  FUNCTION,
   VARIABLE,
   L_BRACKET,
   R_BRACKET,
-  FUNCTION,
   ERROR
 };
 
@@ -31,8 +31,8 @@ class ExprToken {
   virtual const double &cdata() const { return data_; };
   token_type state() const { return state_; };
   void setState(token_type s) { state_ = s; };
-  virtual double calc(double, double) { return data_; };
-  virtual double calc(double) { return data_; };
+  virtual double oper(double, double) { return data_; };
+  virtual double func(double) { return data_; };
 
  protected:
   token_type state_ = ERROR;
@@ -46,7 +46,6 @@ class VarExprToken : public ExprToken {
       : ExprToken(s, 0), var_ref_(v), var_name_(n){};
   double &data() override { return *var_ref_; };
   const double &cdata() const override { return *var_ref_; };
-  // double calc(double, double) override { return *var_ref_; };
 
  protected:
   double *var_ref_ = nullptr;
@@ -59,8 +58,7 @@ class FuncExprToken : public ExprToken {
   using ExprToken::ExprToken;
   FuncExprToken(token_type s, func_type v, int n = 1)
       : ExprToken(s, 0), fnc_(v), n_args_(n){};
-  // double calc(double a, double) override { return fnc_(a); };
-  double calc(double a) override { return fnc_(a); };
+  double func(double a) override { return fnc_(a); };
 
  protected:
   func_type fnc_ = nullptr;
@@ -73,7 +71,7 @@ class OperExprToken : public ExprToken {
   using ExprToken::ExprToken;
   OperExprToken(token_type s, oper_type v, int n = 2)
       : ExprToken(s, 0), fnc_(v), n_args_(n){};
-  double calc(double a, double b) override { return fnc_(a, b); };
+  double oper(double a, double b) override { return fnc_(a, b); };
 
  protected:
   oper_type fnc_;
