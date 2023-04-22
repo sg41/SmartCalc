@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include <map>
+#include <set>
 
 enum token_type {
   OPERAND,
@@ -73,22 +74,53 @@ class OperExprToken : public ExprToken {
   int n_args_ = 2;
 };
 
+template <class T>
+class TokenData {
+ public:
+  token_type t;
+  precedence p;
+  <T> call;
+};
+
+enum precedence {
+  ADD_SCORE,
+  SUB_SCORE,
+  MUL_SCORE,
+  DIV_SCORE,
+  FUNC_SCORE,
+  EXP_SCORE,
+  U_SCORE,
+  L_SCORE,
+  R_SCORE,
+};
+
 using namespace std;
 class ExprSyntax {
  public:
   ExprToken *createToken(string::iterator s);
 
  protected:
+  void count_length() {
+    for (auto l : operators_) {
+      auto a = l;
+      // length_.insert(l.first().size());
+    }
+  };
+  set<int> length_;
   string spaces_ = " \t\n\r";
-  string brackets_ = "()";
-  map<string, oper_type> operators_{
-      {"+", [](double a, double b) { return a + b; }},
-      {"-", [](double a, double b) { return a - b; }},
-      {"/", [](double a, double b) { return (b != 0) ? a / b : NAN; }},
-      {"*", [](double a, double b) { return a * b; }},
-      {"%", [](double a, double b) { return fmod(a, b); }},
-      {"^", [](double a, double b) { return pow(a, b); }},
-      {"mod", fmod}};
+  pair<char, char> brackets_ = {'(', ')'};
+  map<string, TokenData<oper_type>> operators_{
+      {"+", {OPERATOR, ADD_SCORE, [](double a, double b) { return a + b; }}},
+      {"-", {OPERATOR, SUB_SCORE, [](double a, double b) { return a - b; }}},
+      {"/",
+       {OPERATOR, DIV_SCORE,
+        [](double a, double b) { return (b != 0) ? a / b : NAN; }}},
+      {"*", {OPERATOR, MUL_SCORE, [](double a, double b) { return a * b; }}},
+      {"%",
+       {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
+      {"^",
+       {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}},
+      {"mod", {OPERATOR, DIV_SCORE, fmod}}};
   map<string, func_type> functions_{
       {"sin(", sin},   {"cos(", cos},  {"tan(", tan},   {"abs(", abs},
       {"log(", log10}, {"ln(", log},   {"sqrt(", sqrt}, {"asin(", asin},
