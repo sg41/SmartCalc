@@ -74,24 +74,24 @@ class OperExprToken : public ExprToken {
   int n_args_ = 2;
 };
 
+enum precedence {
+  ADD_SCORE = 2,
+  SUB_SCORE = 2,
+  MUL_SCORE = 4,
+  DIV_SCORE = 4,
+  FUNC_SCORE = 10,
+  EXP_SCORE = 6,
+  U_SCORE = 8,
+  L_SCORE = 12,
+  R_SCORE = 12,
+};
+
 template <class T>
 class TokenData {
  public:
   token_type t;
   precedence p;
   <T> call;
-};
-
-enum precedence {
-  ADD_SCORE,
-  SUB_SCORE,
-  MUL_SCORE,
-  DIV_SCORE,
-  FUNC_SCORE,
-  EXP_SCORE,
-  U_SCORE,
-  L_SCORE,
-  R_SCORE,
 };
 
 using namespace std;
@@ -101,13 +101,14 @@ class ExprSyntax {
 
  protected:
   void count_length() {
-    for (auto l : operators_) {
-      auto a = l;
-      // length_.insert(l.first().size());
+    for (auto l : functions_) {
+      length_.insert(l.first.size());
     }
   };
   set<int> length_;
   string spaces_ = " \t\n\r";
+  TokenData<oper_type> d{OPERATOR, ADD_SCORE,
+                         [](double a, double b) { return a + b; }};
   pair<char, char> brackets_ = {'(', ')'};
   map<string, TokenData<oper_type>> operators_{
       {"+", {OPERATOR, ADD_SCORE, [](double a, double b) { return a + b; }}},
@@ -119,8 +120,8 @@ class ExprSyntax {
       {"%",
        {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
       {"^",
-       {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}},
-      {"mod", {OPERATOR, DIV_SCORE, fmod}}};
+       {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}}};
+  // {"mod", {OPERATOR, DIV_SCORE, fmod}}};
   map<string, func_type> functions_{
       {"sin(", sin},   {"cos(", cos},  {"tan(", tan},   {"abs(", abs},
       {"log(", log10}, {"ln(", log},   {"sqrt(", sqrt}, {"asin(", asin},
