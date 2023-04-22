@@ -40,6 +40,18 @@ TEST(CalcTest, calcEngine) {
   EXPECT_EQ(c.calc(0), 7);
 }
 
+TEST(CalcTest, expr_4) {
+  char str[1000] = "sin(cos(x^2)^(1*-100))*x";
+  CalcEngine c;
+  uint expected_result, actual_result;
+  std::list<ExprToken *> infix;
+  c.expr_from_string(infix, str);
+  expected_result = 18;
+  actual_result = infix.size();
+  EXPECT_EQ(expected_result, actual_result);
+  for (auto t : infix) delete t;
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

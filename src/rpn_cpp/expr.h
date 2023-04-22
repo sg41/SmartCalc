@@ -1,59 +1,98 @@
 #ifndef SRC_RPR_EXPR_H_
 #define SRC_RPR_EXPR_H_
 
-// Functions
-#define sin_FUNCTION 's'
-#define cos_FUNCTION 'c'
-#define tan_FUNCTION 't'
-#define ctg_FUNCTION 'g'
-#define abs_FUNCTION 'a'
-#define log_FUNCTION 'l'
-#define ln_FUNCTION 'e'
-#define sqrt_FUNCTION 'q'
-#define asin_FUNCTION 'i'
-#define acos_FUNCTION 'o'
-#define atan_FUNCTION 'n'
-#define error_FUNCTION 'E'
-// Operators:
-#define mod_FUNCTION '%'
-#define UNARY_PLUS 'p'
-#define UNARY_MINUS 'm'
+#include <math.h>
 
-#define OPERAND 0
-#define OPERATOR 1
-#define UNARYOPERATOR 2
-#define VARIABLE 3
-#define L_BRACKET 4
-#define R_BRACKET 5
-#define FUNCTION 6
-#define ERROR 7
+#include <map>
 
-#define ADD_SCORE 2
-#define SUB_SCORE 2
-#define MULT_SCORE 4
-#define DIV_SCORE 4
-#define FUNC_SCORE 10
-#define EXP_SCORE 6
-#define U_SCORE 8
-#define L_SCORE 12
-#define R_SCORE 12
-
-struct expr {
-  unsigned int length;
-  struct ll_node *head;
+enum token_type {
+  OPERAND,
+  OPERATOR,
+  UNARYOPERATOR,
+  FUNCTION,
+  VARIABLE,
+  L_BRACKET,
+  R_BRACKET,
+  ERROR
 };
 
-struct expr *expr_new(void);
-void expr_destroy(struct expr **e);
-void expr_add_symbol(struct expr *e, const unsigned int s, const double d);
-void expr_print(const struct expr *e);
-struct expr *expr_shunt(const struct expr *e);
-struct expr *expr_from_array(const char *a);
-char *one_expr_from_string(char *prog, struct expr **infix_to_fill, int *good,
-                           int *parents);
-struct expr *expr_from_string(char *a, int *good);
-int is_alpha(char c);
-int is_digit(char c);
-int is_space(char c);
+class ExprToken {
+ public:
+  ExprToken(){};
+  virtual ~ExprToken(){};
+  // explicit ExprToken(token_type s, char d) : state_(s), data_((double)d){};
+  explicit ExprToken(token_type s, double d) : state_(s), data_(d){};
+  virtual double &data() { return data_; };
+  virtual const double &cdata() const { return data_; };
+  token_type state() const { return state_; };
+  void setState(token_type s) { state_ = s; };
+  virtual double oper(double, double) { return data_; };
+  virtual double func(double) { return data_; };
+
+ protected:
+  token_type state_ = ERROR;
+  double data_ = 0;
+};
+
+class VarExprToken : public ExprToken {
+ public:
+  using ExprToken::ExprToken;
+  VarExprToken(token_type s, double *v, char n)
+      : ExprToken(s, 0.0), var_ref_(v), var_name_(n){};
+  double &data() override { return *var_ref_; };
+  const double &cdata() const override { return *var_ref_; };
+
+ protected:
+  double *var_ref_ = nullptr;
+  char var_name_ = 'x';
+};
+
+using func_type = double (*)(double);
+class FuncExprToken : public ExprToken {
+ public:
+  using ExprToken::ExprToken;
+  FuncExprToken(token_type s, func_type v, int n = 1)
+      : ExprToken(s, 0.0), fnc_(v), n_args_(n){};
+  double func(double a) override { return fnc_(a); };
+
+ protected:
+  func_type fnc_ = nullptr;
+  int n_args_ = 1;
+};
+
+using oper_type = double (*)(double, double);
+class OperExprToken : public ExprToken {
+ public:
+  using ExprToken::ExprToken;
+  OperExprToken(token_type s, oper_type v, int n = 2)
+      : ExprToken(s, 0.0), fnc_(v), n_args_(n){};
+  double oper(double a, double b) override { return fnc_(a, b); };
+
+ protected:
+  oper_type fnc_;
+  int n_args_ = 2;
+};
+
+using namespace std;
+class ExprSyntax {
+ public:
+  ExprToken *createToken(string::iterator s);
+
+ protected:
+  string spaces_ = " \t\n\r";
+  string brackets_ = "()";
+  map<string, oper_type> operators_{
+      {"+", [](double a, double b) { return a + b; }},
+      {"-", [](double a, double b) { return a - b; }},
+      {"/", [](double a, double b) { return (b != 0) ? a / b : NAN; }},
+      {"*", [](double a, double b) { return a * b; }},
+      {"%", [](double a, double b) { return fmod(a, b); }},
+      {"^", [](double a, double b) { return pow(a, b); }},
+      {"mod", fmod}};
+  map<string, func_type> functions_{
+      {"sin(", sin},   {"cos(", cos},  {"tan(", tan},   {"abs(", abs},
+      {"log(", log10}, {"ln(", log},   {"sqrt(", sqrt}, {"asin(", asin},
+      {"acos(", acos}, {"atan(", atan}};
+};
 
 #endif  // SRC_RPR_EXPR_H_
