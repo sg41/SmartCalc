@@ -9,7 +9,7 @@
 
 #include "expr.h"
 
-class CalcEngine {
+class CalcCore {
  public:
   void expr_from_string(std::list<ExprToken *> &infix, std::string s);
 
@@ -26,8 +26,9 @@ class CalcEngine {
     ExprToken *t = infix.back();
     infix.pop_back();
     infix.push_back(new FuncExprToken(
-        UNARYOPERATOR, (t->data() == '+') ? [](double a) { return a; }
-                                          : [](double a) { return -a; }));
+        UNARYOPERATOR, UOP_SCORE,
+        (t->data() == '+') ? [](double a) { return a; }
+                           : [](double a) { return -a; }));
     delete t;
   }
   const char *one_token_from_string(std::list<ExprToken *> &infix,
@@ -36,10 +37,11 @@ class CalcEngine {
                                 const char *src_str, int *good);
 
  public:
-  CalcEngine(){};
-  ~CalcEngine() {
+  CalcCore(){};
+  ~CalcCore() {
     for (auto t : rpn_expr_) delete t;
   };
+  void set_syntax(ExprSyntax *s) { syntax = s; };
   void make_rpn_expr(std::string s) {
     std::list<ExprToken *> infix;
     expr_from_string(infix, s);
@@ -54,6 +56,7 @@ class CalcEngine {
 
  public:
   std::list<ExprToken *> rpn_expr_;
+  ExprSyntax *syntax = nullptr;
 };
 
 #endif  // SRC_RPR_CORE_H_

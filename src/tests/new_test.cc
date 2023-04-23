@@ -33,16 +33,16 @@ TEST(CalcTest, model) {
 double sum(double a, double b) { return a + b; }
 
 TEST(CalcTest, calcEngine) {
-  CalcEngine c;
+  CalcCore c;
   c.rpn_expr_.push_back(new ExprToken(OPERAND, 2));
   c.rpn_expr_.push_back(new ExprToken(OPERAND, 5));
-  c.rpn_expr_.push_back(new OperExprToken(OPERATOR, sum));
+  c.rpn_expr_.push_back(new FuncExprToken(OPERATOR, ADD_SCORE, sum));
   EXPECT_EQ(c.calc(0), 7);
 }
 
 TEST(CalcTest, expr_4) {
   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
-  CalcEngine c;
+  CalcCore c;
   uint expected_result, actual_result;
   std::list<ExprToken *> infix;
   c.expr_from_string(infix, str);

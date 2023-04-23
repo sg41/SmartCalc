@@ -5,7 +5,7 @@
 #include <stack>
 #include <stdexcept>
 
-double CalcEngine::rpn_reduce(double x) {
+double CalcCore::rpn_reduce(double x) {
   std::stack<ExprToken> k;
   for (auto i : rpn_expr_) {
     if (i->state() == OPERAND) {
@@ -32,8 +32,7 @@ double CalcEngine::rpn_reduce(double x) {
   return res;
 }
 
-void CalcEngine::expr_from_string(std::list<ExprToken *> &infix,
-                                  std::string s) {
+void CalcCore::expr_from_string(std::list<ExprToken *> &infix, std::string s) {
   const char *p = s.c_str();
   int parents = 0;
   int good = 1;
@@ -69,11 +68,11 @@ void CalcEngine::expr_from_string(std::list<ExprToken *> &infix,
   if (parents != 0) throw std::invalid_argument("Wrong () pairs");
 };
 
-// void CalcEngine::expr_shunt(std::list<ExprToken *> &infix){};
+// void CalcCore::expr_shunt(std::list<ExprToken *> &infix){};
 
-const char *CalcEngine::one_token_from_string(std::list<ExprToken *> &infix,
-                                              const char *str, int *good,
-                                              int *parents) {
+const char *CalcCore::one_token_from_string(std::list<ExprToken *> &infix,
+                                            const char *str, int *good,
+                                            int *parents) {
   if (str && *str) {
     while (*str && is_space(*str)) ++str;  // Skip spaces
     if (is_oper(*str)) {                   // Operator
@@ -111,40 +110,40 @@ const char *CalcEngine::one_token_from_string(std::list<ExprToken *> &infix,
   return str;
 }
 
-const char *CalcEngine::expr_add_function(std::list<ExprToken *> &infix,
-                                          const char *src_str, int *good) {
+const char *CalcCore::expr_add_function(std::list<ExprToken *> &infix,
+                                        const char *src_str, int *good) {
   if (strncmp(src_str, "sin(", 4) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, sin));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, sin));
     src_str += 3;
   } else if (strncmp(src_str, "cos(", 4) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, cos));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, cos));
     src_str += 3;
   } else if (strncmp(src_str, "tan(", 4) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, tan));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, tan));
     src_str += 3;
   } else if (strncmp(src_str, "abs(", 4) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, abs));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, abs));
     src_str += 3;
   } else if (strncmp(src_str, "log(", 4) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, log10));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, log10));
     src_str += 3;
   } else if (strncmp(src_str, "ln(", 3) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, log));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, log));
     src_str += 2;
   } else if (strncmp(src_str, "mod", 3) == 0) {
-    infix.push_back(new OperExprToken(OPERATOR, fmod));
+    infix.push_back(new FuncExprToken(OPERATOR, DIV_SCORE, fmod));
     src_str += 3;
   } else if (strncmp(src_str, "sqrt(", 5) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, sqrt));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, sqrt));
     src_str += 4;
   } else if (strncmp(src_str, "asin(", 5) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, asin));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, asin));
     src_str += 4;
   } else if (strncmp(src_str, "acos(", 5) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, acos));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, acos));
     src_str += 4;
   } else if (strncmp(src_str, "atan(", 5) == 0) {
-    infix.push_back(new FuncExprToken(FUNCTION, atan));
+    infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, atan));
     src_str += 4;
   } else if (*src_str == 'x' || *src_str == 'X') {
     infix.push_back(new VarExprToken(VARIABLE, 'x'));
@@ -159,7 +158,7 @@ const char *CalcEngine::expr_add_function(std::list<ExprToken *> &infix,
   return src_str;
 }
 
-int CalcEngine::check_syntax(ExprToken *last, ExprToken *before) {
+int CalcCore::check_syntax(ExprToken *last, ExprToken *before) {
   int good = 1;
   if (last->state() == ERROR) good = 0;
   if (before->state() == UNARYOPERATOR &&
