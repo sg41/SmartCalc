@@ -45,15 +45,17 @@ struct expr *expr_shunt(const struct expr *infix) {
   return rpn;
 }
 */
+
 void TokenList::make_unary_operator() {
   ExprToken *last = back();
-  ExprToken *before = (last == front()) ? nullptr : *(prev(end(), 2));
+  ExprToken *before = before_back();
 
-  if ((last->state() == OPERATOR && syntax->is_unary_operator(last->data())) &&
+  if ((last->state() == OPERATOR && syntax->is_unary_operator(last->name())) &&
       (before == nullptr ||
        ((before->state() == OPERATOR) || (before->state() == L_BRACKET)))) {
     pop_back();
-    push_back(new FuncExprToken(syntax->unary_operators_[last->data()]));
+    push_back(new FuncExprToken(last->name(),
+                                syntax->get_data(last->name(), last->state())));
     delete last;
   }
 }
@@ -87,7 +89,7 @@ void TokenList::make_list(std::string s) {
 
 bool TokenList::check_syntax() {
   ExprToken *last = back();
-  ExprToken *before = (last == front()) ? nullptr : *(prev(end(), 2));
+  ExprToken *before = before_back();
 
   bool good = true;
   if (before != nullptr) {
@@ -156,7 +158,7 @@ ExprToken *TokenList::create_token(string str_token, token_type t) {
   ExprToken *token;
 
   if ((t == OPERATOR || t == UNARYOPERATOR || t == FUNCTION))
-    token = new FuncExprToken(syntax->get_data(str_token, t));
+    token = new FuncExprToken(str_token, syntax->get_data(str_token, t));
   if ((t == L_BRACKET)) {
     token = new ExprToken(t, 0);
     brackets++;

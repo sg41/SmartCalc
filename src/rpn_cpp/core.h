@@ -26,9 +26,9 @@ class CalcCore {
     ExprToken *t = infix.back();
     infix.pop_back();
     infix.push_back(new FuncExprToken(
-        UNARYOPERATOR, UOP_SCORE,
-        (t->data() == '+') ? [](double a) { return a; }
-                           : [](double a) { return -a; }));
+        t->data(), UNARYOPERATOR, UOP_SCORE,
+        (t->data() == '+') ? [](double a, double) { return a; }
+                           : [](double a, double) { return -a; }));
     delete t;
   }
   const char *one_token_from_string(std::list<ExprToken *> &infix,
