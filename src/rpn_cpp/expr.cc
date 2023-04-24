@@ -151,7 +151,7 @@ std::pair<int, token_type> TokenList::find_token(string str) {
     l = syntax->is_variable(str);
     t = VARIABLE;
   }
-  return make_pair(l, t);
+  return make_pair(l, l == 0 ? ERROR : t);
 };
 
 ExprToken *TokenList::create_token(string str_token, token_type t) {

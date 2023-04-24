@@ -21,9 +21,9 @@ double CalcCore::rpn_reduce(double x) {
       a = k.top().data();
       k.pop();
       if (i->state() == OPERATOR)
-        k.emplace(OPERAND, i->oper(a, b));
+        k.emplace(OPERAND, i->func(a, b));
       else if (i->state() == UNARYOPERATOR || i->state() == FUNCTION)
-        k.emplace(OPERAND, i->func(a));
+        k.emplace(OPERAND, i->func(a, 0));
       else
         throw std::invalid_argument("Wrong expressin token");
     }

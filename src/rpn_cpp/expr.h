@@ -5,6 +5,7 @@
 
 #include <list>
 #include <map>
+#include <regex>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -111,11 +112,22 @@ class ExprSyntax {
   int is_R_bracket(string o) {
     return R_brackets_.find(o) != string::npos ? o.size() : 0;
   };
-  // bool is_unary_operator(char o) { return unary_operators_.count(o); };
   int is_unary_operator(string o) {
     return unary_operators_.count(o) ? o.size() : 0;
   };
-  // bool is_operator(char o) { return operators_.count(o); };
+  int is_operand(string o) {
+    int res = 0;
+    const std::regex base_regex("[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?");
+    std::smatch base_match;
+    if (std::regex_match(o, base_match, base_regex)) {
+      // std::ssub_match base_sub_match = base_match[0];
+      res = base_match[0].str().size();
+    }
+    return res;
+  };
+  double get_operand(string s) { return std::atof(s.data()); };
+
+  int is_variable(string o) { return variable_.count(o) ? o.size() : 0; };
   int is_operator(string o) { return operators_.count(o) ? o.size() : 0; };
   int is_function(string o) { return functions_.count(o) ? o.size() : 0; };
   TokenData get_data(string s, token_type t = ERROR) {
@@ -136,6 +148,7 @@ class ExprSyntax {
   string spaces_ = " \t\n\r";
   string L_brackets_ = {"("};
   string R_brackets_ = {")"};
+  set<string> variable_ = {"x", "X"};
   map<string, TokenData> unary_operators_{
       {"+", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return a; }}},
       {"-", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return -a; }}}};
@@ -188,7 +201,6 @@ class TokenList : public list<ExprToken *> {
     (back() == front()) ? nullptr : *(prev(end(), 2));
   };
   void make_unary_operator();
-  // string str;
   int brackets = 0;
   ExprSyntax *syntax;
 };
