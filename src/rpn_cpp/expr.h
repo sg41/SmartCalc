@@ -74,15 +74,16 @@ class VarExprToken : public ExprToken {
 
 using func_type = double (*)(double);
 using oper_type = double (*)(double, double);
+// template <int P = 1>
 class FuncExprToken : public ExprToken {
  public:
+  // std::conditional<F, func_type, oper_type> T;
+  // using T = typename std::conditional<P == 1, func_type, oper_type>::type;
   using ExprToken::ExprToken;
   FuncExprToken(token_type s, precedence p, func_type v)
       : ExprToken(s, 0.0), priority_(p), fnc_(v){};
   FuncExprToken(token_type s, precedence p, oper_type v)
       : ExprToken(s, 0.0), priority_(p), opr_(v){};
-  FuncExprToken(TokenData<func_type> d)
-      : ExprToken(d.t, 0.0), priority_(d.p), fnc_(d.call){};
 
   double func(double a) override {
     return (fnc_ != nullptr) ? fnc_(a)
@@ -100,16 +101,22 @@ class FuncExprToken : public ExprToken {
   func_type fnc_ = nullptr;
 };
 
+// class OperExprToken : public ExprToken {
+//  public:
+//   using ExprToken::ExprToken;
+//   OperExprToken(token_type s, oper_type v, int n = 2)
+//       : ExprToken(s, 0.0), fnc_(v), n_args_(n){};
+//   double oper(double a, double b) override { return fnc_(a, b); };
+
+//  protected:
+//   oper_type fnc_;
+//   int n_args_ = 2;
+// };
+
 using namespace std;
 class ExprSyntax {
  public:
-  friend class TokenList;
   ExprSyntax() { count_length(); };
-  // bool is_unary_operator(char o) { return unary_operators_.count(o); };
-  // bool is_unary_operator(string o) { return unary_operators_.count(o[0]); };
-  // bool is_operator(char o) { return operators_.count(o); };
-  // bool is_operator(string o) { return operators_.count(o[0]); };
-  // bool is_function(string o) { return functions_.count(o); };
   int is_space(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
   int is_space(string o) {
     return spaces_.find(o[0]) != std::string::npos ? 1 : 0;
@@ -120,24 +127,16 @@ class ExprSyntax {
   int is_bracket(string o) {
     return brackets_.find(o[0]) != string::npos ? 1 : 0;
   };
-  int is_unary_operator(string o) {
-    return tokens_[UNARYOPERATOR].count(o.substr(0, 1)) ? 1 : 0;
-  };
-  int is_operator(string o) {
-    return tokens_[OPERATOR].count(o.substr(0, 1)) ? 1 : 0;
-  };
-  int is_function(string o) {
-    int res = 0;
-    for (auto l = length_.rend(), l != length_.rbegin(), ++l)
-      if (tokens_[FUNCTION].count(o.substr(0, *l))) {
-        res = l;
-        break;
-      }
-    return res;
-  };
+  bool is_unary_operator(char o) { return unary_operators_.count(o); };
+  bool is_unary_operator(string o) { return unary_operators_.count(o[0]); };
+  bool is_operator(char o) { return operators_.count(o); };
+  bool is_operator(string o) { return operators_.count(o[0]); };
+  bool is_function(string o) { return functions_.count(o); };
   TokenData get_data(string s, token_type t = ERROR) {
     TokenData d{};
-    if (t != ERROR) d = tokens_[t][s];
+    if (t == OPERATOR) d = operators_[s];
+    if (t == UNARYOPERATOR) d = unary_operators_[s];
+    if (t == FUNCTION) d = functions_[s];
     return d;
   };
 
@@ -149,52 +148,54 @@ class ExprSyntax {
   };
   set<int> length_;
   string spaces_ = " \t\n\r";
-  pair<char, char> brackets_ = {'(', ')'};  //!
-  map<token_type, map<string, TokenData<func_type>>> tokens_ = {
-      // map<char, TokenData<func_type>> unary_operators_{
-      {UNARYOPERATOR,
-       {"+", {OPERATOR, UOP_SCORE, [](double a) { return a; }}},
-       {"-", {OPERATOR, UOP_SCORE, [](double a) { return -a; }}}},
-      // map<char, TokenData<oper_type>> operators_{
-      {OPERATOR,
-       {"+", {OPERATOR, ADD_SCORE, [](double a, double b) { return a + b; }}},
-       {"-", {OPERATOR, SUB_SCORE, [](double a, double b) { return a - b; }}},
-       {"/",
-        {OPERATOR, DIV_SCORE,
-         [](double a, double b) { return (b != 0) ? a / b : NAN; }}},
-       {"*", {OPERATOR, MUL_SCORE, [](double a, double b) { return a * b; }}},
-       {"%",
-        {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
-       {"^",
-        {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}}},
-      // map<string, TokenData<func_type>> functions_{
-      {FUNCTION,
-       {"sin(", {OPERATOR, FUN_SCORE, sin}},
-       {"cos(", {OPERATOR, FUN_SCORE, cos}},
-       {"tan(", {OPERATOR, FUN_SCORE, tan}},
-       {"abs(", {OPERATOR, FUN_SCORE, abs}},
-       {"log(", {OPERATOR, FUN_SCORE, log10}},
-       {"ln(", {OPERATOR, FUN_SCORE, log}},
-       {"sqrt(", {OPERATOR, FUN_SCORE, sqrt}},
-       {"asin(", {OPERATOR, FUN_SCORE, asin}},
-       {"acos(", {OPERATOR, FUN_SCORE, acos}},
-       {"atan(", {OPERATOR, FUN_SCORE, atan}}}};
+  pair<char, char> brackets_ = {'(', ')'};
+  map<char, TokenData<func_type>> unary_operators_{
+      {'+', {OPERATOR, UOP_SCORE, [](double a) { return a; }}},
+      {'-', {OPERATOR, UOP_SCORE, [](double a) { return -a; }}}};
+  map<char, TokenData<oper_type>> operators_{
+      {'+', {OPERATOR, ADD_SCORE, [](double a, double b) { return a + b; }}},
+      {'-', {OPERATOR, SUB_SCORE, [](double a, double b) { return a - b; }}},
+      {'/',
+       {OPERATOR, DIV_SCORE,
+        [](double a, double b) { return (b != 0) ? a / b : NAN; }}},
+      {'*', {OPERATOR, MUL_SCORE, [](double a, double b) { return a * b; }}},
+      {'%',
+       {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
+      {'^',
+       {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}}};
+  map<string, TokenData<func_type>> functions_{
+      {"sin(", {OPERATOR, FUN_SCORE, sin}},
+      {"cos(", {OPERATOR, FUN_SCORE, cos}},
+      {"tan(", {OPERATOR, FUN_SCORE, tan}},
+      {"abs(", {OPERATOR, FUN_SCORE, abs}},
+      {"log(", {OPERATOR, FUN_SCORE, log10}},
+      {"ln(", {OPERATOR, FUN_SCORE, log}},
+      {"sqrt(", {OPERATOR, FUN_SCORE, sqrt}},
+      {"asin(", {OPERATOR, FUN_SCORE, asin}},
+      {"acos(", {OPERATOR, FUN_SCORE, acos}},
+      {"atan(", {OPERATOR, FUN_SCORE, atan}}};
 };
 
 using namespace std;
 class TokenList : public list<ExprToken *> {
  public:
   using list<ExprToken *>::list;
-  TokenList(ExprSyntax *s) { syntax = s; };
+  TokenList(ExprSyntax *s) {
+    syntax = s;
+    brackets = 0;
+  };
   void make_list(string str);
 
  protected:
-  ExprToken *create_token(string str);
-  int find_token(string str);
+  ExprToken *create_token(string str, token_type t);
+  std::pair<int, token_type> find_token(string str);
   int skip_spaces(string str);
   void make_unary_operator();
   bool check_syntax();
+
+  void make_unary_operator();
   // string str;
+  int brackets = 0;
   ExprSyntax *syntax;
 };
 
