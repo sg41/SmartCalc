@@ -49,7 +49,7 @@ class ExprToken {
   virtual ~ExprToken(){};
   explicit ExprToken(token_type s, double d) : state_(s), data_(d){};
   virtual double &data() { return data_; };
-  virtual const double &cdata() const { return data_; };
+  // virtual const double &cdata() const { return data_; };
   token_type state() const { return state_; };
   void setState(token_type s) { state_ = s; };
   virtual double func(double, double) { return data_; };
@@ -64,15 +64,14 @@ class ExprToken {
 class VarExprToken : public ExprToken {
  public:
   using ExprToken::ExprToken;
-  VarExprToken(token_type s, double *v, char n)
-      : ExprToken(s, 0.0), var_ref_(v), var_name_(n){};
-  double &data() override { return *var_ref_; };
-  const double &cdata() const override { return *var_ref_; };
-  string name() override { return string("") + var_name_; };
+  VarExprToken(token_type s, string n) : ExprToken(s, 0.0), var_name_(n){};
+  // double &data() override { return *var_ref_; };
+  // const double &cdata() const override { return *var_ref_; };
+  string name() override { return var_name_; };
 
  protected:
   double *var_ref_ = nullptr;
-  char var_name_ = 'x';
+  string var_name_ = "x";
 };
 
 class FuncExprToken : public ExprToken {
@@ -141,10 +140,10 @@ class ExprSyntax {
  protected:
   void count_length() {
     for (auto l : functions_) {
-      length_.insert(l.first.size());
+      f_length_.insert(l.first.size());
     }
   };
-  set<int> length_;
+  set<int> f_length_, uop_length_, op_length_;
   string spaces_ = " \t\n\r";
   string L_brackets_ = {"("};
   string R_brackets_ = {")"};

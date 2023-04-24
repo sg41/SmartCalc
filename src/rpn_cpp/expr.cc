@@ -171,7 +171,7 @@ ExprToken *TokenList::create_token(string str_token, token_type t) {
     token = new ExprToken(t, syntax->get_operand(str_token));
   }
   if ((t == VARIABLE)) {
-    token = new ExprToken(t, 0);
+    token = new VarExprToken(t, str_token);
   }
 
   return token;
