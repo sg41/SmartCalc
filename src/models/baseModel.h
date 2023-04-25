@@ -10,7 +10,7 @@ class BaseCalcData {
   virtual void init_data() { this->error = 0; };
   virtual int validate_data() { return 0; };
   void set_error(int e) { this->error = e; };
-  void set_error(int e, std::string errMessage) {
+  void set_error(int e, const std::string &errMessage) {
     set_error(e);
     this->error_message = errMessage;
   };
@@ -78,6 +78,7 @@ class BaseCalcModel : public ModelObservableInterface<D> {
   };
   BaseCalcModel &operator=(const BaseCalcModel &m) {
     if (this != &m) *data = *m.data;
+    return *this;
   }
   BaseCalcModel &operator=(BaseCalcModel &&m) {
     if (this != &m) {
@@ -85,13 +86,14 @@ class BaseCalcModel : public ModelObservableInterface<D> {
       data = m.data;
       m.data = nullptr;
     }
+    return *this;
   }
   ~BaseCalcModel() { delete data; };
   virtual void calculate(){};
   int validate_data() { return data->validate_data(); };
 
-  void set_data(D *d) { *data = *d; };
-  const D *get_data() const override { return (const D *)data; };
+  void set_data(const D *d) { *data = *d; };
+  const D *get_data() const override { return static_cast<const D *>(data); };
   void clear_data() { data->init_data(); };
 
  protected:

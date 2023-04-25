@@ -36,16 +36,50 @@ TEST(CalcTest, calcEngine) {
   CalcCore c;
   c.rpn_expr_.push_back(new ExprToken(OPERAND, 2));
   c.rpn_expr_.push_back(new ExprToken(OPERAND, 5));
-  c.rpn_expr_.push_back(new FuncExprToken(OPERATOR, ADD_SCORE, sum));
+  c.rpn_expr_.push_back(new FuncExprToken("+", OPERATOR, ADD_SCORE, sum));
   EXPECT_EQ(c.calc(0), 7);
 }
 
-TEST(CalcTest, expr_4) {
-  char str[1000] = "sin(cos(x^2)^(1*-100))*x";
-  CalcCore c;
+// TEST(CalcTest, expr_4) {
+//   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
+//   CalcCore c;
+//   uint expected_result, actual_result;
+//   std::list<ExprToken *> infix;
+//   c.expr_from_string(infix, str);
+//   expected_result = 18;
+//   actual_result = infix.size();
+//   EXPECT_EQ(expected_result, actual_result);
+//   for (auto t : infix) delete t;
+// }
+
+TEST(CalcTest, regex_5) {
+  char str[1000] = "2.365sdsdsd";
   uint expected_result, actual_result;
-  std::list<ExprToken *> infix;
-  c.expr_from_string(infix, str);
+  ExprSyntax s;
+  s.init();
+  actual_result = s.is_operand(str);
+  expected_result = 5;
+  EXPECT_EQ(expected_result, actual_result);
+  double a, b = 2.365;
+  a = s.get_operand(str);
+  EXPECT_EQ(a, b);
+  b = 1.890e4;
+  a = s.get_operand("1.890e4fdj;alkf;");
+  EXPECT_EQ(a, b);
+  b = 1.890E-4;
+  a = s.get_operand("1.890E-4aslkdjalks147981asfja08--2344");
+  EXPECT_EQ(a, b);
+}
+
+TEST(CalcTest, expr_6) {
+  char str[1000] = "sin(cos(x^2)^(1*-100))*x";
+  // CalcCore c;
+  uint expected_result, actual_result;
+  ExprSyntax s;
+  s.init();
+  TokenList infix(&s);
+  // c.expr_from_string(infix, str);
+  infix.make_list(str);
   expected_result = 18;
   actual_result = infix.size();
   EXPECT_EQ(expected_result, actual_result);

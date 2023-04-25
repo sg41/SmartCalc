@@ -55,37 +55,10 @@ void TokenList::make_unary_operator() {
        ((before->state() == OPERATOR) || (before->state() == L_BRACKET)))) {
     pop_back();
     push_back(new FuncExprToken(last->name(),
-                                syntax->get_data(last->name(), last->state())));
+                                syntax->get_data(last->name(), UNARYOPERATOR)));
     delete last;
   }
 }
-
-void TokenList::make_list(std::string s) {
-  bool good = true;
-  if (s.size() != 0) {
-    int i = 0;
-    while (s[i] && good) {  // Rest of the string
-      i = skip_spaces(s);   // Skip spaces
-      if (s[i]) {
-        int l;
-        token_type t;
-        tie(l, t) = find_token(s.substr(i));
-        if (l) {
-          push_back(create_token(s.substr(i, l), t));
-          make_unary_operator();  //!
-          good = check_syntax();
-          i += l;
-        } else {
-          good = false;
-        }
-      }
-    }
-  } else {
-    throw std::invalid_argument("Wrong expression string");
-  }
-  if (brackets != 0) throw std::invalid_argument("Wrong () pairs");
-  if (good == false) throw std::invalid_argument("Parsing error");
-};
 
 bool TokenList::check_syntax() {
   ExprToken *last = back();
@@ -126,45 +99,21 @@ int TokenList::skip_spaces(string str) {
   return i;
 };
 
-std::pair<int, token_type> TokenList::find_token(string str) {
-  int l = 0;
-  token_type t = ERROR;
-  l = syntax->is_operator(str);
-  t = OPERATOR;
-  if (l == 0) {
-    l = syntax->is_L_bracket(str);
-    t = L_BRACKET;
-  };
-  if (l == 0) {
-    l = syntax->is_R_bracket(str);
-    t = R_BRACKET;
-  }
-  if (l == 0) {
-    l = syntax->is_function(str);
-    t = FUNCTION;
-  }
-  if (l == 0) {
-    l = syntax->is_operand(str);
-    t = OPERAND;
-  }
-  if (l == 0) {
-    l = syntax->is_variable(str);
-    t = VARIABLE;
-  }
-  return make_pair(l, l == 0 ? ERROR : t);
+std::pair<int, token_type> TokenList::find_token(const string &str) {
+  int l = syntax->is_operand(str);
+  token_type t = OPERAND;
+  return l != 0 ? make_pair(l, t) : syntax->is_token(str);
 };
 
-ExprToken *TokenList::create_token(string str_token, token_type t) {
+ExprToken *TokenList::create_token(const string &str_token, token_type t) {
   ExprToken *token;
 
-  if ((t == OPERATOR || t == UNARYOPERATOR || t == FUNCTION))
+  if (t == OPERATOR || t == UNARYOPERATOR || t == FUNCTION || t == L_BRACKET ||
+      t == R_BRACKET)
     token = new FuncExprToken(str_token, syntax->get_data(str_token, t));
-  if ((t == L_BRACKET)) {
-    token = new ExprToken(t, 0);
+  if (t == L_BRACKET) {
     brackets++;
-  }
-  if ((t == R_BRACKET)) {
-    token = new ExprToken(t, 0);
+  } else if ((t == R_BRACKET)) {
     brackets--;
   }
   if ((t == OPERAND)) {
@@ -175,4 +124,31 @@ ExprToken *TokenList::create_token(string str_token, token_type t) {
   }
 
   return token;
+};
+
+void TokenList::make_list(std::string s) {
+  bool good = true;
+  if (s.size() != 0) {
+    int i = 0;
+    while (static_cast<size_t>(i) < s.size() && good) {  // Rest of the string
+      i += skip_spaces(s);                               // Skip spaces
+      if (s[i]) {
+        int l;
+        token_type t;
+        tie(l, t) = find_token(s.substr(i));
+        if (l) {
+          push_back(create_token(s.substr(i, l), t));
+          make_unary_operator();  //!
+          good = check_syntax();
+          i += l;
+        } else {
+          good = false;
+        }
+      }
+    }
+  } else {
+    throw std::invalid_argument("Wrong expression string");
+  }
+  if (brackets != 0) throw std::invalid_argument("Wrong () pairs");
+  if (good == false) throw std::invalid_argument("Parsing error");
 };

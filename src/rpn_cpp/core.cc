@@ -31,7 +31,7 @@ double CalcCore::rpn_reduce(double x) {
   double res = k.top().data();
   return res;
 }
-
+/*
 void CalcCore::expr_from_string(std::list<ExprToken *> &infix, std::string s) {
   const char *p = s.c_str();
   int parents = 0;
@@ -111,7 +111,8 @@ const char *CalcCore::one_token_from_string(std::list<ExprToken *> &infix,
 }
 
 const char *CalcCore::expr_add_function(std::list<ExprToken *> &infix,
-                                        const char *src_str, int *good) {
+                                        const char *src_str, int *good){};
+{
   if (strncmp(src_str, "sin(", 4) == 0) {
     infix.push_back(new FuncExprToken(FUNCTION, FUN_SCORE, sin));
     src_str += 3;
@@ -183,3 +184,4 @@ int CalcCore::check_syntax(ExprToken *last, ExprToken *before) {
 
   return good;
 }
+*/
