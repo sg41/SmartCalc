@@ -1,50 +1,27 @@
 #include "expr.h"
 
 #include <memory>
-/*
-void stack_to_expr(struct expr *rpn, struct stk *opstack) {
-  expr_add_symbol(rpn, stk_peek_status(opstack), stk_peek(opstack));
-  stk_pop(opstack);
-}
 
-struct expr *expr_shunt(const struct expr *infix) {
-  struct stk *opstack = stk_new();
-  struct expr *rpn = expr_new();
-  for (struct ll_node *i = infix->head; i != NULL; i = i->next) {
-    switch (i->state) {
-      case OPERAND:
-      case VARIABLE:
-        expr_add_symbol(rpn, i->state, i->datum);
-        break;
-      case L_BRACKET:
-        stk_push(opstack, i->state, i->datum);
-        break;
-      case R_BRACKET:
-        while (stk_peek_status(opstack) != L_BRACKET)
-          stack_to_expr(rpn, opstack);
-        stk_pop(opstack);  // Забираем из стека открывающуюся скобку
-        if (stk_peek_status(opstack) == FUNCTION) stack_to_expr(rpn, opstack);
-        break;
-      case FUNCTION:
-      case UNARYOPERATOR:
-      case OPERATOR:
-        while (opstack->depth > 0 &&
-               precedence(opstack->top) >= precedence(i) &&
-               stk_peek_status(opstack) != L_BRACKET)
-          stack_to_expr(rpn, opstack);
-        stk_push(opstack, i->state, i->datum);
-        break;
-      case ERROR:
-      default:
-        i = NULL;
-        assert(0);
-    }
+int ExprSyntax::is_operand(const string &o) {
+  int res = 0;
+  static const std::regex base_regex(operand_mask_);
+  std::smatch base_match;
+  if (std::regex_match(o, base_match, base_regex)) {
+    res = base_match[1].str().size();
   }
-  while (opstack->depth > 0) stack_to_expr(rpn, opstack);
-  stk_destroy(&opstack);
-  return rpn;
-}
-*/
+  return res;
+};
+
+pair<int, token_type> ExprSyntax::is_token(const string &o) {
+  int res = 0, len = 0;
+  auto l = length_.rbegin();
+  for (; res == 0 && l != length_.rend(); l++) {
+    len = *l;
+    res = operators_.count(o.substr(0, len));
+  }
+  return res == 0 ? make_pair(0, ERROR)
+                  : make_pair(len, operators_[o.substr(0, len)].t);
+};
 
 void TokenList::make_unary_operator() {
   ExprToken *last = back();
@@ -93,7 +70,7 @@ bool TokenList::check_syntax() {
   return good;
 };
 
-int TokenList::skip_spaces(string str) {
+int TokenList::skip_spaces(const string &str) {
   int i = 0;
   while (str[i] && syntax->is_space(str[i])) i++;  // Skip spaces
   return i;
@@ -126,19 +103,21 @@ ExprToken *TokenList::create_token(const string &str_token, token_type t) {
   return token;
 };
 
-void TokenList::make_list(std::string s) {
+void TokenList::make_list(const std::string &s) {
+  if (!empty()) clear();
+  brackets = 0;
   bool good = true;
   if (s.size() != 0) {
     int i = 0;
     while (static_cast<size_t>(i) < s.size() && good) {  // Rest of the string
-      i += skip_spaces(s);                               // Skip spaces
-      if (s[i]) {
+      i += skip_spaces(s.substr(i));                     // Skip spaces
+      if (static_cast<size_t>(i) < s.size()) {
         int l;
         token_type t;
         tie(l, t) = find_token(s.substr(i));
         if (l) {
           push_back(create_token(s.substr(i, l), t));
-          make_unary_operator();  //!
+          make_unary_operator();
           good = check_syntax();
           i += l;
         } else {
@@ -149,6 +128,7 @@ void TokenList::make_list(std::string s) {
   } else {
     throw std::invalid_argument("Wrong expression string");
   }
-  if (brackets != 0) throw std::invalid_argument("Wrong () pairs");
+  if (empty()) throw std::invalid_argument("No valid expression found");
   if (good == false) throw std::invalid_argument("Parsing error");
+  if (brackets != 0) throw std::invalid_argument("Wrong () pairs");
 };

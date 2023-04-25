@@ -40,23 +40,10 @@ TEST(CalcTest, calcEngine) {
   EXPECT_EQ(c.calc(0), 7);
 }
 
-// TEST(CalcTest, expr_4) {
-//   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
-//   CalcCore c;
-//   uint expected_result, actual_result;
-//   std::list<ExprToken *> infix;
-//   c.expr_from_string(infix, str);
-//   expected_result = 18;
-//   actual_result = infix.size();
-//   EXPECT_EQ(expected_result, actual_result);
-//   for (auto t : infix) delete t;
-// }
-
 TEST(CalcTest, regex_5) {
   char str[1000] = "2.365sdsdsd";
   uint expected_result, actual_result;
   ExprSyntax s;
-  s.init();
   actual_result = s.is_operand(str);
   expected_result = 5;
   EXPECT_EQ(expected_result, actual_result);
@@ -64,26 +51,107 @@ TEST(CalcTest, regex_5) {
   a = s.get_operand(str);
   EXPECT_EQ(a, b);
   b = 1.890e4;
+  actual_result = s.is_operand("1.890e4fdj;alkf;");
+  expected_result = 7;
+  EXPECT_EQ(expected_result, actual_result);
   a = s.get_operand("1.890e4fdj;alkf;");
   EXPECT_EQ(a, b);
   b = 1.890E-4;
+  actual_result = s.is_operand("1.890E-4aslkdjalks147981asfja08--2344");
+  expected_result = 8;
+  EXPECT_EQ(expected_result, actual_result);
+
   a = s.get_operand("1.890E-4aslkdjalks147981asfja08--2344");
   EXPECT_EQ(a, b);
 }
 
 TEST(CalcTest, expr_6) {
-  char str[1000] = "sin(cos(x^2)^(1*-100))*x";
-  // CalcCore c;
+  char str[1000] = "sin( cos(x^2)^(1*-100))*x";
   uint expected_result, actual_result;
   ExprSyntax s;
-  s.init();
   TokenList infix(&s);
-  // c.expr_from_string(infix, str);
   infix.make_list(str);
   expected_result = 18;
   actual_result = infix.size();
   EXPECT_EQ(expected_result, actual_result);
-  for (auto t : infix) delete t;
+  for (auto t : infix) delete t;  //! to be fixed!
+}
+/*
+TEST(CalcTest, expr_wrong_formula) {
+#define __N__ 21
+  char str[__N__][1000] = {
+      "sinus(X)",
+      "sin(eX) ",
+      "sinus(cosinus(x^^2)^^^^(++1-*-100))*x(         )*tangens(X)+sqrt("
+      "-x/2)-log(x mod 2)",
+      "",
+      {0},
+      "+-x*cos(((",
+      "mod 4",
+      "cos(-x-)",
+      "2 modulus 3",
+      "2 -mod 4",
+      "sin)x(",
+      ")X(",
+      " ",
+      "русский язык рулит",
+      "tan(-nan)",
+      "1.999x",
+      "xsin(x)",
+      "sin(x)1",
+      "sin(x)x",
+      "1cos(x)",
+      "sin(x)cos(x)"};
+
+  uint expected_result[__N__] = {1, 2, 1, 0, 0, 2, 1, 6, 2, 3, 2,
+                                 1, 0, 0, 3, 2, 2, 5, 5, 2, 5},
+       actual_result;
+
+  ExprSyntax s;
+  TokenList infix(&s);
+  for (int i = 0; i < __N__; i++) {
+    EXPECT_THROW(infix.make_list(str[i]), invalid_argument);
+    actual_result = infix.size();
+    EXPECT_EQ(expected_result[i], actual_result);
+  }
+#undef __N__
+}
+*/
+TEST(CalcTest, expr_right_formula) {
+  char str[13][1000] = {
+      "sin(X)",
+      "cos(X)",
+      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*sin(3*x) + (12 - "
+      "5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
+      "(-x/2)-log(x mod 2)",
+      "x",
+      "-.5555*(sin(x))",
+      "-x*cos(x)",
+      "x mod 4",
+      "cos(-x)",
+      "2 mod 3",
+      "-2 mod -4",
+      "sin(x)-cos(x)",
+      "-(-X)"};
+
+  uint expected_result[13] = {4, 4, 72, 13, 1, 9, 7, 3, 5, 3, 5, 9, 5},
+       actual_result;
+
+  for (int i = 0; i < 13; i++) {
+    ExprSyntax s;
+    TokenList infix(&s);
+    EXPECT_NO_THROW(infix.make_list(str[i]));
+    actual_result = infix.size();
+    EXPECT_EQ(expected_result[i], actual_result);
+    for (auto t : infix) delete t;  //! to be fixed!
+  }
+}
+
+TEST(CalcTest, expr_shunt_5) {
+  char str[1000] = "sin(cos(x^2)^(1*-100))*x";
+  CalcCore c;
+  c.make_rpn_expr(str);
+  EXPECT_EQ(c.calc(1), 0.017720242);
 }
 
 int main(int argc, char **argv) {

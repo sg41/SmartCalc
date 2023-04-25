@@ -11,6 +11,17 @@
 #include <string>
 #include <type_traits>
 
+#ifdef NDEBUG
+#define D(fmt, ...) \
+  do {              \
+  } while (0)
+#else /* Not NDEBUG.  */
+#define D(fmt, ...)                    \
+  do {                                 \
+    fprintf(stderr, fmt, __VA_ARGS__); \
+  } while (0)
+#endif
+
 using namespace std;
 
 enum token_type {
@@ -100,51 +111,27 @@ class FuncExprToken : public ExprToken {
 
 class ExprSyntax {
  public:
-  ExprSyntax(){};
-  void init() { count_length(length_, operators_); };
+  ExprSyntax() { count_length(); };
+  int is_operand(const string &o);
   int is_space(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
-  int is_space(string o) {
+  int is_space(const string &o) {
     return spaces_.find(o[0]) != std::string::npos ? 1 : 0;
   };
+  int is_unary_operator(const string &exact_operator_name) {
+    return unary_operators_.count(exact_operator_name)
+               ? exact_operator_name.size()
+               : 0;
+  };
+  pair<int, token_type> is_token(const string &o);
 
-  int is_unary_operator(const string &o) {
-    return unary_operators_.count(o) ? o.size() : 0;
-  };
-  int is_operand(string o) {
-    int res = 0;
-    static const std::regex base_regex(operand_mask_);
-    // "([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?).*");
-    std::smatch base_match;
-    if (std::regex_match(o, base_match, base_regex)) {
-      res = base_match[1].str().size();
-    }
-    return res;
-  };
   double get_operand(const string &s) { return std::atof(s.data()); };
-
-  pair<int, token_type> is_token(string o) {
-    int res = 0, len = 0;
-    auto l = length_.rbegin();
-    for (; res == 0 && l != length_.rend(); l++) {
-      len = *l;
-      res = operators_.count(o.substr(0, len));
-    }
-    return res == 0 ? make_pair(0, ERROR)
-                    : make_pair(len, operators_[o.substr(0, len)].t);
-  };
-
-  TokenData get_data(string s, token_type t = ERROR) {
-    TokenData d{};
-    if (t == UNARYOPERATOR)
-      d = unary_operators_[s];
-    else
-      d = operators_[s];
-    return d;
+  const TokenData &get_data(string s, token_type t) {
+    return t == UNARYOPERATOR ? unary_operators_[s] : operators_[s];
   };
 
  protected:
-  void count_length(set<int> &len, const map<string, TokenData> &m) {
-    for (auto i : m) len.insert(i.first.size());
+  void count_length() {
+    for (auto i : operators_) length_.insert(i.first.size());
   };
 
   set<int> length_;
@@ -161,6 +148,8 @@ class ExprSyntax {
         [](double a, double b) { return (b != 0) ? a / b : NAN; }}},
       {"*", {OPERATOR, MUL_SCORE, [](double a, double b) { return a * b; }}},
       {"%",
+       {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
+      {"mod",
        {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
       {"^",
        {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}},
@@ -192,12 +181,17 @@ class TokenList : public list<ExprToken *> {
     syntax = s;
     brackets = 0;
   };
-  void make_list(string str);
+  ~TokenList() { clear(); };
+  void clear() {
+    // for (auto t : *this) delete t; //! to be fixed!
+    list::clear();
+  };
+  void make_list(const string &str);
 
  protected:
   ExprToken *create_token(const string &str, token_type t);
   std::pair<int, token_type> find_token(const string &str);
-  int skip_spaces(string str);
+  int skip_spaces(const string &str);
   void make_unary_operator();
   bool check_syntax();
   ExprToken *before_back() {
