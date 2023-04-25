@@ -13,14 +13,15 @@ class CalcCore {
  public:
   CalcCore() : syntax(new ExprSyntax()){};
   ~CalcCore() {
-    for (auto t : rpn_expr_) delete t;
+    // for (auto t : rpn_expr_) delete t;
     delete syntax;
   };
   //! void set_syntax(ExprSyntax *s) { syntax = s; };
   void make_rpn_expr(const std::string &s) {
+    if (!rpn_expr_.empty()) rpn_expr_.clear_and_delete();
     TokenList infix(syntax);
     infix.make_list(s);
-    expr_shunt(infix);
+    move_infix_to_rpn(infix);
   };
   double calc(double x) {
     double res = 0;
@@ -30,11 +31,11 @@ class CalcCore {
 
  protected:
   double rpn_reduce(double x);
-  void expr_shunt(TokenList &infix);
+  void move_infix_to_rpn(TokenList &infix);
   void stack_to_rpn(std::stack<ExprToken *> &opstack);
 
  public:
-  std::list<ExprToken *> rpn_expr_;
+  TokenList rpn_expr_;
   ExprSyntax *syntax = nullptr;
 };
 

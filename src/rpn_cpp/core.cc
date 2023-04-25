@@ -10,8 +10,9 @@ void CalcCore::stack_to_rpn(std::stack<ExprToken *> &opstack) {
   opstack.pop();
 }
 
-void CalcCore::expr_shunt(TokenList &infix) {
+void CalcCore::move_infix_to_rpn(TokenList &infix) {
   std::stack<ExprToken *> opstack;
+  TokenList brackets;
 
   for (auto i : infix) {
     switch (i->state()) {
@@ -21,11 +22,12 @@ void CalcCore::expr_shunt(TokenList &infix) {
         break;
       case L_BRACKET:
         opstack.push(i);
+        brackets.push_back(i);  // store bracket token to be 'delete'd
         break;
       case R_BRACKET:
         while (opstack.top()->state() != L_BRACKET) stack_to_rpn(opstack);
         opstack.pop();  // Забираем из стека открывающуюся скобку
-        if (opstack.top()->state() == FUNCTION) stack_to_rpn(opstack);
+        brackets.push_back(i);  // store bracket token to be 'delete'd
         break;
       case FUNCTION:
       case UNARYOPERATOR:
@@ -39,9 +41,9 @@ void CalcCore::expr_shunt(TokenList &infix) {
       default:
         throw std::invalid_argument("Wrong infix list");
     }
-    // if (i->state() != L_BRACKET && i->state() != R_BRACKET) infix.remove(i);
   }
   while (opstack.size() > 0) stack_to_rpn(opstack);
+  infix.clear();
 }
 
 double CalcCore::rpn_reduce(double x) {

@@ -181,9 +181,9 @@ class TokenList : public list<ExprToken *> {
     syntax = s;
     brackets = 0;
   };
-  ~TokenList() { clear(); };
-  void clear() {
-    // for (auto t : *this) delete t; //! to be fixed!
+  ~TokenList() { clear_and_delete(); };
+  void clear_and_delete() {
+    for (auto t : *this) delete t;  //! to be fixed!
     list::clear();
   };
   void make_list(const string &str);

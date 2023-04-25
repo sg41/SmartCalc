@@ -104,7 +104,7 @@ ExprToken *TokenList::create_token(const string &str_token, token_type t) {
 };
 
 void TokenList::make_list(const std::string &s) {
-  if (!empty()) clear();
+  if (!empty()) clear_and_delete();
   brackets = 0;
   bool good = true;
   if (s.size() != 0) {
