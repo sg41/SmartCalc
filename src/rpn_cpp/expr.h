@@ -79,8 +79,8 @@ class FuncExprToken : public ExprToken {
   using ExprToken::ExprToken;
   FuncExprToken(string n, token_type s, precedence p, func_type f)
       : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
-  FuncExprToken(char c, token_type s, precedence p, func_type f)
-      : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(string("") + c){};
+  FuncExprToken(char c_name, token_type s, precedence p, func_type f)
+      : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(string("") + c_name){};
   FuncExprToken(string n, TokenData d)
       : ExprToken(d.t, 0.0), priority_(d.p), fnc_(d.call), name_(n){};
 
@@ -100,16 +100,21 @@ class FuncExprToken : public ExprToken {
 using namespace std;
 class ExprSyntax {
  public:
-  ExprSyntax() { count_length(); };
+  ExprSyntax() {
+    count_length(f_length_, functions_);
+    count_length(uop_length_, unary_operators_);
+    count_length(op_length_, operators_);
+    count_length(var_length_, variables_);
+  };
   int is_space(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
   int is_space(string o) {
-    return spaces_.find(o[0]) != std::string::npos ? o.size() : 0;
+    return spaces_.find(o[0]) != std::string::npos ? 1 : 0;
   };
   int is_L_bracket(string o) {
-    return L_brackets_.find(o) != std::string::npos ? o.size() : 0;
+    return L_brackets_.find(o[0]) != std::string::npos ? 1 : 0;
   };
   int is_R_bracket(string o) {
-    return R_brackets_.find(o) != string::npos ? o.size() : 0;
+    return R_brackets_.find(o[0]) != string::npos ? 1 : 0;
   };
   int is_unary_operator(string o) {
     return unary_operators_.count(o) ? o.size() : 0;
@@ -125,10 +130,18 @@ class ExprSyntax {
     return res;
   };
   double get_operand(string s) { return std::atof(s.data()); };
-
-  int is_variable(string o) { return variable_.count(o) ? o.size() : 0; };
+  int is_variable(string o) { return variables_.count(o) ? o.size() : 0; };
   int is_operator(string o) { return operators_.count(o) ? o.size() : 0; };
   int is_function(string o) { return functions_.count(o) ? o.size() : 0; };
+
+ protected:
+  int base_is_function(string o, map<string, TokenData> m, set<int> len) {
+    int res = 0;
+    for (auto l = len.rbegin(); res == 0 && l != len.rend(); l++) {
+      res = m.count(o.substr(0, *l));
+    }
+    return res;
+  };
   TokenData get_data(string s, token_type t = ERROR) {
     TokenData d{};
     if (t == OPERATOR) d = operators_[s];
@@ -136,18 +149,18 @@ class ExprSyntax {
     if (t == FUNCTION) d = functions_[s];
     return d;
   };
-
- protected:
-  void count_length() {
-    for (auto l : functions_) {
-      f_length_.insert(l.first.size());
-    }
+  void count_length(set<int> len, map<string, TokenData> m) {
+    for (auto i : m) len.insert(i.first.size());
   };
-  set<int> f_length_, uop_length_, op_length_;
+  void count_length(set<int> len, set<string> s) {
+    for (auto i : s) len.insert(i.size());
+  };
+
+  set<int> f_length_, uop_length_, op_length_, var_length_;
   string spaces_ = " \t\n\r";
   string L_brackets_ = {"("};
   string R_brackets_ = {")"};
-  set<string> variable_ = {"x", "X"};
+  set<string> variables_ = {"x", "X"};
   map<string, TokenData> unary_operators_{
       {"+", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return a; }}},
       {"-", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return -a; }}}};
