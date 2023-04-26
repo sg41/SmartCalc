@@ -33,6 +33,9 @@ class BaseCalcData {
   static const int VERY_MIN_Y = -1000000;
   static const int VERY_MAX_Y = 1000000;
   static const int EPS = 1e-7;
+  static const int MAXI = 80;
+  static const int MAXJ = 25;
+  static const int MIDDLEJ = 13;
 
  public:
   std::string error_message;
@@ -68,21 +71,18 @@ template <class D>
 class BaseCalcModel : public ModelObservableInterface<D> {
  public:
   BaseCalcModel() { data = new D; };
-  BaseCalcModel(const BaseCalcModel &m) {
-    data = new D;
-    *data = *m.data;
-  }
+  BaseCalcModel(const BaseCalcModel &m) { set_data(m.data); }
   BaseCalcModel(BaseCalcModel &&m) {
     data = m.data;
     m.data = nullptr;
   };
   BaseCalcModel &operator=(const BaseCalcModel &m) {
-    if (this != &m) *data = *m.data;
+    if (this != &m) set_data(m.data);
     return *this;
   }
   BaseCalcModel &operator=(BaseCalcModel &&m) {
     if (this != &m) {
-      delete data;
+      if (data != nullptr) delete data;
       data = m.data;
       m.data = nullptr;
     }
@@ -91,8 +91,10 @@ class BaseCalcModel : public ModelObservableInterface<D> {
   ~BaseCalcModel() { delete data; };
   virtual void calculate(){};
   int validate_data() { return data->validate_data(); };
-
-  void set_data(const D *d) { *data = *d; };
+  virtual void set_data(const D *d) {
+    if (data == nullptr) data = new D;
+    if (d != nullptr) *data = *d;
+  };
   const D *get_data() const override { return static_cast<const D *>(data); };
   void clear_data() { data->init_data(); };
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "../rpn_cpp/core.h"
 #include "baseModel.h"
 
 class GraphModelData : public BaseCalcData {
@@ -29,7 +30,8 @@ class GraphModelData : public BaseCalcData {
   double clip_y2;
   double dx;
   double dy;
-  std::vector<double> y;
+  std::vector<double> y_vect;
+  double y;
 
   void init_data() override {
     BaseCalcData::init_data();
@@ -40,16 +42,28 @@ class GraphModelData : public BaseCalcData {
     clip_y2 = 0;
     dx = 0;
     dy = 0;
-    y.clear();
+    y = 0;
+    y_vect.clear();
   };
 };
 
 class GraphModel : public BaseCalcModel<GraphModelData> {
  public:
   using BaseCalcModel<GraphModelData>::BaseCalcModel;
-  void calculate() override{
-
+  void calculate() override {
+    data->y = c.calc(data->x);  // calculate single Y for given X
+    data->y_vect.clear();       // calculate Y vector for X range
+    double x = data->MINX;
+    for (; x < data->MAXX; x += data->dx) data->y_vect.push_back(c.calc(x));
+    notify_observers();
+  }
+  void set_data(const GraphModelData *d) override {
+    BaseCalcModel::set_data(d);
+    c.make_rpn_expr(data->str);
   };
+
+ protected:
+  CalcCore c;
 };
 
 #endif  //_GRAPHMODEL_H_
