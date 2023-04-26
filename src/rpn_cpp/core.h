@@ -12,29 +12,26 @@
 class CalcCore {
  public:
   CalcCore() : syntax(new ExprSyntax()){};
-  ~CalcCore() {
-    // for (auto t : rpn_expr_) delete t;
-    delete syntax;
-  };
+  ~CalcCore() { delete syntax; };
   //! void set_syntax(ExprSyntax *s) { syntax = s; };
   void make_rpn_expr(const std::string &s) {
     if (!rpn_expr_.empty()) rpn_expr_.clear_and_delete();
     TokenList infix(syntax);
-    infix.make_list(s);
+    infix.make_infix_list(s);
     move_infix_to_rpn(infix);
   };
-  double calc(double x) {
-    double res = 0;
-    if (rpn_expr_.size() > 0) res = rpn_reduce(x);
-    return res;
-  };
+  double calc(double x) { return (rpn_expr_.size() > 0) ? rpn_reduce(x) : 0; };
+  int get_expr_size() { return rpn_expr_.size(); };
 
  protected:
   double rpn_reduce(double x);
   void move_infix_to_rpn(TokenList &infix);
-  void stack_to_rpn(std::stack<ExprToken *> &opstack);
+  void stack_to_rpn(std::stack<ExprToken *> &opstack) {
+    rpn_expr_.push_back(opstack.top());
+    opstack.pop();
+  };
 
- public:
+ protected:
   TokenList rpn_expr_;
   ExprSyntax *syntax = nullptr;
 };

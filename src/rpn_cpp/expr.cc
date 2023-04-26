@@ -72,7 +72,8 @@ bool TokenList::check_syntax() {
 
 int TokenList::skip_spaces(const string &str) {
   int i = 0;
-  while (str[i] && syntax->is_space(str[i])) i++;  // Skip spaces
+  while (static_cast<size_t>(i) < str.size() && syntax->is_space(str[i]))
+    i++;  // Skip spaces
   return i;
 };
 
@@ -103,7 +104,7 @@ ExprToken *TokenList::create_token(const string &str_token, token_type t) {
   return token;
 };
 
-void TokenList::make_list(const std::string &s) {
+void TokenList::make_infix_list(const std::string &s) {
   if (!empty()) clear_and_delete();
   brackets = 0;
   bool good = true;
@@ -126,7 +127,7 @@ void TokenList::make_list(const std::string &s) {
       }
     }
   } else {
-    throw std::invalid_argument("Wrong expression string");
+    throw std::invalid_argument("Empty expression string");
   }
   if (empty()) throw std::invalid_argument("No valid expression found");
   if (good == false) throw std::invalid_argument("Parsing error");

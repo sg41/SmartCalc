@@ -5,45 +5,43 @@
 #include <stack>
 #include <stdexcept>
 
-void CalcCore::stack_to_rpn(std::stack<ExprToken *> &opstack) {
-  rpn_expr_.push_back(opstack.top());
-  opstack.pop();
-}
-
 void CalcCore::move_infix_to_rpn(TokenList &infix) {
-  std::stack<ExprToken *> opstack;
-  TokenList brackets;
+  if (&infix != &rpn_expr_) {
+    std::stack<ExprToken *> opstack;
+    TokenList brackets;
 
-  for (auto i : infix) {
-    switch (i->state()) {
-      case OPERAND:
-      case VARIABLE:
-        rpn_expr_.push_back(i);
-        break;
-      case L_BRACKET:
-        opstack.push(i);
-        brackets.push_back(i);  // store bracket token to be 'delete'd
-        break;
-      case R_BRACKET:
-        while (opstack.top()->state() != L_BRACKET) stack_to_rpn(opstack);
-        opstack.pop();  // Забираем из стека открывающуюся скобку
-        brackets.push_back(i);  // store bracket token to be 'delete'd
-        break;
-      case FUNCTION:
-      case UNARYOPERATOR:
-      case OPERATOR:
-        while (opstack.size() > 0 && opstack.top()->priorty() >= i->priorty() &&
-               opstack.top()->state() != L_BRACKET)
-          stack_to_rpn(opstack);
-        opstack.push(i);
-        break;
-      case ERROR:
-      default:
-        throw std::invalid_argument("Wrong infix list");
+    for (auto i : infix) {
+      switch (i->state()) {
+        case OPERAND:
+        case VARIABLE:
+          rpn_expr_.push_back(i);
+          break;
+        case L_BRACKET:
+          opstack.push(i);
+          brackets.push_back(i);  // store bracket token to be 'delete'd
+          break;
+        case R_BRACKET:
+          while (opstack.top()->state() != L_BRACKET) stack_to_rpn(opstack);
+          opstack.pop();  // Забираем из стека открывающуюся скобку
+          brackets.push_back(i);  // store bracket token to be 'delete'd
+          break;
+        case FUNCTION:
+        case UNARYOPERATOR:
+        case OPERATOR:
+          while (opstack.size() > 0 &&
+                 opstack.top()->priorty() >= i->priorty() &&
+                 opstack.top()->state() != L_BRACKET)
+            stack_to_rpn(opstack);
+          opstack.push(i);
+          break;
+        case ERROR:
+        default:
+          throw std::invalid_argument("Wrong infix list");
+      }
     }
+    while (opstack.size() > 0) stack_to_rpn(opstack);
+    infix.clear();
   }
-  while (opstack.size() > 0) stack_to_rpn(opstack);
-  infix.clear();
 }
 
 double CalcCore::rpn_reduce(double x) {

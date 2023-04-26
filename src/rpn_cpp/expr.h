@@ -183,10 +183,10 @@ class TokenList : public list<ExprToken *> {
   };
   ~TokenList() { clear_and_delete(); };
   void clear_and_delete() {
-    for (auto t : *this) delete t;  //! to be fixed!
+    for (auto t : *this) delete t;
     list::clear();
   };
-  void make_list(const string &str);
+  void make_infix_list(const string &str);
 
  protected:
   ExprToken *create_token(const string &str, token_type t);
