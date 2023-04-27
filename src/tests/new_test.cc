@@ -30,7 +30,7 @@ TEST(CalcTest, model) {
   EXPECT_NE(d->x, d2->x);
 }
 
-double sum(double a, double b) { return a + b; }
+// double sum(double a, double b) { return a + b; }
 
 // TEST(CalcTest, calcEngine) {
 //   CalcCore c;
@@ -310,7 +310,7 @@ double ex12(double x) { return pow(-27, 1. / 3.) + x - x; }
 TEST(CalcTest, core_random_expressions) {
 #define __N__ 12
   char str[__N__][1000] = {
-      "sin(cos(x^2)^(1*-100))*x   *tan(X)+sqrt(+x/2)-log(x mod 2)",
+      "sin(cos(x^2)^(1*-100))*x   *tan(X)+sqrt(+x/2)-log(x % 2)",
       "sin(cos(x^2)^(1*-100))*x",
       "tan(x)^(abs(x))/asin(x^-1)+3.14*ln(x-x/2)",
       "x+1-x+(x+(x-x/2)-x*0.01-x*2)",
