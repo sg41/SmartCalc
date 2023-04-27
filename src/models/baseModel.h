@@ -88,7 +88,7 @@ class BaseCalcModel : public ModelObservableInterface<D> {
     }
     return *this;
   }
-  ~BaseCalcModel() { delete data; };
+  virtual ~BaseCalcModel() { delete data; };
   virtual void calculate(){};
   int validate_data() { return data->validate_data(); };
   virtual void set_data(const D *d) {
