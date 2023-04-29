@@ -24,7 +24,7 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
 
  public:
   explicit ConsoleView(ExampleController *c) : controller(c) {
-    // data = new GraphModelData;
+    data = new GraphModelData;
     set_scale();
   };
   // ConsoleView(const ConsoleView &c) {
@@ -36,7 +36,7 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
   //   controller = c.controller;
   //   c.data = nullptr;
   // };
-  ~ConsoleView(){/*delete data;*/};
+  ~ConsoleView() { delete data; };
   void startEventLoop();
   void update(const GraphModelData *model_data) override {
     *data = *(model_data);

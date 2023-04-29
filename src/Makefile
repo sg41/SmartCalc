@@ -77,7 +77,7 @@ $(LIB): lib$(LIB).a
 lib$(LIB).a: $(OBJECTS)
 	ar rcs lib$(LIB).a $(OBJECTS)
 
-$(TXT_APP): $(TXT_O) $(TXT_H) $(LIB) 
+$(TXT_APP): clean $(TXT_O) $(TXT_H) $(LIB) 
 	$(CC) $(CCOPTS) $(TXT_O) -o $@ $(LDOPTS) -l$(LIB) $(LDOPTS)
 
 tests: $(NEW_TEST_C) $(LIB)

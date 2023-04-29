@@ -35,8 +35,8 @@ double ConsoleView::performNumericInput() {
 std::string ConsoleView::performFormulaInput() {
   // std::string formula;
   std::cout << "Input a formula string: ";
-  // std::cin >> data.str;
-  getline(cin, data->str);
+  std::cin >> data->str;
+  // getline(cin, data->str);
   return data->str;
 }
 
