@@ -226,8 +226,8 @@ TEST(CalcTest, expr_shunt_right_formula) {
       "sin(x)-+cos(+x)",
       "-(-X)"};
 
-  uint const expected_result[13] = {4, 4, 73, 13, 1, 9, 7, 3, 5, 3, 5, 11, 5},
-             actual_result;
+  uint const expected_result[13] = {4, 4, 73, 13, 1, 9, 7, 3, 5, 3, 5, 11, 5};
+  uint actual_result;
   CalcCore c;
   for (int i = 0; i < 13; i++) {
     c.make_rpn_expr(str[i]);
