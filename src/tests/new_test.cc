@@ -3,11 +3,11 @@
 #include "../models/graphModel.h"
 #include "../rpn_cpp/core.h"
 
-class TestObserver : public CalcObserverInterface<GraphModelData> {
+class TestObserver : public ModelObserverInterface<GraphModelData> {
  public:
-  void update(ModelObservableInterface<GraphModelData> *d) override {
+  void update(const GraphModelData *d) override {
     std::cout << "Updated" << std::endl;
-    std::cout << d->get_data()->clip_x1 << std::endl;
+    std::cout << d->clip_x1 << std::endl;
   };
 };
 
@@ -251,14 +251,14 @@ TEST(CalcTest, core_functions) {
 
   for (int i = 0; i < 10; i++) {
     c.make_rpn_expr(str[i]);
-    D("i:%d func:%s\n", i, str[i]);
+    DBPRINT("i:%d func:%s\n", i, str[i]);
     for (double x = MIN_X; x <= MAX_X; x += 100) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
         if (fabs(expected_result - actual_result) >= EPS ||
             !isfinite(actual_result))
-          D("e:%f a:%f\n", expected_result, actual_result);
+          DBPRINT("e:%f a:%f\n", expected_result, actual_result);
         ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
@@ -331,14 +331,14 @@ TEST(CalcTest, core_random_expressions) {
   CalcCore c;
   for (int i = 0; i < __N__; i++) {
     c.make_rpn_expr(str[i]);
-    D("i:%d func:%s\n", i, str[i]);
+    DBPRINT("i:%d func:%s\n", i, str[i]);
     for (double x = MIN_X; x <= MAX_X; x += 1000) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
         if (fabs(expected_result - actual_result) >= EPS ||
             !isfinite(actual_result))
-          D("e:%f a:%f\n", expected_result, actual_result);
+          DBPRINT("e:%f a:%f\n", expected_result, actual_result);
         ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));

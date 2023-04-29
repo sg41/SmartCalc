@@ -46,32 +46,35 @@ template <class D>
 class ModelObservableInterface;
 
 template <class D>
-class CalcObserverInterface {
+class ModelObserverInterface {
  public:
-  virtual void update(ModelObservableInterface<D> *){};
+  virtual void update(const D *){};
+
+ protected:
 };
 
 template <class D>
 class ModelObservableInterface {
  public:
-  void register_observer(CalcObserverInterface<D> *o) {
+  void register_observer(ModelObserverInterface<D> *o) {
     observers.push_back(o);
   };
-  void remove_observer(CalcObserverInterface<D> *o) { observers.remove(o); };
+  void remove_observer(ModelObserverInterface<D> *o) { observers.remove(o); };
   void notify_observers() {
-    for (auto o : observers) o->update(this);
+    if (observers.size() > 0)
+      for (auto o : observers) o->update(get_data());
   };
   virtual const D *get_data() const = 0;
 
  protected:
-  std::list<CalcObserverInterface<D> *> observers;
+  std::list<ModelObserverInterface<D> *> observers;
 };
 
 template <class D>
 class BaseCalcModel : public ModelObservableInterface<D> {
  public:
   BaseCalcModel() { data = new D; };
-  BaseCalcModel(const BaseCalcModel &m) { set_data(m.data); }
+  BaseCalcModel(const BaseCalcModel &m) { data = new D(*m.data); };
   BaseCalcModel(BaseCalcModel &&m) {
     data = m.data;
     m.data = nullptr;

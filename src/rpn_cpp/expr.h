@@ -12,11 +12,11 @@
 #include <type_traits>
 
 #ifdef NDEBUG
-#define D(fmt, ...) \
-  do {              \
+#define DBPRINT(fmt, ...) \
+  do {                    \
   } while (0)
 #else /* Not NDEBUG.  */
-#define D(fmt, ...)                    \
+#define DBPRINT(fmt, ...)              \
   do {                                 \
     fprintf(stderr, fmt, __VA_ARGS__); \
   } while (0)

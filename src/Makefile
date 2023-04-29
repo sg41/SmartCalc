@@ -7,11 +7,15 @@ APP_ARGS = "sin(cos(x^2)^(1*-100))*x"
 TEST_APP = test.app
 TEST_C = tests/test.c
 GTEST_C = tests/gtest.cc
-NEW_TEST_C = tests/new_test.cc rpn_cpp/core.cc rpn_cpp/expr.cc
+TXT_APP = txt.app
+TXT_C = main.cc views/consoleView.cc
+TXT_O = $(TXT_C:.cc=.o)
+NEW_TEST_C = tests/new_test.cc
 DOCKER_NAME=calc:1.01
 RELEASE_NAME=s21_SmartCalc-1.01
 TEXI2DVI=texi2dvi
 .SUFFIXES:
+.SUFFIXES: .cc .o
 
 # ROOT := $(shell git rev-parse --show-toplevel)
 ROOT := ../
@@ -30,12 +34,15 @@ endif
 APP = graph.app
 LIB = s21_SmartCalc
 SRC_DIR=$(ROOT)/src
-OBJECTS = rpr/llist.o rpr/stack.o rpr/expr.o rpr/core.o
-SOURCES = $(OBJECTS:.o=.c)
+OBJECTS = rpn_cpp/expr.o rpn_cpp/core.o
+SOURCES = $(OBJECTS:.o=.cc)
 HEADERS = $(OBJECTS:.o=.h)
 INST_DIR=../build
 
-all:  graph gtk 
+# all:  graph gtk 
+
+.cc.o:
+	$(CC) -c $(CCOPTS) -o $@ $<
 
 dvi: doc.dvi
 
@@ -62,46 +69,15 @@ uninstall:
 	rm -rf $(INST_DIR)/gtk.app $(INST_DIR)/newversion-v9.ui $(INST_DIR)/$(APP) $(INST_DIR)/run.sh
 	-[ `ls -a $(INST_DIR)| wc -l` -eq 2 ] && rm -rf $(INST_DIR)
 
+lib: $(LIB)
+
 $(LIB): lib$(LIB).a
 
 lib$(LIB).a: $(OBJECTS)
 	ar rcs lib$(LIB).a $(OBJECTS)
 
-gtk: gtk.app
-
-gtk.app: gtk.c	$(LIB)
-	$(CC) $(GTK_OPTS) gtk.c -o gtk.app $(LDOPTS) -l$(LIB) $(LIBS) $(GTK_LIBS)
-
-graph: $(LIB) graph.c graph.h rpr/llist.h rpr/stack.h
-	$(CC) $(CCOPTS) -DTXT_VERSION graph.c -o $(APP) -l$(LIB) $(LDOPTS)
-
-$(APP): graph
-
-graph.o: graph.c graph.h rpr/llist.h
-	$(CC) $(CCOPTS) $(LDOPTS) -c graph.c
-
-rpr/llist.o: rpr/llist.c rpr/llist.h graph.h
-	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/llist.c -o rpr/llist.o
-
-rpr/stack.o: rpr/stack.c rpr/stack.h
-	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/stack.c -o rpr/stack.o
-
-rpr/expr.o: rpr/expr.c rpr/expr.h
-	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/expr.c -o rpr/expr.o
-
-rpr/core.o: rpr/core.c rpr/core.h
-	$(CC) $(CCOPTS) $(LDOPTS) -c rpr/core.c -o rpr/core.o
-
-$(TEST_C): tests/*.check
-	checkmk tests/*.check > $(TEST_C)
-
-tests_libcheck: $(TEST_C) $(LIB)
-	$(CC) $(CCOPTS) $(TEST_C) -o $(TEST_APP) $(LDOPTS) $(LIBS) -l$(LIB)
-	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
-
-tests_gtest: $(GTEST_C) $(LIB)
-	$(CC) $(CCOPTS) $(GTEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
-	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
+txt.app: $(TXT_O) $(LIB) 
+	$(CC) $(CCOPTS) $(TXT_O) -o $@ $(LDOPTS) -l$(LIB) $(LDOPTS)
 
 tests: $(NEW_TEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(NEW_TEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
@@ -124,7 +100,7 @@ check2: $(SOURCES) graph.c $(HEADERS) graph.h
 .PHONY: all clean rebuild
 
 clean:
-	rm -rf $(OBJECTS) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
+	rm -rf $(OBJECTS) $(TXT_O) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
 	rm -rf *.o $(TEST_APP) lib$(LIB).a $(OBJECTS) *.a *.gcno *.gcda *.gcov *.info CPPLINT.cfg .clang-format *.app *.log *.aux *.dvi *.toc report
 
 rebuild: clean all

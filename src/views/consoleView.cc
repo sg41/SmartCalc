@@ -1,7 +1,5 @@
 #include "consoleView.h"
 
-#include <iostream>
-
 using std::cin;
 using std::cout;
 using std::endl;
@@ -38,20 +36,16 @@ std::string ConsoleView::performFormulaInput() {
 }
 
 void ConsoleView::draw_txt_graph() {
-  // double scalex = (double)(data->MAXX - data->MINX) / data->MAXI;
-  // double scaley = (double)data->MAXJ / (data->MAXY - data->MINY);
   int i, j;
   for (j = 0; j < data->MAXJ; j++) {
-    // double x = datat->MINX;
     for (i = 0; i < data->MAXI; i++) {
       if ((int)round(data->y_vect[i] * data->dy + round(data->MAXJ / 2)) == j) {
-        printf("*");
+        std::cout << ("*");
       } else {
-        printf(".");
+        std::cout << (".");
       }
-      // x += scalex;
     }
-    printf("\n");
+    std::cout << ("\n");
   }
 };
 
@@ -68,12 +62,17 @@ void ConsoleView::startEventLoop() {
         break;
 
       case CALC:
-        controller->calculate();
+        try {
+          controller->user_action(data);
+        } catch (const std::invalid_argument &e) {
+          cout << "ERROR: " << e.what() << std::endl;
+        };
         break;
 
       case EXIT:
         exit(1);
 
+      case NONE:
       default:
         std::cout << "Wrong menu item number!";
         continue;
