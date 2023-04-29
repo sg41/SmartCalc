@@ -8,9 +8,13 @@ void ConsoleView::displayMenu() {
   std::cout << "=========" << std::endl;
   std::cout << " M E N U " << std::endl;
   std::cout << "=========" << std::endl;
-  std::cout << "1. Enter x value" << std::endl;
-  std::cout << "2. Enter formula" << std::endl;
+  std::cout << "1. Enter x value (Current: " << this->data->x << ")"
+            << std::endl;
+  std::cout << "2. Enter formula (Current: \"" << this->data->str << "\")"
+            << std::endl;
   std::cout << "3. Calculate formula" << std::endl;
+  std::cout << "4. Change x range (Current: from " << this->data->MINX
+            << ", to " << data->MAXX << ")" << std::endl;
   std::cout << "0. Quit" << std::endl << std::endl;
 }
 
@@ -22,16 +26,17 @@ int ConsoleView::performChoice() {
 }
 
 double ConsoleView::performNumericInput() {
-  // double number;
+  double number;
   std::cout << "Input a decimal number: ";
-  std::cin >> data->x;
-  return data->x;
+  std::cin >> number;
+  return number;
 }
 
 std::string ConsoleView::performFormulaInput() {
   // std::string formula;
-  std::cout << "Input a decimal number: ";
-  std::cin >> data->str;
+  std::cout << "Input a formula string: ";
+  // std::cin >> data.str;
+  getline(cin, data->str);
   return data->str;
 }
 
@@ -50,11 +55,12 @@ void ConsoleView::draw_txt_graph() {
 };
 
 void ConsoleView::startEventLoop() {
-  while (true) {
+  bool done = false;
+  while (!done) {
     displayMenu();
     switch ((Choice)performChoice()) {
       case VAR:
-        performNumericInput();
+        data->x = performNumericInput();
         break;
 
       case FORMULA:
@@ -69,8 +75,16 @@ void ConsoleView::startEventLoop() {
         };
         break;
 
+      case RANGE:
+        cout << "MIN X: ";
+        data->MINX = performNumericInput();
+        cout << "MAX X: ";
+        data->MAXX = performNumericInput();
+        set_scale();
+        break;
       case EXIT:
-        exit(1);
+        done = true;
+        break;
 
       case NONE:
       default:

@@ -9,11 +9,6 @@ class BaseCalcData {
   virtual ~BaseCalcData(){};
   virtual void init_data() { this->error = 0; };
   virtual int validate_data() { return 0; };
-  void set_error(int e) { this->error = e; };
-  void set_error(int e, const std::string &errMessage) {
-    set_error(e);
-    this->error_message = errMessage;
-  };
 
  public:
   static const int MAXSTR = 1024;
@@ -24,26 +19,22 @@ class BaseCalcData {
   static const int DEFAULT_DURATION = 12;
   static const int DEFAULT_AMOUNT = 100000;
   static const int DEFAULT_RATE = 9.5;
-  static const int MINX = -3;
-  static const int MAXX = 3;  // 4 * 3.14
-  static const int MINY = -1;
-  static const int MAXY = 1;
+  int MINX = -3;
+  int MAXX = 3;  // 4 * 3.14
+  int MINY = -1;
+  int MAXY = 1;
   static const int VERY_MIN_X = -1000000;
   static const int VERY_MAX_X = 1000000;
   static const int VERY_MIN_Y = -1000000;
   static const int VERY_MAX_Y = 1000000;
   static const int EPS = 1e-7;
-  static const int MAXI = 80;
-  static const int MAXJ = 25;
-  static const int MIDDLEJ = 13;
+  int MAXI = 80;
+  int MAXJ = 25;
 
  public:
   std::string error_message;
   int error;
 };
-
-template <class D>
-class ModelObservableInterface;
 
 template <class D>
 class ModelObserverInterface {

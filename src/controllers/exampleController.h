@@ -8,8 +8,8 @@ class ExampleController {
   GraphModel *model;
 
  public:
-  ExampleController(GraphModel *m) : model(m){};
-  void user_action(GraphModelData *d) {
+  explicit ExampleController(GraphModel *m) : model(m){};
+  void user_action(const GraphModelData *d) {
     model->set_data(d);
     model->calculate();
   };

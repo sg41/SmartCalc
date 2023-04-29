@@ -10,6 +10,7 @@ GTEST_C = tests/gtest.cc
 TXT_APP = txt.app
 TXT_C = main.cc views/consoleView.cc
 TXT_O = $(TXT_C:.cc=.o)
+TXT_H = views/consoleView.h controllers/exampleController.h 
 NEW_TEST_C = tests/new_test.cc
 DOCKER_NAME=calc:1.01
 RELEASE_NAME=s21_SmartCalc-1.01
@@ -76,7 +77,7 @@ $(LIB): lib$(LIB).a
 lib$(LIB).a: $(OBJECTS)
 	ar rcs lib$(LIB).a $(OBJECTS)
 
-txt.app: $(TXT_O) $(LIB) 
+$(TXT_APP): $(TXT_O) $(TXT_H) $(LIB) 
 	$(CC) $(CCOPTS) $(TXT_O) -o $@ $(LDOPTS) -l$(LIB) $(LDOPTS)
 
 tests: $(NEW_TEST_C) $(LIB)
@@ -94,10 +95,10 @@ check: $(SOURCES) graph.c $(HEADERS) graph.h
 	clang-format -n graph.c graph.h
 	clang-format -n gtk.c gtk.h
 
-check2: $(SOURCES) graph.c $(HEADERS) graph.h
-	cppcheck --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction $(ROOT)/src/
+check2: 
+	cppcheck --enable=all --suppress=syntaxError --suppress=missingInclude  --suppress=cstyleCast $(ROOT)/src/
 
-.PHONY: all clean rebuild
+.PHONY: all clean rebuild check2
 
 clean:
 	rm -rf $(OBJECTS) $(TXT_O) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
@@ -105,8 +106,8 @@ clean:
 
 rebuild: clean all
 
-leaks: $(APP)
-	$(LEAKS) ./$(APP) $(APP_ARGS)
+leaks: $(TXT_APP)
+	$(LEAKS) ./$(TXT_APP) $(APP_ARGS)
 
 leaks_test: test_leaks
 
