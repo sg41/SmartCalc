@@ -16,7 +16,17 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+
+    void on_graph_area_customContextMenuRequested(const QPoint &pos);
+
+    void on_buttonBox_accepted();
+
+    void on_buttonBox_rejected();
+
 private:
+    void hideSizeDialog();
+    void showSizeDialog();
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H
