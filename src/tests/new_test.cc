@@ -30,16 +30,6 @@ TEST(CalcTest, model) {
   EXPECT_NE(d->x, d2->x);
 }
 
-// double sum(double a, double b) { return a + b; }
-
-// TEST(CalcTest, calcEngine) {
-//   CalcCore c;
-//   c.rpn_expr_.push_back(new ExprToken(OPERAND, 2));
-//   c.rpn_expr_.push_back(new ExprToken(OPERAND, 5));
-//   c.rpn_expr_.push_back(new FuncExprToken("+", OPERATOR, ADD_SCORE, sum));
-//   EXPECT_EQ(c.calc(0), 7);
-// }
-
 TEST(CalcTest, regex_5) {
   char str[1000] = "2.365sdsdsd";
   uint expected_result, actual_result;
@@ -110,7 +100,7 @@ TEST(CalcTest, expr_wrong_formula) {
   ExprSyntax s;
   TokenList infix(&s);
   for (int i = 0; i < __N__; i++) {
-    EXPECT_THROW(infix.make_infix_list(str[i]), invalid_argument);
+    EXPECT_THROW(infix.make_infix_list(str[i]), std::invalid_argument);
     actual_result = infix.size();
     EXPECT_EQ(expected_result[i], actual_result);
   }

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-int ExprSyntax::is_operand(const string &o) {
+int ExprSyntax::is_operand(const std::string &o) {
   int res = 0;
   static const std::regex base_regex(operand_mask_);
   std::smatch base_match;
@@ -12,15 +12,15 @@ int ExprSyntax::is_operand(const string &o) {
   return res;
 };
 
-pair<int, token_type> ExprSyntax::is_token(const string &o) {
+std::pair<int, token_type> ExprSyntax::is_token(const std::string &o) {
   int res = 0, len = 0;
   auto l = length_.rbegin();
   for (; res == 0 && l != length_.rend(); l++) {
     len = *l;
     res = operators_.count(o.substr(0, len));
   }
-  return res == 0 ? make_pair(0, ERROR)
-                  : make_pair(len, operators_[o.substr(0, len)].t);
+  return res == 0 ? std::make_pair(0, ERROR)
+                  : std::make_pair(len, operators_[o.substr(0, len)].t);
 };
 
 void TokenList::make_unary_operator() {
@@ -70,20 +70,20 @@ bool TokenList::check_syntax() {
   return good;
 };
 
-int TokenList::skip_spaces(const string &str) {
+int TokenList::skip_spaces(const std::string &str) {
   int i = 0;
   while (static_cast<size_t>(i) < str.size() && syntax->is_space(str[i]))
     i++;  // Skip spaces
   return i;
 };
 
-std::pair<int, token_type> TokenList::find_token(const string &str) {
+std::pair<int, token_type> TokenList::find_token(const std::string &str) {
   int l = syntax->is_operand(str);
   token_type t = OPERAND;
-  return l != 0 ? make_pair(l, t) : syntax->is_token(str);
+  return l != 0 ? std::make_pair(l, t) : syntax->is_token(str);
 };
 
-ExprToken *TokenList::create_token(const string &str_token, token_type t) {
+ExprToken *TokenList::create_token(const std::string &str_token, token_type t) {
   ExprToken *token;
 
   if (t == OPERATOR || t == UNARYOPERATOR || t == FUNCTION || t == L_BRACKET ||
@@ -110,12 +110,13 @@ void TokenList::make_infix_list(const std::string &s) {
   bool good = true;
   if (s.size() != 0) {
     int i = 0;
-    while (static_cast<size_t>(i) < s.size() && good) {  // Rest of the string
-      i += skip_spaces(s.substr(i));                     // Skip spaces
+    while (static_cast<size_t>(i) < s.size() &&
+           good) {                    // Rest of the std::string
+      i += skip_spaces(s.substr(i));  // Skip spaces
       if (static_cast<size_t>(i) < s.size()) {
         int l;
         token_type t;
-        tie(l, t) = find_token(s.substr(i));
+        std::tie(l, t) = find_token(s.substr(i));
         if (l) {
           push_back(create_token(s.substr(i, l), t));
           make_unary_operator();
@@ -127,7 +128,7 @@ void TokenList::make_infix_list(const std::string &s) {
       }
     }
   } else {
-    throw std::invalid_argument("Empty expression string");
+    throw std::invalid_argument("Empty expression std::string");
   }
   if (empty()) throw std::invalid_argument("No valid expression found");
   if (good == false) throw std::invalid_argument("Parsing error");

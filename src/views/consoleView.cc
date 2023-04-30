@@ -8,13 +8,13 @@ void ConsoleView::displayMenu() {
   std::cout << "=========" << std::endl;
   std::cout << " M E N U " << std::endl;
   std::cout << "=========" << std::endl;
-  std::cout << "1. Enter x value (Current: " << this->data->x << ")"
+  std::cout << "1. Enter x value (Current: " << this->data.x << ")"
             << std::endl;
-  std::cout << "2. Enter formula (Current: \"" << this->data->str << "\")"
+  std::cout << "2. Enter formula (Current: \"" << this->data.str << "\")"
             << std::endl;
   std::cout << "3. Calculate formula" << std::endl;
-  std::cout << "4. Change x range (Current: from " << this->data->MINX
-            << ", to " << data->MAXX << ")" << std::endl;
+  std::cout << "4. Change x range (Current: from " << this->data.MINX << ", to "
+            << data.MAXX << ")" << std::endl;
   std::cout << "0. Quit" << std::endl << std::endl;
 }
 
@@ -33,18 +33,17 @@ double ConsoleView::performNumericInput() {
 }
 
 std::string ConsoleView::performFormulaInput() {
-  // std::string formula;
   std::cout << "Input a formula string: ";
-  std::cin >> data->str;
-  // getline(cin, data->str);
-  return data->str;
+  getline(cin, data.str);  // vipe previous eol
+  getline(cin, data.str);
+  return data.str;
 }
 
 void ConsoleView::draw_txt_graph() {
   int i, j;
-  for (j = 0; j < data->MAXJ; j++) {
-    for (i = 0; i < data->MAXI; i++) {
-      if ((int)round(data->y_vect[i] * data->dy + round(data->MAXJ / 2)) == j) {
+  for (j = 0; j < data.MAXJ; j++) {
+    for (i = 0; i < data.MAXI; i++) {
+      if ((int)round(-data.y_vect[i] * data.dy + round(data.MAXJ / 2)) == j) {
         std::cout << ("*");
       } else {
         std::cout << (".");
@@ -60,7 +59,7 @@ void ConsoleView::startEventLoop() {
     displayMenu();
     switch ((Choice)performChoice()) {
       case VAR:
-        data->x = performNumericInput();
+        data.x = performNumericInput();
         break;
 
       case FORMULA:
@@ -69,7 +68,7 @@ void ConsoleView::startEventLoop() {
 
       case CALC:
         try {
-          controller->user_action(data);
+          controller->user_action(&data);
         } catch (const std::invalid_argument &e) {
           cout << "ERROR: " << e.what() << std::endl;
         };
@@ -77,9 +76,9 @@ void ConsoleView::startEventLoop() {
 
       case RANGE:
         cout << "MIN X: ";
-        data->MINX = performNumericInput();
+        data.MINX = performNumericInput();
         cout << "MAX X: ";
-        data->MAXX = performNumericInput();
+        data.MAXX = performNumericInput();
         set_scale();
         break;
       case EXIT:

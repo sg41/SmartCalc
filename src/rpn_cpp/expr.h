@@ -22,7 +22,7 @@
   } while (0)
 #endif
 
-using namespace std;
+// using namespace std;
 
 enum token_type {
   OPERAND,
@@ -67,7 +67,7 @@ class ExprToken {
   void setState(token_type s) { state_ = s; };
   virtual double func(double, double) { return data_; };
   virtual precedence priorty() { return ADD_SCORE; };
-  virtual string name() { return to_string(data_); };
+  virtual std::string name() { return std::to_string(data_); };
 
  protected:
   token_type state_ = ERROR;
@@ -77,23 +77,23 @@ class ExprToken {
 class VarExprToken : public ExprToken {
  public:
   using ExprToken::ExprToken;
-  VarExprToken(token_type s, const string &n)
+  VarExprToken(token_type s, const std::string &n)
       : ExprToken(s, 0.0), var_name_(n){};
-  string name() override { return var_name_; };
+  std::string name() override { return var_name_; };
 
  protected:
   double *var_ref_ = nullptr;
-  string var_name_ = "x";
+  std::string var_name_ = "x";
 };
 
 class FuncExprToken : public ExprToken {
  public:
   using ExprToken::ExprToken;
-  FuncExprToken(const string &n, token_type s, precedence p, func_type f)
+  FuncExprToken(const std::string &n, token_type s, precedence p, func_type f)
       : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
   FuncExprToken(char c_name, token_type s, precedence p, func_type f)
-      : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(string("") + c_name){};
-  FuncExprToken(const string &n, TokenData d)
+      : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(std::string("") + c_name){};
+  FuncExprToken(const std::string &n, TokenData d)
       : ExprToken(d.t, 0.0), priority_(d.p), fnc_(d.call), name_(n){};
 
   double func(double a, double b) override {
@@ -101,31 +101,31 @@ class FuncExprToken : public ExprToken {
                              : throw std::invalid_argument("Wrong token");
   };
   precedence priorty() override { return priority_; };
-  string name() override { return name_; };
+  std::string name() override { return name_; };
 
  protected:
   precedence priority_ = ADD_SCORE;
   func_type fnc_ = nullptr;
-  string name_;
+  std::string name_;
 };
 
 class ExprSyntax {
  public:
   ExprSyntax() { count_length(); };
-  int is_operand(const string &o);
+  int is_operand(const std::string &o);
   int is_space(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
-  int is_space(const string &o) {
+  int is_space(const std::string &o) {
     return spaces_.find(o[0]) != std::string::npos ? 1 : 0;
   };
-  int is_unary_operator(const string &exact_operator_name) {
+  int is_unary_operator(const std::string &exact_operator_name) {
     return unary_operators_.count(exact_operator_name)
                ? exact_operator_name.size()
                : 0;
   };
-  pair<int, token_type> is_token(const string &o);
+  std::pair<int, token_type> is_token(const std::string &o);
 
-  double get_operand(const string &s) { return std::atof(s.data()); };
-  const TokenData &get_data(string s, token_type t) {
+  double get_operand(const std::string &s) { return std::atof(s.data()); };
+  const TokenData &get_data(std::string s, token_type t) {
     return t == UNARYOPERATOR ? unary_operators_[s] : operators_[s];
   };
 
@@ -134,13 +134,13 @@ class ExprSyntax {
     for (auto i : operators_) length_.insert(i.first.size());
   };
 
-  set<int> length_;
-  string spaces_ = " \t\n\r";
-  string operand_mask_ = "([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?).*";
-  map<string, TokenData> unary_operators_{
+  std::set<int> length_;
+  std::string spaces_ = " \t\n\r";
+  std::string operand_mask_ = "([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?).*";
+  std::map<std::string, TokenData> unary_operators_{
       {"+", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return a; }}},
       {"-", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return -a; }}}};
-  map<string, TokenData> operators_{
+  std::map<std::string, TokenData> operators_{
       {"+", {OPERATOR, ADD_SCORE, [](double a, double b) { return a + b; }}},
       {"-", {OPERATOR, SUB_SCORE, [](double a, double b) { return a - b; }}},
       {"/",
@@ -153,7 +153,7 @@ class ExprSyntax {
        {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
       {"^",
        {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}},
-      // map<string, TokenData> functions_{
+      // map<std::string, TokenData> functions_{
       {"sin", {FUNCTION, FUN_SCORE, [](double a, double) { return sin(a); }}},
       {"cos", {FUNCTION, FUN_SCORE, [](double a, double) { return cos(a); }}},
       {"tan", {FUNCTION, FUN_SCORE, [](double a, double) { return tan(a); }}},
@@ -174,9 +174,9 @@ class ExprSyntax {
   };
 };
 
-class TokenList : public list<ExprToken *> {
+class TokenList : public std::list<ExprToken *> {
  public:
-  using list<ExprToken *>::list;
+  using std::list<ExprToken *>::list;
   explicit TokenList(ExprSyntax *s) {
     syntax = s;
     brackets = 0;
@@ -186,12 +186,12 @@ class TokenList : public list<ExprToken *> {
     for (auto t : *this) delete t;
     list::clear();
   };
-  void make_infix_list(const string &str);
+  void make_infix_list(const std::string &str);
 
  protected:
-  ExprToken *create_token(const string &str, token_type t);
-  std::pair<int, token_type> find_token(const string &str);
-  int skip_spaces(const string &str);
+  ExprToken *create_token(const std::string &str, token_type t);
+  std::pair<int, token_type> find_token(const std::string &str);
+  int skip_spaces(const std::string &str);
   void make_unary_operator();
   bool check_syntax();
   ExprToken *before_back() {
