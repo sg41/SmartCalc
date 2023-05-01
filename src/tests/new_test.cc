@@ -5,7 +5,7 @@
 
 class TestObserver : public ModelObserverInterface<GraphModelData> {
  public:
-  void update(const GraphModelData *d) override {
+  void observer_update(const GraphModelData *d) override {
     std::cout << "Updated" << std::endl;
     std::cout << d->clip_x1 << std::endl;
   };

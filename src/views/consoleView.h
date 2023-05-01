@@ -24,7 +24,7 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
  public:
   explicit ConsoleView(ExampleController *c) : controller(c) { set_scale(); };
   void startEventLoop();
-  void update(const GraphModelData *model_data) override {
+  void observer_update(const GraphModelData *model_data) override {
     data = *(model_data);
     std::cout << "Current result for X=" << data.x << " is: " << data.y
               << std::endl;

@@ -11,11 +11,15 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    qtgraphcalcview.cc
 
 HEADERS += \
+    ../controllers/exampleController.h \
+    ../models/graphModel.h \
     mainwindow.h \
-    qcustomplot.h
+    qcustomplot.h \
+    qtgraphcalcview.h
 
 FORMS += \
     mainwindow.ui
@@ -29,3 +33,16 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../release/ -ls21_SmartCalc
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../debug/ -ls21_SmartCalc
+else:unix: LIBS += -L$$PWD/../ -ls21_SmartCalc
+
+INCLUDEPATH += $$PWD/../rpn_cpp
+DEPENDPATH += $$PWD/../rpn_cpp
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../release/libs21_SmartCalc.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../debug/libs21_SmartCalc.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../release/s21_SmartCalc.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../debug/s21_SmartCalc.lib
+else:unix: PRE_TARGETDEPS += $$PWD/../libs21_SmartCalc.a

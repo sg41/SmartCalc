@@ -39,7 +39,7 @@ class BaseCalcData {
 template <class D>
 class ModelObserverInterface {
  public:
-  virtual void update(const D *){};
+  virtual void observer_update(const D *){};
 
  protected:
 };
@@ -53,7 +53,7 @@ class ModelObservableInterface {
   void remove_observer(ModelObserverInterface<D> *o) { observers.remove(o); };
   void notify_observers() {
     if (observers.size() > 0)
-      for (auto o : observers) o->update(get_data());
+      for (auto o : observers) o->observer_update(get_data());
   };
   virtual const D *get_data() const = 0;
 
