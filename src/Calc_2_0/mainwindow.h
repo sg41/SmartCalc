@@ -25,8 +25,8 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
-    void hideSizeDialog();
-    void showSizeDialog();
+    void showSizeDialog(bool on);
+    QWidget * SizeDialog;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

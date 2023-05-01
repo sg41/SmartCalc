@@ -5,39 +5,31 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
-    hideSizeDialog();
+  SizeDialog = ui->centralwidget->findChild<QWidget*>(QString("SizeDialog"));
+  showSizeDialog(false);
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::on_graph_area_customContextMenuRequested(const QPoint &pos) {
-    showSizeDialog();
+    showSizeDialog(true);
 }
 
 void MainWindow::on_buttonBox_accepted()
 {
-    hideSizeDialog();
+    showSizeDialog(false);
 }
 
 
 void MainWindow::on_buttonBox_rejected()
 {
-    hideSizeDialog();
+    showSizeDialog(false);
 }
 
-void MainWindow::hideSizeDialog()
+void MainWindow::showSizeDialog(bool on)
 {
-    QWidget * SizeDialog = ui->centralwidget->findChild<QWidget*>(QString("SizeDialog"));
     if(SizeDialog){
-        SizeDialog->setVisible(false);
-    }
-}
-
-void MainWindow::showSizeDialog()
-{
-    QWidget * SizeDialog = ui->centralwidget->findChild<QWidget*>(QString("SizeDialog"));
-    if(SizeDialog){
-        SizeDialog->setVisible(true);
+        SizeDialog->setVisible(on);
     }
 }
 
