@@ -92,7 +92,10 @@ class FuncExprToken : public ExprToken {
   FuncExprToken(const std::string &n, token_type s, precedence p, func_type f)
       : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
   FuncExprToken(char c_name, token_type s, precedence p, func_type f)
-      : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(std::string("") + c_name){};
+      : ExprToken(s, 0.0),
+        priority_(p),
+        fnc_(f),
+        name_(std::string("") + c_name){};
   FuncExprToken(const std::string &n, TokenData d)
       : ExprToken(d.t, 0.0), priority_(d.p), fnc_(d.call), name_(n){};
 
@@ -154,6 +157,7 @@ class ExprSyntax {
       {"^",
        {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}},
       // map<std::string, TokenData> functions_{
+      {"abs", {FUNCTION, FUN_SCORE, [](double a, double) { return fabs(a); }}},
       {"sin", {FUNCTION, FUN_SCORE, [](double a, double) { return sin(a); }}},
       {"cos", {FUNCTION, FUN_SCORE, [](double a, double) { return cos(a); }}},
       {"tan", {FUNCTION, FUN_SCORE, [](double a, double) { return tan(a); }}},

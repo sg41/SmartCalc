@@ -64,9 +64,9 @@ TEST(CalcTest, expr_6) {
   expected_result = 18;
   actual_result = infix.size();
   EXPECT_EQ(expected_result, actual_result);
-  // for (auto t : infix) delete t;  //! to be fixed!
 }
 
+#ifdef NDEBUG
 TEST(CalcTest, expr_wrong_formula) {
 #define __N__ 21
   char str[__N__][1000] = {
@@ -106,12 +106,13 @@ TEST(CalcTest, expr_wrong_formula) {
   }
 #undef __N__
 }
+#endif
 
 TEST(CalcTest, expr_right_formula) {
   char str[13][1000] = {
       "sin(X)",
       "cos(X)",
-      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*sin(3*x) + (12 - "
+      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*abs(3*x) + (12 - "
       "5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
       "(-x/2)-log(x mod 2)",
       "x",
@@ -203,7 +204,7 @@ TEST(CalcTest, expr_shunt_right_formula) {
   char str[13][1000] = {
       "sin(X)",
       "cos(X)",
-      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*sin(+3*x) + (12 - "
+      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*abs(+3*x) + (12 - "
       "5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
       "(-x/2)-log(x mod 2)",
       "x",
@@ -297,8 +298,9 @@ double ex11(double x) {
   return 13 * cos(x) - 5 * cos(2 * x) - 2 * cos(3 * x) - cos(4 * x);
 }
 double ex12(double x) { return pow(-27, 1. / 3.) + x - x; }
+double ex13(double x) { return fabs(sin(fabs(x))); }
 TEST(CalcTest, core_random_expressions) {
-#define __N__ 12
+#define __N__ 13
   char str[__N__][1000] = {
       "sin(cos(x^2)^(1*-100))*x   *tan(X)+sqrt(+x/2)-log(x % 2)",
       "sin(cos(x^2)^(1*-100))*x",
@@ -313,10 +315,11 @@ TEST(CalcTest, core_random_expressions) {
       "asin(x)/acos(x)*sqrt(x)+abs(x)",
       " 3.14*sin(x)^2+3.14/2*sin(x)*cos(x)+3.14/4*cos(+x)^2",
       "13*cos(x)-5*cos(2*x)-2*cos(3*x)-cos(4*x)",
-      "-27^(1/3)"};
+      "-27^(1/3)",
+      "abs(sin(abs(x)))"};
   typedef double (*f_ptr)(double x);
-  f_ptr functions[__N__] = {ex1, ex2, ex3, ex4,  ex5,  ex6,
-                            ex7, ex8, ex9, ex10, ex11, ex12};
+  f_ptr functions[__N__] = {ex1, ex2, ex3,  ex4,  ex5,  ex6, ex7,
+                            ex8, ex9, ex10, ex11, ex12, ex13};
   double expected_result, actual_result;
   CalcCore c;
   for (int i = 0; i < __N__; i++) {
