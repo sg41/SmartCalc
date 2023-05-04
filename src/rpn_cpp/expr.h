@@ -197,7 +197,7 @@ class TokenList : public std::list<ExprToken *> {
   std::pair<int, token_type> find_token(const std::string &str);
   int skip_spaces(const std::string &str);
   void make_unary_operator();
-  bool check_syntax();
+  bool check_syntax(bool);
   ExprToken *before_back() {
     return (back() == front()) ? nullptr : *(prev(end(), 2));
   };

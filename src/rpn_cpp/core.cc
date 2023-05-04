@@ -54,11 +54,17 @@ double CalcCore::rpn_reduce(double x) {
     } else {
       double a, b = 0;
       if (i->state() == OPERATOR) {
-        b = k.top().data();
-        k.pop();
+        if (!k.empty()) {
+          b = k.top().data();
+          k.pop();
+        } else
+          throw std::invalid_argument("Wrong operator argument");
       }
-      a = k.top().data();
-      k.pop();
+      if (!k.empty()) {
+        a = k.top().data();
+        k.pop();
+      } else
+        throw std::invalid_argument("Wrong function argument");
       if (i->state() == OPERATOR)
         k.emplace(OPERAND, i->func(a, b));
       else if (i->state() == UNARYOPERATOR || i->state() == FUNCTION)

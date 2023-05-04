@@ -22,7 +22,8 @@ HEADERS += \
     qtgraphcalcview.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    qtgraphcalcview.ui
 
 TRANSLATIONS += \
     Calc_2_0_en_150.ts

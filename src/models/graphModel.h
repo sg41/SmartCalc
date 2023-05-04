@@ -40,8 +40,8 @@ class GraphModelData : public BaseCalcData {
     clip_y1 = 0;
     clip_x2 = 0;
     clip_y2 = 0;
-    dx = 0;
-    dy = 0;
+    dx = (double)(MAXX - MINX) / MAXI;  //! To be or not to be
+    dy = (double)MAXJ / (MAXY - MINY);
     y = 0;
     y_vect.clear();
   };
@@ -54,8 +54,10 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
     data->y = c.calc(data->x);  // calculate single Y for given X
     data->y_vect.clear();       // calculate Y vector for X range
     double x = data->MINX;
-    for (; x < data->MAXX; x += data->dx) data->y_vect.push_back(c.calc(x));
-    notify_observers();
+    if (data->dx != 0) {
+      for (; x < data->MAXX; x += data->dx) data->y_vect.push_back(c.calc(x));
+      notify_observers();
+    }
   }
   void set_data(const GraphModelData *d) override {
     BaseCalcModel::set_data(d);

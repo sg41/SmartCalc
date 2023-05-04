@@ -37,7 +37,7 @@ void TokenList::make_unary_operator() {
   }
 }
 
-bool TokenList::check_syntax() {
+bool TokenList::check_syntax(bool last_check = false) {
   ExprToken *last = back();
   ExprToken *before = before_back();
 
@@ -66,6 +66,10 @@ bool TokenList::check_syntax() {
   } else {
     if (last->state() == OPERATOR) good = false;
   }
+  if (last_check &&
+      (last->state() == OPERATOR || last->state() == UNARYOPERATOR ||
+       last->state() == FUNCTION || last->state() == L_BRACKET))
+    good = false;
   if (brackets < 0) good = false;
   return good;
 };
@@ -130,7 +134,9 @@ void TokenList::make_infix_list(const std::string &s) {
   } else {
     throw std::invalid_argument("Empty expression std::string");
   }
+
   if (empty()) throw std::invalid_argument("No valid expression found");
+  if (good != false) good = check_syntax(true);
   if (good == false) throw std::invalid_argument("Parsing error");
   if (brackets != 0) throw std::invalid_argument("Wrong () pairs");
 };
