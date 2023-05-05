@@ -59,7 +59,6 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
   showSizeDialog(false);
   controller.user_action(&m_data);
-  //  emit result_requested();
 }
 
 void QtGraphCalcView::on_buttonBox_rejected() { showSizeDialog(false); }
@@ -97,6 +96,7 @@ void QtGraphCalcView::on_QtGraphCalcView_result_requested() {
     ui->listWidget->insertItem(
         0, ui->InputStr->text() + " = " + std::to_string(m_data.y).c_str());
     ui->listWidget->item(0)->setTextAlignment(Qt::AlignRight);
+    ui->listWidget->item(0)->setSelected(true);
     //  ui->InputStr->setText(QString(std::to_string(m_data.y).c_str()));
     ui->InputStr->setText("");
     emit showStatus(std::to_string(m_data.y));

@@ -170,7 +170,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item alignment="Qt::AlignHCenter">
     <widget class="QWidget" name="Keyboard" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -664,5 +664,6 @@
   <signal>showMessage()</signal>
   <slot>onHistoryItemDblClicked(QListWidgetItem*)</slot>
   <slot>draw_graph()</slot>
+  <slot>on_QtGraphCalcView_result_requested()</slot>
  </slots>
 </ui>
