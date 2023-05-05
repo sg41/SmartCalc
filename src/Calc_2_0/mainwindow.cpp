@@ -9,6 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::on_GraphCalcWidget_inputError(const std::string &err) {
+void MainWindow::on_GraphCalcWidget_showStatus(const std::string &err) {
   ui->statusbar->showMessage(err.c_str());
 }

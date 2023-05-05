@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
  private slots:
-  void on_GraphCalcWidget_inputError(const std::string &);
+  void on_GraphCalcWidget_showStatus(const std::string &);
 
  private:
   // Default staff

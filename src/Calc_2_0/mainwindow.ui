@@ -69,7 +69,7 @@
    <header>qtgraphcalcview.h</header>
    <container>1</container>
    <slots>
-    <signal>inputError(std::string)</signal>
+    <signal>showStatus(std::string)</signal>
    </slots>
   </customwidget>
  </customwidgets>
@@ -77,9 +77,9 @@
  <connections>
   <connection>
    <sender>GraphCalcWidget</sender>
-   <signal>inputError(std::string)</signal>
+   <signal>showStatus(std::string)</signal>
    <receiver>MainWindow</receiver>
-   <slot>on_GraphCalcWidget_inputError(std::string)</slot>
+   <slot>on_GraphCalcWidget_showStatus(std::string)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>319</x>
@@ -93,6 +93,6 @@
   </connection>
  </connections>
  <slots>
-  <slot>on_GraphCalcWidget_inputError(std::string)</slot>
+  <slot>on_GraphCalcWidget_showStatus(std::string)</slot>
  </slots>
 </ui>

@@ -40,16 +40,18 @@ class QtGraphCalcView : public QWidget,
 
   void on_QtGraphCalcView_result_requested();
 
+  void onHistoryItemDblClicked(QListWidgetItem *);
+
+  void on_X_Value_textChanged(const QString &arg1);
+
  signals:
   void result_requested();
-  void inputError(std::string);
+  void showStatus(std::string);
 
  private:
   // MVC staff
   GraphModel model;
   ExampleController controller;
-  // Child objects
-  QSignalMapper *signalMapper;
   // Default staff
   Ui::QtGraphCalcView *ui;
 };
