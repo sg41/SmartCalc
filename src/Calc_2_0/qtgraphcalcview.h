@@ -44,6 +44,8 @@ class QtGraphCalcView : public QWidget,
 
   void on_X_Value_textChanged(const QString &arg1);
 
+  void setup_graph();
+
  signals:
   void result_requested();
   void showStatus(std::string);
@@ -52,6 +54,8 @@ class QtGraphCalcView : public QWidget,
   // MVC staff
   GraphModel model;
   ExampleController controller;
+  // Customplot staff
+  QVector<double> x_points, y_points;
   // Default staff
   Ui::QtGraphCalcView *ui;
 };

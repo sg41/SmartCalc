@@ -30,7 +30,7 @@ class GraphModelData : public BaseCalcData {
   double clip_y2;
   double dx;
   double dy;
-  std::vector<double> y_vect;
+  std::vector<double> x_vect, y_vect;
   double y;
 
   void init_data() override {
@@ -44,6 +44,7 @@ class GraphModelData : public BaseCalcData {
     dy = (double)MAXJ / (MAXY - MINY);
     y = 0;
     y_vect.clear();
+    x_vect.clear();
   };
 };
 
@@ -53,9 +54,13 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
   void calculate() override {
     data->y = c.calc(data->x);  // calculate single Y for given X
     data->y_vect.clear();       // calculate Y vector for X range
+    data->x_vect.clear();
     double x = data->MINX;
     if (data->dx != 0) {
-      for (; x < data->MAXX; x += data->dx) data->y_vect.push_back(c.calc(x));
+      for (; x < data->MAXX; x += data->dx) {
+        data->x_vect.push_back(x);
+        data->y_vect.push_back(c.calc(x));
+      }
       notify_observers();
     }
   }

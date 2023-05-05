@@ -663,5 +663,6 @@
   <signal>result_requested()</signal>
   <signal>showMessage()</signal>
   <slot>onHistoryItemDblClicked(QListWidgetItem*)</slot>
+  <slot>draw_graph()</slot>
  </slots>
 </ui>
