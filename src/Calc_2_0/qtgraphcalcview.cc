@@ -31,6 +31,9 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
   ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
   ui->graph_area->addGraph();
   ui->graph_area->graph(0)->data()->clear();
+  // give the axes some labels:
+  ui->graph_area->xAxis->setLabel("x");
+  ui->graph_area->yAxis->setLabel("y");
 }
 
 QtGraphCalcView::~QtGraphCalcView() { delete ui; }
@@ -55,8 +58,8 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   ui->graph_area->xAxis->setRange(this->m_data.MINX, this->m_data.MAXX);
   ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
   showSizeDialog(false);
-  emit result_requested();
-  //  ui->graph_area->replot();
+  controller.user_action(&m_data);
+  //  emit result_requested();
 }
 
 void QtGraphCalcView::on_buttonBox_rejected() { showSizeDialog(false); }
@@ -86,17 +89,17 @@ void QtGraphCalcView::observer_update(const GraphModelData *model_data) {
   m_data = *(model_data);
   setup_graph();
   ui->graph_area->replot();
-  ui->listWidget->insertItem(
-      0, ui->InputStr->text() + " = " + std::to_string(m_data.y).c_str());
-  ui->listWidget->item(0)->setTextAlignment(Qt::AlignRight);
-//  ui->InputStr->setText(QString(std::to_string(m_data.y).c_str()));
-  ui->InputStr->text().clear();
-  emit showStatus(std::to_string(m_data.y));
 };
 
 void QtGraphCalcView::on_QtGraphCalcView_result_requested() {
   try {
     controller.user_action(&m_data);
+    ui->listWidget->insertItem(
+        0, ui->InputStr->text() + " = " + std::to_string(m_data.y).c_str());
+    ui->listWidget->item(0)->setTextAlignment(Qt::AlignRight);
+    //  ui->InputStr->setText(QString(std::to_string(m_data.y).c_str()));
+    ui->InputStr->setText("");
+    emit showStatus(std::to_string(m_data.y));
   } catch (std::invalid_argument &e) {
     emit showStatus(e.what());
   }
@@ -119,11 +122,5 @@ void QtGraphCalcView::setup_graph() {
     QVector<double> x(m_data.x_vect.begin(), m_data.x_vect.end());
     QVector<double> y(m_data.y_vect.begin(), m_data.y_vect.end());
     ui->graph_area->graph(0)->setData(x, y);
-    // give the axes some labels:
-    //    ui->graph_area->xAxis->setLabel("x");
-    //    ui->graph_area->yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    //    ui->graph_area->xAxis->setRange(-1, 1);
-    //    ui->graph_area->yAxis->setRange(0, 1);
   }
 }
