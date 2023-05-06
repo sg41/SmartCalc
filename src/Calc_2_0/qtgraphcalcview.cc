@@ -26,14 +26,10 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
   ui->X_Value->setValidator(xValidator);
 
   // Setup graph
-  // create graph and assign data to it:
   ui->graph_area->xAxis->setRange(this->m_data.MINX, this->m_data.MAXX);
   ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
   ui->graph_area->addGraph();
-  ui->graph_area->graph(0)->data()->clear();
-  // give the axes some labels:
-  ui->graph_area->xAxis->setLabel("x");
-  ui->graph_area->yAxis->setLabel("y");
+  ui->graph_area->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 }
 
 QtGraphCalcView::~QtGraphCalcView() { delete ui; }
@@ -92,6 +88,7 @@ void QtGraphCalcView::observer_update(const GraphModelData *model_data) {
 
 void QtGraphCalcView::on_QtGraphCalcView_result_requested() {
   try {
+    setup_geometry();
     controller.user_action(&m_data);
     ui->listWidget->insertItem(
         0, ui->InputStr->text() + " = " + std::to_string(m_data.y).c_str());
@@ -123,4 +120,15 @@ void QtGraphCalcView::setup_graph() {
     QVector<double> y(m_data.y_vect.begin(), m_data.y_vect.end());
     ui->graph_area->graph(0)->setData(x, y);
   }
+}
+
+void QtGraphCalcView::setup_geometry() {
+  m_data.clip_x1 = ui->graph_area->geometry().left();
+  m_data.clip_x2 = ui->graph_area->geometry().right();
+  m_data.clip_y1 = ui->graph_area->geometry().bottom();
+  m_data.clip_y2 = ui->graph_area->geometry().top();
+  m_data.dx = (double)(m_data.MAXX - m_data.MINX) /
+              (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
+  m_data.dy =
+      (double)(-m_data.clip_y2 + m_data.clip_y1) / (m_data.MAXY - m_data.MINY);
 }

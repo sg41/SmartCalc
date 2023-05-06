@@ -46,6 +46,8 @@ class QtGraphCalcView : public QWidget,
 
   void setup_graph();
 
+  void setup_geometry();
+
  signals:
   void result_requested();
   void showStatus(std::string);
