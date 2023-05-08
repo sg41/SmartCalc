@@ -48,6 +48,8 @@ class QtGraphCalcView : public QWidget,
 
   void setup_geometry();
 
+  void resizeEvent(QResizeEvent *event) override;
+
  signals:
   void result_requested();
   void showStatus(std::string);

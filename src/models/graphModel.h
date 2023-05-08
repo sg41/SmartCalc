@@ -55,23 +55,21 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
     data->y = c.calc(data->x);  // calculate single Y for given X
     data->y_vect.clear();       // calculate Y vector for X range
     data->x_vect.clear();
-    double x = data->MINX;
     if (data->dx != 0) {
-      for (; x < data->MAXX; x += data->dx) {
+      for (double x = data->MINX; x < data->MAXX; x += data->dx) {
         data->x_vect.push_back(x);
         double res = c.calc(x);
-        // if (!data->y_vect.empty()) {
-        //   if (data->y_vect.back() - res > (data->MAXY - data->MINY) &&
-        //       (res * data->y_vect.back()) < 0) {
-        //     data->y_vect.push_back(std::numeric_limits<double>::quiet_NaN());
-        //   } else {
-        data->y_vect.push_back((res < GraphModelData::VERY_MAX_Y &&
-                                res > GraphModelData::VERY_MIN_Y)
-                                   ? res
-                                   : std::numeric_limits<double>::infinity());
-        //   }
-        // }
-        // : std::nan(""));
+        double visible_area = (data->MAXY - data->MINY);
+        if (!data->y_vect.empty() &&
+            (fabs(data->y_vect.back() - res) > visible_area &&
+             (res * data->y_vect.back()) < 0)) {
+          data->y_vect.push_back(std::numeric_limits<double>::quiet_NaN());
+        } else {
+          data->y_vect.push_back((res < GraphModelData::VERY_MAX_Y &&
+                                  res > GraphModelData::VERY_MIN_Y)
+                                     ? res
+                                     : std::numeric_limits<double>::infinity());
+        }
       }
       notify_observers();
     }

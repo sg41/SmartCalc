@@ -22,14 +22,14 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
           SLOT(buttonPressed(const QString &)));
 
   // X value validator
-  QDoubleValidator *xValidator = new QDoubleValidator(this);
+  QRegExp rx("([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?)");
+  QValidator *xValidator = new QRegExpValidator(rx, this);
   ui->X_Value->setValidator(xValidator);
 
   // Setup graph
   ui->graph_area->xAxis->setRange(this->m_data.MINX, this->m_data.MAXX);
   ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
   ui->graph_area->addGraph();
-  ui->graph_area->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 }
 
 QtGraphCalcView::~QtGraphCalcView() { delete ui; }
@@ -77,7 +77,7 @@ void QtGraphCalcView::buttonPressed(const QString &str) {
     ui->InputStr->insert(str + QString("()"));
     ui->InputStr->cursorBackward(false);
   } else if (str == QString("=")) {
-    m_data.str = ui->InputStr->text().toStdString();
+    m_data.str = ui->InputStr->text().replace(',', ".").toStdString();
     emit result_requested();
   } else {
     ui->InputStr->insert(str);
@@ -99,14 +99,15 @@ void QtGraphCalcView::observer_update(const GraphModelData *model_data) {
 void QtGraphCalcView::on_QtGraphCalcView_result_requested() {
   try {
     setup_geometry();
+    ui->graph_area->legend->setVisible(true);
     controller.user_action(&m_data);
+    // make history record
     ui->listWidget->insertItem(
-        0, ui->InputStr->text() + " = " + std::to_string(m_data.y).c_str());
+        0, ui->InputStr->text() + " = " + QString::number(m_data.y, 'g', 7));
     ui->listWidget->item(0)->setTextAlignment(Qt::AlignRight);
     ui->listWidget->item(0)->setSelected(true);
-    //  ui->InputStr->setText(QString(std::to_string(m_data.y).c_str()));
     ui->InputStr->setText("");
-    emit showStatus(std::to_string(m_data.y));
+    emit showStatus(QString::number(m_data.y, 'g', 7).toStdString());
   } catch (std::invalid_argument &e) {
     emit showStatus(e.what());
   }
@@ -118,7 +119,8 @@ void QtGraphCalcView::onHistoryItemDblClicked(QListWidgetItem *history) {
 }
 
 void QtGraphCalcView::on_X_Value_textChanged(const QString &arg1) {
-  m_data.x = arg1.toDouble();
+  QString replace_comma = arg1;
+  m_data.x = replace_comma.replace(',', ".").toDouble();
   emit showStatus(std::string("X = ") + std::to_string(m_data.x));
 }
 
@@ -139,6 +141,14 @@ void QtGraphCalcView::setup_geometry() {
   m_data.clip_y2 = ui->graph_area->geometry().top();
   m_data.dx = (double)(m_data.MAXX - m_data.MINX) /
               (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
-  m_data.dy =
-      (double)(-m_data.clip_y2 + m_data.clip_y1) / (m_data.MAXY - m_data.MINY);
+  m_data.dy = 1. / ((double)(-m_data.clip_y2 + m_data.clip_y1) /
+                    (m_data.MAXY - m_data.MINY));
+  ui->graph_area->graph(0)->setName(QString(m_data.str.c_str()) +
+                                    "\nScale x=" + QString::number(m_data.dx) +
+                                    "\nScale y=" + QString::number(m_data.dy));
+}
+
+void QtGraphCalcView::resizeEvent(QResizeEvent *event) {
+  QWidget::resizeEvent(event);
+  setup_geometry();
 }
