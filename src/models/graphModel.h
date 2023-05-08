@@ -72,8 +72,8 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
         //   }
         // }
         // : std::nan(""));
-        notify_observers();
       }
+      notify_observers();
     }
   };
 
