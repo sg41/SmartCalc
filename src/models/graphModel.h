@@ -12,8 +12,8 @@ class GraphModelData : public BaseCalcData {
   GraphModelData() { GraphModelData::init_data(); };
   int validate_data() override {
     int err = 0;
-    if (clip_x1 >= VERY_MIN_X && clip_y1 >= VERY_MIN_Y &&
-        clip_x2 <= VERY_MAX_X && clip_y2 <= VERY_MAX_Y)
+    if (MINX >= VERY_MIN_X && MINY >= VERY_MIN_Y && MAXX <= VERY_MAX_X &&
+        MAXY <= VERY_MAX_Y)
       err = 0;
     else
       err = 1;
@@ -59,11 +59,24 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
     if (data->dx != 0) {
       for (; x < data->MAXX; x += data->dx) {
         data->x_vect.push_back(x);
-        data->y_vect.push_back(c.calc(x));
+        double res = c.calc(x);
+        // if (!data->y_vect.empty()) {
+        //   if (data->y_vect.back() - res > (data->MAXY - data->MINY) &&
+        //       (res * data->y_vect.back()) < 0) {
+        //     data->y_vect.push_back(std::numeric_limits<double>::quiet_NaN());
+        //   } else {
+        data->y_vect.push_back((res < GraphModelData::VERY_MAX_Y &&
+                                res > GraphModelData::VERY_MIN_Y)
+                                   ? res
+                                   : std::numeric_limits<double>::infinity());
+        //   }
+        // }
+        // : std::nan(""));
+        notify_observers();
       }
-      notify_observers();
     }
-  }
+  };
+
   void set_data(const GraphModelData *d) override {
     BaseCalcModel::set_data(d);
     c.make_rpn_expr(data->str);

@@ -54,7 +54,16 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   ui->graph_area->xAxis->setRange(this->m_data.MINX, this->m_data.MAXX);
   ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
   showSizeDialog(false);
-  controller.user_action(&m_data);
+  if (ui->graph_area->graph(0)->data()->size()) {
+    try {
+      setup_geometry();
+      controller.user_action(&m_data);
+    } catch (std::invalid_argument &e) {
+      ui->graph_area->replot();
+    }
+  } else {
+    ui->graph_area->replot();
+  }
 }
 
 void QtGraphCalcView::on_buttonBox_rejected() { showSizeDialog(false); }
@@ -65,7 +74,8 @@ void QtGraphCalcView::buttonPressed(const QString &str) {
   } else if (str == QString("Bksp")) {
     ui->InputStr->backspace();
   } else if (str.length() > 1 && str != QString("mod")) {
-    ui->InputStr->insert(str + QString("("));
+    ui->InputStr->insert(str + QString("()"));
+    ui->InputStr->cursorBackward(false);
   } else if (str == QString("=")) {
     m_data.str = ui->InputStr->text().toStdString();
     emit result_requested();
@@ -82,7 +92,7 @@ void QtGraphCalcView::showSizeDialog(bool on) {
 
 void QtGraphCalcView::observer_update(const GraphModelData *model_data) {
   m_data = *(model_data);
-  setup_graph();
+  setup_graph_data();
   ui->graph_area->replot();
 };
 
@@ -112,7 +122,7 @@ void QtGraphCalcView::on_X_Value_textChanged(const QString &arg1) {
   emit showStatus(std::string("X = ") + std::to_string(m_data.x));
 }
 
-void QtGraphCalcView::setup_graph() {
+void QtGraphCalcView::setup_graph_data() {
   size_t n_points = m_data.y_vect.size();
   if (n_points) {
     ui->graph_area->graph(0)->data()->clear();

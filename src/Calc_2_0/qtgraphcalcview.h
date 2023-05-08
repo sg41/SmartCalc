@@ -44,7 +44,7 @@ class QtGraphCalcView : public QWidget,
 
   void on_X_Value_textChanged(const QString &arg1);
 
-  void setup_graph();
+  void setup_graph_data();
 
   void setup_geometry();
 
