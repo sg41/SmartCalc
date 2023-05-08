@@ -45,7 +45,6 @@ void QtGraphCalcView::on_graph_area_customContextMenuRequested(
 }
 
 void QtGraphCalcView::on_buttonBox_accepted() {
-  //! values to be validated!
   this->m_data.MAXX = ui->spinBox_MAXX->value();
   this->m_data.MINX = ui->spinBox_MINX->value();
   this->m_data.MAXY = ui->spinBox_MAXY->value();
