@@ -54,13 +54,19 @@ bool TokenList::check_syntax(bool last_check = false) {
         last->state() != R_BRACKET)
       good = false;
 
+    if (before->state() == L_BRACKET && last->state() == R_BRACKET)
+      good = false;
     if (before->state() == OPERATOR && last->state() == R_BRACKET) good = false;
     if (before->state() == R_BRACKET &&
         (last->state() != OPERATOR && last->state() != R_BRACKET))
       good = false;
 
-    if (before->state() == OPERAND && last->state() == VARIABLE) good = false;
-    if (before->state() == VARIABLE && last->state() == OPERAND) good = false;
+    if (before->state() == OPERAND &&
+        (last->state() == VARIABLE || last->state() == L_BRACKET))
+      good = false;
+    if (before->state() == VARIABLE &&
+        (last->state() == OPERAND || last->state() == L_BRACKET))
+      good = false;
 
     if (before->state() != OPERATOR && before->state() != UNARYOPERATOR &&
         before->state() != L_BRACKET && last->state() == FUNCTION)

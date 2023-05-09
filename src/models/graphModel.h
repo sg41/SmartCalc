@@ -52,6 +52,7 @@ class GraphModelData : public BaseCalcData {
 class GraphModel : public BaseCalcModel<GraphModelData> {
  public:
   using BaseCalcModel<GraphModelData>::BaseCalcModel;
+
   void calculate() override {
     data->y = c.calc(data->x);  // calculate single Y for given X
     data->y_vect.clear();       // calculate Y vector for X range

@@ -4,13 +4,14 @@
 
 QtGraphCalcView::QtGraphCalcView(QWidget *parent)
     : QWidget(parent), controller(&model), ui(new Ui::QtGraphCalcView) {
+  // Setup interface
   ui->setupUi(this);
-
-  model.register_observer(this);
-
   showSizeDialog(false);
 
-  // keyboard mapping
+  // MVC staff
+  model.register_observer(this);
+
+  // Setup keyboard mapping
   QList<QPushButton *> buttons = ui->Keyboard->findChildren<QPushButton *>();
   QSignalMapper *signalMapper = new QSignalMapper(this);
   for (auto b : buttons) {
@@ -21,7 +22,7 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
   connect(signalMapper, SIGNAL(mapped(const QString &)), this,
           SLOT(on_buttonPressed(const QString &)));
 
-  // X value validator
+  // Setup X value validator
   QRegExp rx("([-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?)");
   QValidator *xValidator = new QRegExpValidator(rx, this);
   ui->X_Value->setValidator(xValidator);
@@ -104,7 +105,7 @@ void QtGraphCalcView::on_QtGraphCalcView_resultRequested() {
     ui->listWidget->insertItem(
         0, ui->InputStr->text() + " = " + QString::number(m_data.y, 'g', 7));
     ui->listWidget->item(0)->setTextAlignment(Qt::AlignRight);
-    ui->listWidget->item(0)->setSelected(true);
+    ui->listWidget->setCurrentItem(ui->listWidget->item(0));
     ui->InputStr->setText("");
     emit showStatus(QString::number(m_data.y, 'g', 7).toStdString());
   } catch (std::invalid_argument &e) {
@@ -142,7 +143,8 @@ void QtGraphCalcView::setupGeometry() {
               (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
   m_data.dy = 1. / ((double)(-m_data.clip_y2 + m_data.clip_y1) /
                     (m_data.MAXY - m_data.MINY));
-  ui->graph_area->graph(0)->setName(QString(m_data.str.c_str()) +
+  ui->graph_area->graph(0)->setName(QString(m_data.str.substr(0, 17).c_str()) +
+                                    ((m_data.str.size() > 17) ? "..." : "") +
                                     "\nScale x=" + QString::number(m_data.dx) +
                                     "\nScale y=" + QString::number(m_data.dy));
 }

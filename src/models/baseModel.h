@@ -70,8 +70,8 @@ class ModelObservableInterface {
 template <class D>
 class BaseCalcModel : public ModelObservableInterface<D> {
  public:
-  BaseCalcModel() { data = new D; };
-  BaseCalcModel(const BaseCalcModel &m) { data = new D(*m.data); };
+  BaseCalcModel() : data(new D){};
+  BaseCalcModel(const BaseCalcModel &m) : data(new D(*m.data)){};
   BaseCalcModel(BaseCalcModel &&m) {
     data = m.data;
     m.data = nullptr;
@@ -82,7 +82,7 @@ class BaseCalcModel : public ModelObservableInterface<D> {
   }
   BaseCalcModel &operator=(BaseCalcModel &&m) {
     if (this != &m) {
-      if (data != nullptr) delete data;
+      delete data;
       data = m.data;
       m.data = nullptr;
     }
@@ -92,7 +92,6 @@ class BaseCalcModel : public ModelObservableInterface<D> {
   virtual void calculate() = 0;  //{};
   int validate_data() { return data->validate_data(); };
   virtual void set_data(const D *d) {
-    if (data == nullptr) data = new D;
     if (d != nullptr) *data = *d;
   };
   const D *get_data() const override { return static_cast<const D *>(data); };

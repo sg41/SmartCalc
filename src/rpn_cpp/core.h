@@ -12,10 +12,8 @@ namespace s21 {
 class CalcCore {
  public:
   CalcCore() : syntax(new ExprSyntax()){};
-  ~CalcCore() {
-    if (syntax) delete syntax;
-  };
-  CalcCore(const CalcCore &c) { syntax = new ExprSyntax(*c.syntax); };
+  ~CalcCore() { delete syntax; };
+  CalcCore(const CalcCore &c) : syntax(new ExprSyntax(*c.syntax)){};
   CalcCore(CalcCore &&c) {
     syntax = c.syntax;
     c.syntax = nullptr;
@@ -26,12 +24,12 @@ class CalcCore {
   }
   CalcCore &operator=(CalcCore &&c) {
     if (this != &c) {
-      *syntax = *c.syntax;
+      delete syntax;
+      syntax = c.syntax;
       c.syntax = nullptr;
     }
     return *this;
   }
-  //! void set_syntax(ExprSyntax *s) { syntax = s; };
   void make_rpn_expr(const std::string &s) {
     if (!rpn_expr_.empty()) rpn_expr_.clear_and_delete();
     TokenList infix(syntax);

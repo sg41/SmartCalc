@@ -83,7 +83,7 @@ TEST(CalcTest, expr_6) {
 
 #ifdef NDEBUG
 TEST(CalcTest, expr_wrong_formula) {
-#define __N__ 26
+#define __N__ 28
   char str[__N__][1000] = {
       "sinus(X)",
       "sin(eX) ",
@@ -111,10 +111,12 @@ TEST(CalcTest, expr_wrong_formula) {
       "*",
       "*21",
       "23*+",
-      "sin(a)"};
+      "sin(a)",
+      "x2",
+      "x()"};
 
-  uint expected_result[__N__] = {1, 2, 1, 0, 0, 2, 1, 6, 2, 3, 2, 1, 0,
-                                 0, 3, 2, 2, 5, 5, 2, 5, 2, 1, 1, 3, 2},
+  uint expected_result[__N__] = {1, 2, 1, 0, 0, 2, 1, 6, 2, 3, 2, 1, 0, 0,
+                                 3, 2, 2, 5, 5, 2, 5, 2, 1, 1, 3, 2, 2, 2},
        actual_result;
 
   ExprSyntax s;
@@ -288,8 +290,7 @@ TEST(CalcTest, expr_calc) {
 TEST(CalcTest, expr_calc_1) {
   char str[1000] = "sin()";
   CalcCore c;
-  ASSERT_NO_THROW(c.make_rpn_expr(str));
-  ASSERT_ANY_THROW(c.calc(1));
+  ASSERT_ANY_THROW(c.make_rpn_expr(str));
 }
 
 TEST(CalcTest, expr_data_1) {
