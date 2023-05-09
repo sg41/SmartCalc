@@ -35,24 +35,24 @@ class QtGraphCalcView : public QWidget,
 
   void on_buttonBox_rejected();
 
-  void buttonPressed(const QString &str);
+  void on_buttonPressed(const QString &str);
 
-  void showSizeDialog(bool on);
+  void on_QtGraphCalcView_resultRequested();
 
-  void on_QtGraphCalcView_result_requested();
-
-  void onHistoryItemDblClicked(QListWidgetItem *);
+  void on_HistoryItemDblClicked(QListWidgetItem *);
 
   void on_X_Value_textChanged(const QString &arg1);
 
-  void setup_graph_data();
+  void showSizeDialog(bool on);
 
-  void setup_geometry();
+  void setupGraphData();
+
+  void setupGeometry();
 
   void resizeEvent(QResizeEvent *event) override;
 
  signals:
-  void result_requested();
+  void resultRequested();
   void showStatus(std::string);
 
  private:

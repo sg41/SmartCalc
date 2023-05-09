@@ -19,10 +19,10 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
     connect(b, SIGNAL(clicked()), signalMapper, SLOT(map()));
   }
   connect(signalMapper, SIGNAL(mapped(const QString &)), this,
-          SLOT(buttonPressed(const QString &)));
+          SLOT(on_buttonPressed(const QString &)));
 
   // X value validator
-  QRegExp rx("([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?)");
+  QRegExp rx("([-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?)");
   QValidator *xValidator = new QRegExpValidator(rx, this);
   ui->X_Value->setValidator(xValidator);
 
@@ -55,7 +55,7 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   showSizeDialog(false);
   if (ui->graph_area->graph(0)->data()->size()) {
     try {
-      setup_geometry();
+      setupGeometry();
       controller.user_action(&m_data);
     } catch (std::invalid_argument &e) {
       ui->graph_area->replot();
@@ -67,7 +67,7 @@ void QtGraphCalcView::on_buttonBox_accepted() {
 
 void QtGraphCalcView::on_buttonBox_rejected() { showSizeDialog(false); }
 
-void QtGraphCalcView::buttonPressed(const QString &str) {
+void QtGraphCalcView::on_buttonPressed(const QString &str) {
   if (str == QString("AC")) {
     ui->InputStr->clear();
   } else if (str == QString("Bksp")) {
@@ -77,7 +77,7 @@ void QtGraphCalcView::buttonPressed(const QString &str) {
     ui->InputStr->cursorBackward(false);
   } else if (str == QString("=")) {
     m_data.str = ui->InputStr->text().replace(',', ".").toStdString();
-    emit result_requested();
+    emit resultRequested();
   } else {
     ui->InputStr->insert(str);
   }
@@ -91,13 +91,13 @@ void QtGraphCalcView::showSizeDialog(bool on) {
 
 void QtGraphCalcView::observer_update(const GraphModelData *model_data) {
   m_data = *(model_data);
-  setup_graph_data();
+  setupGraphData();
   ui->graph_area->replot();
 };
 
-void QtGraphCalcView::on_QtGraphCalcView_result_requested() {
+void QtGraphCalcView::on_QtGraphCalcView_resultRequested() {
   try {
-    setup_geometry();
+    setupGeometry();
     ui->graph_area->legend->setVisible(true);
     controller.user_action(&m_data);
     // make history record
@@ -112,7 +112,7 @@ void QtGraphCalcView::on_QtGraphCalcView_result_requested() {
   }
 }
 
-void QtGraphCalcView::onHistoryItemDblClicked(QListWidgetItem *history) {
+void QtGraphCalcView::on_HistoryItemDblClicked(QListWidgetItem *history) {
   std::string str = history->text().toStdString();
   ui->InputStr->setText(QString(str.substr(0, str.find(" = ")).c_str()));
 }
@@ -123,7 +123,7 @@ void QtGraphCalcView::on_X_Value_textChanged(const QString &arg1) {
   emit showStatus(std::string("X = ") + std::to_string(m_data.x));
 }
 
-void QtGraphCalcView::setup_graph_data() {
+void QtGraphCalcView::setupGraphData() {
   size_t n_points = m_data.y_vect.size();
   if (n_points) {
     ui->graph_area->graph(0)->data()->clear();
@@ -133,7 +133,7 @@ void QtGraphCalcView::setup_graph_data() {
   }
 }
 
-void QtGraphCalcView::setup_geometry() {
+void QtGraphCalcView::setupGeometry() {
   m_data.clip_x1 = ui->graph_area->geometry().left();
   m_data.clip_x2 = ui->graph_area->geometry().right();
   m_data.clip_y1 = ui->graph_area->geometry().bottom();
@@ -149,5 +149,5 @@ void QtGraphCalcView::setup_geometry() {
 
 void QtGraphCalcView::resizeEvent(QResizeEvent *event) {
   QWidget::resizeEvent(event);
-  setup_geometry();
+  setupGeometry();
 }

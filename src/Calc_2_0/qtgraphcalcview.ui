@@ -658,7 +658,7 @@
    <sender>listWidget</sender>
    <signal>itemDoubleClicked(QListWidgetItem*)</signal>
    <receiver>QtGraphCalcView</receiver>
-   <slot>onHistoryItemDblClicked(QListWidgetItem*)</slot>
+   <slot>on_HistoryItemDblClicked(QListWidgetItem*)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>308</x>
@@ -672,9 +672,9 @@
   </connection>
  </connections>
  <slots>
-  <signal>result_requested()</signal>
+  <signal>resultRequested()</signal>
   <signal>showMessage()</signal>
-  <slot>onHistoryItemDblClicked(QListWidgetItem*)</slot>
-  <slot>on_QtGraphCalcView_result_requested()</slot>
+  <slot>on_HistoryItemDblClicked(QListWidgetItem*)</slot>
+  <slot>on_QtGraphCalcView_resultRequested()</slot>
  </slots>
 </ui>
