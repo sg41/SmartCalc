@@ -3,6 +3,7 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using namespace s21;
 
 void ConsoleView::displayMenu() {
   std::cout << "=========" << std::endl;

@@ -3,6 +3,8 @@
 #include "../models/graphModel.h"
 #include "../rpn_cpp/core.h"
 
+using namespace s21;
+
 class TestObserver : public ModelObserverInterface<GraphModelData> {
  public:
   void observer_update(const GraphModelData *d) override {
@@ -28,6 +30,19 @@ TEST(CalcTest, model) {
   EXPECT_GT(d2->MAXX, GraphModelData::VERY_MAX_X + 0);
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
+  d2->init_data();
+  d2->str = "sin(x)";
+  m2.set_data(d2);
+  EXPECT_NO_THROW(m2.calculate());
+  m1.clear_data();
+  m1 = m2;
+  EXPECT_EQ(m1.get_data()->str, "sin(x)");
+  m1 = GraphModel();
+  EXPECT_NE(m1.get_data()->str, "sin(x)");
+  m1 = std::move(m2);
+  EXPECT_EQ(m1.get_data()->str, "sin(x)");
+  GraphModel m3(std::move(GraphModel()));
+  EXPECT_EQ(m3.get_data()->MINY, -1);
 }
 
 TEST(CalcTest, regex_5) {
@@ -275,6 +290,16 @@ TEST(CalcTest, expr_calc_1) {
   CalcCore c;
   ASSERT_NO_THROW(c.make_rpn_expr(str));
   ASSERT_ANY_THROW(c.calc(1));
+}
+
+TEST(CalcTest, expr_data_1) {
+  ExprToken t;
+  t.data() = 3;
+  EXPECT_EQ(t.func(1.2, 2.3), 3);
+  EXPECT_EQ(t.priority(), ADD_SCORE);
+  EXPECT_EQ(t.name(), "3.000000");
+  VarExprToken v;
+  EXPECT_EQ(v.name(), "x");
 }
 
 double ex1(double x) {

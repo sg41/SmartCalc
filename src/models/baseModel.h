@@ -2,13 +2,21 @@
 #define _CALCDATA_H_
 #include <list>
 #include <string>
-
+namespace s21 {
 class BaseCalcData {
  public:
   BaseCalcData() { this->init_data(); };
   virtual ~BaseCalcData(){};
-  virtual void init_data() { this->error = 0; };
-  virtual int validate_data() { return 0; };
+  virtual void init_data() {
+    this->error = 0;
+    MINX = -3;
+    MAXX = 3;  // 4 * 3.14
+    MINY = -1;
+    MAXY = 1;
+    MAXI = 80;
+    MAXJ = 25;
+  };
+  virtual int validate_data() = 0;  //{ return 0; };
 
  public:
   static const int MAXSTR = 1024;
@@ -39,9 +47,7 @@ class BaseCalcData {
 template <class D>
 class ModelObserverInterface {
  public:
-  virtual void observer_update(const D *){};
-
- protected:
+  virtual void observer_update(const D *) = 0;
 };
 
 template <class D>
@@ -83,7 +89,7 @@ class BaseCalcModel : public ModelObservableInterface<D> {
     return *this;
   }
   virtual ~BaseCalcModel() { delete data; };
-  virtual void calculate(){};
+  virtual void calculate() = 0;  //{};
   int validate_data() { return data->validate_data(); };
   virtual void set_data(const D *d) {
     if (data == nullptr) data = new D;
@@ -95,5 +101,5 @@ class BaseCalcModel : public ModelObservableInterface<D> {
  protected:
   D *data = nullptr;
 };
-
+}  // namespace s21
 #endif  // _CALCDATA_H

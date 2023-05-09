@@ -2,7 +2,7 @@
 #define EXAMPLECONTROLLER_H
 
 #include "../models/graphModel.h"
-
+namespace s21 {
 class ExampleController {
  private:
   GraphModel *model;
@@ -14,5 +14,5 @@ class ExampleController {
     model->calculate();
   };
 };
-
+}  // namespace s21
 #endif

@@ -1,6 +1,8 @@
 #include "controllers/exampleController.h"
 #include "views/consoleView.h"
 
+using namespace s21;
+
 int main() {
   GraphModel model;
   ExampleController controller(&model);

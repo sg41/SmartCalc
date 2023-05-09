@@ -4,7 +4,7 @@
 
 #include "../controllers/exampleController.h"
 #include "../models/graphModel.h"
-
+namespace s21 {
 enum Choice { VAR = 1, FORMULA = 2, CALC = 3, RANGE = 4, EXIT = 0, NONE = -1 };
 
 class ConsoleView : public ModelObserverInterface<GraphModelData> {
@@ -31,5 +31,5 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
     draw_txt_graph();
   };
 };
-
+}  // namespace s21
 #endif

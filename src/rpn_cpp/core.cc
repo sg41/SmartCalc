@@ -4,7 +4,7 @@
 
 #include <stack>
 #include <stdexcept>
-
+using namespace s21;
 void CalcCore::move_infix_to_rpn(TokenList &infix) {
   if (&infix != &rpn_expr_) {
     std::stack<ExprToken *> opstack;
@@ -29,7 +29,7 @@ void CalcCore::move_infix_to_rpn(TokenList &infix) {
         case UNARYOPERATOR:
         case OPERATOR:
           while (opstack.size() > 0 &&
-                 opstack.top()->priorty() >= i->priorty() &&
+                 opstack.top()->priority() >= i->priority() &&
                  opstack.top()->state() != L_BRACKET)
             stack_to_rpn(opstack);
           opstack.push(i);

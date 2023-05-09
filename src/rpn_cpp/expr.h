@@ -22,7 +22,7 @@
   } while (0)
 #endif
 
-// using namespace std;
+namespace s21 {
 
 enum token_type {
   OPERAND,
@@ -66,7 +66,7 @@ class ExprToken {
   token_type state() const { return state_; };
   void setState(token_type s) { state_ = s; };
   virtual double func(double, double) { return data_; };
-  virtual precedence priorty() { return ADD_SCORE; };
+  virtual precedence priority() { return ADD_SCORE; };
   virtual std::string name() { return std::to_string(data_); };
 
  protected:
@@ -103,7 +103,7 @@ class FuncExprToken : public ExprToken {
     return (fnc_ != nullptr) ? fnc_(a, b)
                              : throw std::invalid_argument("Wrong token");
   };
-  precedence priorty() override { return priority_; };
+  precedence priority() override { return priority_; };
   std::string name() override { return name_; };
 
  protected:
@@ -161,7 +161,6 @@ class ExprSyntax {
       {"sin", {FUNCTION, FUN_SCORE, [](double a, double) { return sin(a); }}},
       {"cos", {FUNCTION, FUN_SCORE, [](double a, double) { return cos(a); }}},
       {"tan", {FUNCTION, FUN_SCORE, [](double a, double) { return tan(a); }}},
-      {"abs", {FUNCTION, FUN_SCORE, [](double a, double) { return abs(a); }}},
       {"log", {FUNCTION, FUN_SCORE, [](double a, double) { return log10(a); }}},
       {"ln", {FUNCTION, FUN_SCORE, [](double a, double) { return log(a); }}},
       {"sqrt", {FUNCTION, FUN_SCORE, [](double a, double) { return sqrt(a); }}},
@@ -204,5 +203,5 @@ class TokenList : public std::list<ExprToken *> {
   int brackets = 0;
   ExprSyntax *syntax;
 };
-
+}  // namespace s21
 #endif  // SRC_RPR_EXPR_H_

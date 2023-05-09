@@ -8,7 +8,7 @@
 #include <string>
 
 #include "expr.h"
-
+namespace s21 {
 class CalcCore {
  public:
   CalcCore() : syntax(new ExprSyntax()){};
@@ -53,5 +53,5 @@ class CalcCore {
   TokenList rpn_expr_;
   ExprSyntax *syntax = nullptr;
 };
-
+}  // namespace s21
 #endif  // SRC_RPR_CORE_H_

@@ -2,6 +2,8 @@
 
 #include <memory>
 
+using namespace s21;
+
 int ExprSyntax::is_operand(const std::string &o) {
   int res = 0;
   static const std::regex base_regex(operand_mask_);
@@ -113,11 +115,10 @@ void TokenList::make_infix_list(const std::string &s) {
   brackets = 0;
   bool good = true;
   if (s.size() != 0) {
-    int i = 0;
-    while (static_cast<size_t>(i) < s.size() &&
-           good) {                    // Rest of the std::string
+    size_t i = 0;
+    while (i < s.size() && good) {
       i += skip_spaces(s.substr(i));  // Skip spaces
-      if (static_cast<size_t>(i) < s.size()) {
+      if (i < s.size()) {
         int l;
         token_type t;
         std::tie(l, t) = find_token(s.substr(i));
@@ -132,7 +133,7 @@ void TokenList::make_infix_list(const std::string &s) {
       }
     }
   } else {
-    throw std::invalid_argument("Empty expression std::string");
+    throw std::invalid_argument("Empty expression string");
   }
 
   if (empty()) throw std::invalid_argument("No valid expression found");

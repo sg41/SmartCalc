@@ -11,6 +11,9 @@ TXT_APP = txt.app
 TXT_C = main.cc views/consoleView.cc
 TXT_O = $(TXT_C:.cc=.o)
 TXT_H = views/consoleView.h controllers/exampleController.h 
+MODELS=models/*.h
+CONTROLLERS=controllers/*.h
+VIEWS=views/*.h views/*.cc
 NEW_TEST_C = tests/new_test.cc
 DOCKER_NAME=calc:1.01
 RELEASE_NAME=s21_SmartCalc-1.01
@@ -88,15 +91,24 @@ check: $(SOURCES) graph.c $(HEADERS) graph.h
 	cp $(ROOT)/materials/linters/.clang-format ./
 	clang-format -i $(SOURCES)
 	clang-format -i $(HEADERS)
-	clang-format -i graph.c graph.h
-	clang-format -i gtk.c gtk.h
+	clang-format -i $(NEW_TEST_C)
+	clang-format -i $(TXT_C)
+	clang-format -i $(TXT_H)
+	clang-format -i $(MODELS)
+	clang-format -i $(CONTROLLERS)
+	clang-format -i $(VIEWS)
 	clang-format -n $(SOURCES)
 	clang-format -n $(HEADERS)
-	clang-format -n graph.c graph.h
-	clang-format -n gtk.c gtk.h
-
+	clang-format -n $(NEW_TEST_C)
+	clang-format -n $(TXT_C)
+	clang-format -n $(TXT_H)
+	clang-format -n $(MODELS)
+	clang-format -n $(CONTROLLERS)
+	clang-format -n $(VIEWS)
 check2: 
-	cppcheck --enable=all --suppress=syntaxError --suppress=missingInclude  --suppress=cstyleCast $(ROOT)/src/
+	cppcheck --enable=all --suppress=syntaxError --suppress=missingInclude \
+	--suppress=unusedFunction --suppress=toomanyconfigs --suppress=unknownMacro \
+	--suppress=ConfigurationNotChecked --suppress=noValidConfiguration $(ROOT)src/
 
 .PHONY: all clean rebuild check2
 

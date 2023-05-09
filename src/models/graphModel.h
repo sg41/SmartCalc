@@ -6,6 +6,7 @@
 #include "../rpn_cpp/core.h"
 #include "baseModel.h"
 
+namespace s21 {
 class GraphModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
@@ -37,8 +38,8 @@ class GraphModelData : public BaseCalcData {
     BaseCalcData::init_data();
     x = 0;
     clip_x1 = 0;
-    clip_y1 = 0;
     clip_x2 = 0;
+    clip_y1 = 0;
     clip_y2 = 0;
     dx = (double)(MAXX - MINX) / MAXI;  //! To be or not to be
     dy = (double)MAXJ / (MAXY - MINY);
@@ -55,7 +56,7 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
     data->y = c.calc(data->x);  // calculate single Y for given X
     data->y_vect.clear();       // calculate Y vector for X range
     data->x_vect.clear();
-    if (data->dx != 0) {
+    if (data->dx > 0) {
       for (double x = data->MINX; x < data->MAXX; x += data->dx) {
         data->x_vect.push_back(x);
         double res = c.calc(x);
@@ -83,5 +84,5 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
  protected:
   CalcCore c;
 };
-
+}  // namespace s21
 #endif  //_GRAPHMODEL_H_
