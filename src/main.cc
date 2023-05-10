@@ -5,7 +5,7 @@ using namespace s21;
 
 int main() {
   GraphModel model;
-  ExampleController controller(&model);
+  ExampleController controller((BaseModel*)&model);
   ConsoleView view(&controller);
   model.register_observer(&view);
   view.startEventLoop();

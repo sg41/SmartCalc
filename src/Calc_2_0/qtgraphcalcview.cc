@@ -3,7 +3,9 @@
 #include "ui_qtgraphcalcview.h"
 
 QtGraphCalcView::QtGraphCalcView(QWidget *parent)
-    : QWidget(parent), controller(&model), ui(new Ui::QtGraphCalcView) {
+    : QWidget(parent),
+      controller((BaseModel *)&model),
+      ui(new Ui::QtGraphCalcView) {
   // Setup interface
   ui->setupUi(this);
   showSizeDialog(false);

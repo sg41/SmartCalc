@@ -49,9 +49,9 @@ class GraphModelData : public BaseCalcData {
   };
 };
 
-class GraphModel : public BaseCalcModel<GraphModelData> {
+class GraphModel : public AbstractModel<GraphModelData> {
  public:
-  using BaseCalcModel<GraphModelData>::BaseCalcModel;
+  using AbstractModel<GraphModelData>::AbstractModel;
 
   void calculate() override {
     data->y = c.calc(data->x);  // calculate single Y for given X
@@ -78,7 +78,7 @@ class GraphModel : public BaseCalcModel<GraphModelData> {
   };
 
   void set_data(const GraphModelData *d) override {
-    BaseCalcModel::set_data(d);
+    AbstractModel::set_data(d);
     c.make_rpn_expr(data->str);
   };
 

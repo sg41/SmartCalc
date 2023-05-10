@@ -17,8 +17,10 @@ SOURCES += \
 
 HEADERS += \
     ../controllers/exampleController.h \
+    ../models/creditModel.h \
     ../models/graphModel.h \
     mainwindow.h \
+    myqtdoubleslider.h \
     qcustomplot.h \
     qtcreditcalcview.h \
     qtgraphcalcview.h

@@ -3,20 +3,31 @@
 
 #include <QWidget>
 
+#include "../controllers/exampleController.h"
+#include "../models/creditModel.h"
+using namespace s21;
+
 namespace Ui {
 class QtCreditCalcView;
 }
 
-class QtCreditCalcView : public QWidget
-{
-    Q_OBJECT
+class QtCreditCalcView : public QWidget,
+                         public ModelObserverInterface<CreditModelData> {
+  Q_OBJECT
 
-public:
-    explicit QtCreditCalcView(QWidget *parent = nullptr);
-    ~QtCreditCalcView();
+ public:
+  explicit QtCreditCalcView(QWidget *parent = nullptr);
+  ~QtCreditCalcView();
+  // Observer staff
+  void observer_update(const CreditModelData *model_data) override{};
+  CreditModelData m_data;
 
-private:
-    Ui::QtCreditCalcView *ui;
+ private:
+  // MVC staff
+  CreditModel model;
+  ExampleController controller;
+  // Default staff
+  Ui::QtCreditCalcView *ui;
 };
 
-#endif // QTCREDITCALCVIEW_H
+#endif  // QTCREDITCALCVIEW_H

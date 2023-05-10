@@ -55,9 +55,9 @@ class CreditModelData : public BaseCalcData {
   };
 };
 
-class CreditModel : public BaseCalcModel<CreditModelData> {
+class CreditModel : public AbstractModel<CreditModelData> {
  public:
-  using BaseCalcModel<CreditModelData>::BaseCalcModel;
+  using AbstractModel<CreditModelData>::AbstractModel;
 
   void calculate() override {
     if (data->type == data->ANNUITET) {
@@ -98,7 +98,7 @@ class CreditModel : public BaseCalcModel<CreditModelData> {
   };
 
   void set_data(const CreditModelData *d) override {
-    BaseCalcModel::set_data(d);
+    AbstractModel::set_data(d);
     c.make_rpn_expr(data->str);
   };
 

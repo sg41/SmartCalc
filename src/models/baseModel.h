@@ -68,19 +68,19 @@ class ModelObservableInterface {
 };
 
 template <class D>
-class BaseCalcModel : public ModelObservableInterface<D> {
+class AbstractModel : public ModelObservableInterface<D> {
  public:
-  BaseCalcModel() : data(new D){};
-  BaseCalcModel(const BaseCalcModel &m) : data(new D(*m.data)){};
-  BaseCalcModel(BaseCalcModel &&m) {
+  AbstractModel() : data(new D){};
+  AbstractModel(const AbstractModel &m) : data(new D(*m.data)){};
+  AbstractModel(AbstractModel &&m) {
     data = m.data;
     m.data = nullptr;
   };
-  BaseCalcModel &operator=(const BaseCalcModel &m) {
+  AbstractModel &operator=(const AbstractModel &m) {
     if (this != &m) set_data(m.data);
     return *this;
   }
-  BaseCalcModel &operator=(BaseCalcModel &&m) {
+  AbstractModel &operator=(AbstractModel &&m) {
     if (this != &m) {
       delete data;
       data = m.data;
@@ -88,8 +88,8 @@ class BaseCalcModel : public ModelObservableInterface<D> {
     }
     return *this;
   }
-  virtual ~BaseCalcModel() { delete data; };
-  virtual void calculate() = 0;  //{};
+  virtual ~AbstractModel() { delete data; };
+  virtual void calculate() = 0;
   int validate_data() { return data->validate_data(); };
   virtual void set_data(const D *d) {
     if (d != nullptr) *data = *d;
@@ -100,5 +100,8 @@ class BaseCalcModel : public ModelObservableInterface<D> {
  protected:
   D *data = nullptr;
 };
+
+// class BaseModel : public AbstractModel<BaseCalcData> {};
+
 }  // namespace s21
 #endif  // _CALCDATA_H
