@@ -97,11 +97,6 @@ class CreditModel : public AbstractModel<CreditModelData> {
     notify_observers();
   };
 
-  void set_data(const CreditModelData *d) override {
-    AbstractModel::set_data(d);
-    c.make_rpn_expr(data->str);
-  };
-
  protected:
   CalcCore c;
 };

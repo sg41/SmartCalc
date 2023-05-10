@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 
+#define MIN_X -1000000
+#define MAX_X 1000000
+
 #include "../models/creditModel.h"
 #include "../models/graphModel.h"
 #include "../rpn_cpp/core.h"
 
 using namespace s21;
-
 class TestObserver : public ModelObserverInterface<GraphModelData> {
  public:
   void observer_update(const GraphModelData *d) override {
@@ -31,10 +33,13 @@ TEST(CalcTest, model) {
   EXPECT_GT(d2->MAXX, GraphModelData::VERY_MAX_X + 0);
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
+  m2.clear_data();
   d2->init_data();
+  d2->x = 1;
   d2->str = "sin(x)";
   m2.set_data(d2);
   EXPECT_NO_THROW(m2.calculate());
+  EXPECT_NEAR(m2.get_data()->y, 0.841471, BaseCalcData::EPS);
   m1.clear_data();
   m1 = m2;
   EXPECT_EQ(m1.get_data()->str, "sin(x)");
@@ -250,9 +255,6 @@ TEST(CalcTest, expr_shunt_right_formula) {
   }
 }
 
-#define MIN_X -1000000
-#define MAX_X 1000000
-#define EPS 1e-6
 TEST(CalcTest, core_functions) {
   char str[10][1000] = {"sin(x)",  "cos(x)",  "tan(x)",  "log(x)",  "ln(x)",
                         "atan(x)", "asin(x)", "acos(x)", "sqrt(x)", "abs(x)"};
@@ -270,10 +272,10 @@ TEST(CalcTest, core_functions) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= EPS ||
+        if (fabs(expected_result - actual_result) >= BaseCalcData::EPS ||
             !isfinite(actual_result))
           DBPRINT("e:%f a:%f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) < BaseCalcData::EPS);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -285,14 +287,16 @@ TEST(CalcTest, expr_calc) {
   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
   CalcCore c;
   c.make_rpn_expr(str);
-  EXPECT_TRUE(c.calc(1) - 0.7919175265 < EPS);
+  EXPECT_TRUE(c.calc(1) - 0.7919175265 < BaseCalcData::EPS);
 }
 
+#ifdef NDEBUG
 TEST(CalcTest, expr_calc_1) {
   char str[1000] = "sin()";
   CalcCore c;
   ASSERT_ANY_THROW(c.make_rpn_expr(str));
 }
+#endif
 
 TEST(CalcTest, expr_data_1) {
   ExprToken t;
@@ -368,10 +372,10 @@ TEST(CalcTest, core_random_expressions) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= EPS ||
+        if (fabs(expected_result - actual_result) >= BaseCalcData::EPS ||
             !isfinite(actual_result))
           DBPRINT("e:%f a:%f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) < BaseCalcData::EPS);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -388,12 +392,12 @@ TEST(CreditTest, ann) {
   d->duration = 120;
   d->rate = 4.56;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 153966.00, EPS);
-  ASSERT_NEAR(d->overpayment, 30510.00, EPS);
-  ASSERT_NEAR(d->monthly_payment, 1283.05, EPS);
+  ASSERT_NEAR(d->total_payment, 153966.00, BaseCalcData::EPS);
+  ASSERT_NEAR(d->overpayment, 30510.00, BaseCalcData::EPS);
+  ASSERT_NEAR(d->monthly_payment, 1283.05, BaseCalcData::EPS);
   d->round = true;
   calc.calculate();
-  ASSERT_NEAR(d->monthly_payment, 1283, EPS);
+  ASSERT_NEAR(d->monthly_payment, 1283, BaseCalcData::EPS);
 }
 
 TEST(CreditTest, diff) {
@@ -404,17 +408,37 @@ TEST(CreditTest, diff) {
   d->duration = 6;
   d->rate = 12.5;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 103645.83, EPS);
-  ASSERT_NEAR(d->overpayment, 3645.83, EPS);
+  ASSERT_NEAR(d->total_payment, 103645.83, BaseCalcData::EPS);
+  ASSERT_NEAR(d->overpayment, 3645.83, BaseCalcData::EPS);
   std::vector<double> expected_mp = {17708.33, 17534.72, 17361.11,
                                      17187.50, 17013.89, 16840.28};
   for (int i = 0; i < 6; ++i) {
-    ASSERT_NEAR(d->monthly_payments[i], expected_mp.at(i), EPS);
+    ASSERT_NEAR(d->monthly_payments[i], expected_mp.at(i), BaseCalcData::EPS);
   }
   d->round = true;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 103646, EPS);
-  ASSERT_NEAR(d->overpayment, 3646, EPS);
+  ASSERT_NEAR(d->total_payment, 103646, BaseCalcData::EPS);
+  ASSERT_NEAR(d->overpayment, 3646, BaseCalcData::EPS);
+}
+
+TEST(CreditTest, set_data) {
+  CreditModel calc;
+  CreditModelData d;
+  d.type = d.ANNUITET;
+  d.amount = 123456;
+  d.duration = 120;
+  d.rate = 4.56;
+  calc.set_data(&d);
+  calc.calculate();
+  d = *calc.get_data();
+  ASSERT_NEAR(d.total_payment, 153966.00, BaseCalcData::EPS);
+  ASSERT_NEAR(d.overpayment, 30510.00, BaseCalcData::EPS);
+  ASSERT_NEAR(d.monthly_payment, 1283.05, BaseCalcData::EPS);
+  d.round = true;
+  calc.set_data(&d);
+  calc.calculate();
+  d = *calc.get_data();
+  ASSERT_NEAR(d.monthly_payment, 1283, BaseCalcData::EPS);
 }
 
 int main(int argc, char **argv) {

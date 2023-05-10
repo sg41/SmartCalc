@@ -9,7 +9,7 @@ QtCreditCalcView::QtCreditCalcView(QWidget *parent)
   ui->setupUi(this);
 
   // MVC staff
-  model.register_observer(this);
+  //  model.register_observer(this);
 
   // Setup sliders & spin boxes
   // Copy default values before connecting
@@ -32,3 +32,18 @@ QtCreditCalcView::QtCreditCalcView(QWidget *parent)
 }
 
 QtCreditCalcView::~QtCreditCalcView() { delete ui; }
+
+void QtCreditCalcView::on_calculateButton_pressed() {
+  m_data.type = ui->creditTypeComboBox->currentText() == "Annuitet"
+                    ? m_data.ANNUITET
+                    : m_data.DIFFERENTIATED;
+  m_data.amount = ui->creditAmountSpinBox->value();
+  m_data.duration = ui->creditTermSpinBox->value();
+  m_data.rate = ui->interestRateSpinBox->value();
+  try {
+    controller.user_action((BaseCalcData *)&m_data);
+    emit showStatus("Success");
+  } catch (std::invalid_argument &e) {
+    emit showStatus(e.what());
+  }
+}

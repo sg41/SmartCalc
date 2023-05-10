@@ -22,6 +22,12 @@ class QtCreditCalcView : public QWidget,
   void observer_update(const CreditModelData *model_data) override{};
   CreditModelData m_data;
 
+ private slots:
+  void on_calculateButton_pressed();
+
+ signals:
+  void showStatus(std::string);
+
  private:
   // MVC staff
   CreditModel model;

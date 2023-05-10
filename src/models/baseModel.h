@@ -35,7 +35,7 @@ class BaseCalcData {
   static const int VERY_MAX_X = 1000000;
   static const int VERY_MIN_Y = -1000000;
   static const int VERY_MAX_Y = 1000000;
-  static const int EPS = 1e-7;
+  static const double constexpr EPS = 1e-7;
   int MAXI = 80;
   int MAXJ = 25;
 
@@ -100,8 +100,6 @@ class AbstractModel : public ModelObservableInterface<D> {
  protected:
   D *data = nullptr;
 };
-
-// class BaseModel : public AbstractModel<BaseCalcData> {};
 
 }  // namespace s21
 #endif  // _CALCDATA_H

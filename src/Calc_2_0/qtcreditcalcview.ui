@@ -329,4 +329,7 @@
  </customwidgets>
  <resources/>
  <connections/>
+ <slots>
+  <signal>showStatus(std::string)</signal>
+ </slots>
 </ui>

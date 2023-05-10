@@ -42,7 +42,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QtCreditCalcView" name="widget" native="true"/>
+         <widget class="QtCreditCalcView" name="CreditCalcWidget" native="true"/>
         </item>
        </layout>
       </widget>
@@ -82,12 +82,31 @@
    <extends>QWidget</extends>
    <header>qtcreditcalcview.h</header>
    <container>1</container>
+   <slots>
+    <signal>showStatus(std::string)</signal>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
    <sender>GraphCalcWidget</sender>
+   <signal>showStatus(std::string)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_GraphCalcWidget_showStatus(std::string)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>385</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>371</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CreditCalcWidget</sender>
    <signal>showStatus(std::string)</signal>
    <receiver>MainWindow</receiver>
    <slot>on_GraphCalcWidget_showStatus(std::string)</slot>
