@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "../models/creditModel.h"
 #include "../models/graphModel.h"
 #include "../rpn_cpp/core.h"
 
@@ -377,6 +378,43 @@ TEST(CalcTest, core_random_expressions) {
     }
   }
 #undef __N__
+}
+
+TEST(CreditTest, ann) {
+  CreditModel calc;
+  CreditModelData *d = (CreditModelData *)calc.get_data();
+  d->type = d->ANNUITET;
+  d->amount = 123456;
+  d->duration = 120;
+  d->rate = 4.56;
+  calc.calculate();
+  ASSERT_NEAR(d->total_payment, 153966.00, EPS);
+  ASSERT_NEAR(d->overpayment, 30510.00, EPS);
+  ASSERT_NEAR(d->monthly_payment, 1283.05, EPS);
+  d->round = true;
+  calc.calculate();
+  ASSERT_NEAR(d->monthly_payment, 1283, EPS);
+}
+
+TEST(CreditTest, diff) {
+  CreditModel calc;
+  CreditModelData *d = (CreditModelData *)calc.get_data();
+  d->type = d->DIFFERENTIATED;
+  d->amount = 100000;
+  d->duration = 6;
+  d->rate = 12.5;
+  calc.calculate();
+  ASSERT_NEAR(d->total_payment, 103645.83, EPS);
+  ASSERT_NEAR(d->overpayment, 3645.83, EPS);
+  std::vector<double> expected_mp = {17708.33, 17534.72, 17361.11,
+                                     17187.50, 17013.89, 16840.28};
+  for (int i = 0; i < 6; ++i) {
+    ASSERT_NEAR(d->monthly_payments[i], expected_mp.at(i), EPS);
+  }
+  d->round = true;
+  calc.calculate();
+  ASSERT_NEAR(d->total_payment, 103646, EPS);
+  ASSERT_NEAR(d->overpayment, 3646, EPS);
 }
 
 int main(int argc, char **argv) {
