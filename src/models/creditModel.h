@@ -13,11 +13,11 @@ class CreditModelData : public BaseCalcData {
   CreditModelData() { CreditModelData::init_data(); };
   int validate_data() override {
     int err = 0;
-    if (MINX >= VERY_MIN_X && MINY >= VERY_MIN_Y && MAXX <= VERY_MAX_X &&
-        MAXY <= VERY_MAX_Y)
-      err = 0;
-    else
-      err = 1;
+    // if (MINX >= VERY_MIN_X && MINY >= VERY_MIN_Y && MAXX <= VERY_MAX_X &&
+    //     MAXY <= VERY_MAX_Y)
+    //   err = 0;
+    // else
+    //   err = 1;
     return err;
   };
 
@@ -73,8 +73,6 @@ class CreditModel : public BaseCalcModel<CreditModelData> {
         data->error_message = "Incorrect input data - can't calculate";
       }
       if (data->round) data->monthly_payment = round(data->monthly_payment);
-      data->overpayment =
-          (data->monthly_payment) * data->duration - data->amount;
       data->total_payment = (data->monthly_payment) * data->duration;
     } else {  // DIFFERENTIATED
       std::string monthly_payment_expr =
@@ -94,8 +92,8 @@ class CreditModel : public BaseCalcModel<CreditModelData> {
       }
       data->monthly_payment = data->monthly_payments[0];
       data->monthly_payment_min = data->monthly_payments[data->duration - 1];
-      data->overpayment = data->total_payment - data->amount;
     }
+    data->overpayment = data->total_payment - data->amount;
     notify_observers();
   };
 
