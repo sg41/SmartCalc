@@ -21,10 +21,10 @@
     </sizepolicy>
    </property>
    <layout class="QGridLayout" name="gridLayout_4">
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="GraphCalcTab">
        <attribute name="title">
@@ -40,6 +40,11 @@
        <attribute name="title">
         <string>Credit Calculator</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QtCreditCalcView" name="widget" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="DebetCalcTab">
        <attribute name="title">
@@ -71,6 +76,12 @@
    <slots>
     <signal>showStatus(std::string)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>QtCreditCalcView</class>
+   <extends>QWidget</extends>
+   <header>qtcreditcalcview.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

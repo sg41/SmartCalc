@@ -12,6 +12,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp \
+    qtcreditcalcview.cc \
     qtgraphcalcview.cc
 
 HEADERS += \
@@ -19,10 +20,12 @@ HEADERS += \
     ../models/graphModel.h \
     mainwindow.h \
     qcustomplot.h \
+    qtcreditcalcview.h \
     qtgraphcalcview.h
 
 FORMS += \
     mainwindow.ui \
+    qtcreditcalcview.ui \
     qtgraphcalcview.ui
 
 TRANSLATIONS += \
