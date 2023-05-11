@@ -8,14 +8,14 @@ class MyQtDoubleSlider : public QSlider {
  public:
   MyQtDoubleSlider(QWidget *parent = 0) : QSlider(parent) {
     connect(this, SIGNAL(valueChanged(int)), this,
-            SLOT(notifyValueChanged(int)));
+            SLOT(convertValueChanged(int)));
   };
 
  signals:
   void doubleValueChanged(double value);
 
  public slots:
-  void notifyValueChanged(int value) {
+  void convertValueChanged(int value) {
     emit doubleValueChanged((double)value);
   };
   void doubleSetValue(double value) { emit setValue((int)value); };
