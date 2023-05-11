@@ -9,7 +9,7 @@ QtCreditCalcView::QtCreditCalcView(QWidget *parent)
   ui->setupUi(this);
 
   // MVC staff
-  //  model.register_observer(this);
+  model.register_observer(this);
 
   // Setup sliders & spin boxes
   // Copy default values before connecting
@@ -33,6 +33,14 @@ QtCreditCalcView::QtCreditCalcView(QWidget *parent)
 
 QtCreditCalcView::~QtCreditCalcView() { delete ui; }
 
+void QtCreditCalcView::observer_update(const CreditModelData *model_data) {
+  m_data = *(model_data);
+  ui->monthlyPaymentLabel->setText(QString::number(m_data.monthly_payment));
+  ui->overPaymentLabel->setText(QString::number(m_data.overpayment));
+  ui->totalPaymentLabel->setText(QString::number(m_data.total_payment));
+  ui->resultFrame->setEnabled(true);
+}
+
 void QtCreditCalcView::on_calculateButton_pressed() {
   m_data.type = ui->creditTypeComboBox->currentText() == "Annuitet"
                     ? m_data.ANNUITET
@@ -40,10 +48,12 @@ void QtCreditCalcView::on_calculateButton_pressed() {
   m_data.amount = ui->creditAmountSpinBox->value();
   m_data.duration = ui->creditTermSpinBox->value();
   m_data.rate = ui->interestRateSpinBox->value();
+  m_data.round = ui->round->isChecked();
   try {
     controller.user_action((BaseCalcData *)&m_data);
     emit showStatus("Success");
   } catch (std::invalid_argument &e) {
+    ui->resultFrame->setEnabled(false);
     emit showStatus(e.what());
   }
 }

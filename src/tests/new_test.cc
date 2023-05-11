@@ -400,6 +400,20 @@ TEST(CreditTest, ann) {
   ASSERT_NEAR(d->monthly_payment, 1283, BaseCalcData::EPS);
 }
 
+TEST(CreditTest, ann_banki) {
+  CreditModel calc;
+  CreditModelData *d = (CreditModelData *)calc.get_data();
+  d->type = d->ANNUITET;
+  d->amount = 50000;
+  d->duration = 6;
+  d->rate = 14;
+  d->round = true;
+  calc.calculate();
+  ASSERT_NEAR(d->total_payment, 52062, BaseCalcData::EPS);
+  ASSERT_NEAR(d->overpayment, 2062, BaseCalcData::EPS);
+  ASSERT_NEAR(d->monthly_payment, 8677, BaseCalcData::EPS);
+}
+
 TEST(CreditTest, diff) {
   CreditModel calc;
   CreditModelData *d = (CreditModelData *)calc.get_data();
