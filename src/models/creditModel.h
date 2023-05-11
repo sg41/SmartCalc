@@ -87,8 +87,9 @@ class CreditModel : public AbstractModel<CreditModelData> {
       for (int m = 0; m < data->duration; m++) {
         data->monthly_payments.push_back(round(c.calc((double)m) * 100.) /
                                          100.);
-        if (data->round)
+        if (data->round) {
           data->monthly_payments[m] = round(data->monthly_payments[m]);
+        }
         data->total_payment += data->monthly_payments[m];
       }
       data->monthly_payment = data->monthly_payments[0];

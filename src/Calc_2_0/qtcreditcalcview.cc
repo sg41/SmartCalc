@@ -35,9 +35,14 @@ QtCreditCalcView::~QtCreditCalcView() { delete ui; }
 
 void QtCreditCalcView::observer_update(const CreditModelData *model_data) {
   m_data = *(model_data);
-  ui->monthlyPaymentLabel->setText(QString::number(m_data.monthly_payment));
-  ui->overPaymentLabel->setText(QString::number(m_data.overpayment));
-  ui->totalPaymentLabel->setText(QString::number(m_data.total_payment));
+  int points = 2;
+  if (m_data.round) points = 0;
+  ui->monthlyPaymentLabel->setText(
+      QString::number(m_data.monthly_payment, 'f', points));
+  ui->overPaymentLabel->setText(
+      QString::number(m_data.overpayment, 'f', points));
+  ui->totalPaymentLabel->setText(
+      QString::number(m_data.total_payment, 'f', points));
   ui->resultFrame->setEnabled(true);
 }
 
