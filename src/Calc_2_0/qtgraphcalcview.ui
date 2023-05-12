@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Right click to Graph dimensions dialog&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Right click to change Graph dimensions&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0" rowspan="3" colspan="2">

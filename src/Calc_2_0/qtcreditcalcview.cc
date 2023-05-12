@@ -35,14 +35,12 @@ QtCreditCalcView::~QtCreditCalcView() { delete ui; }
 
 void QtCreditCalcView::observer_update(const CreditModelData *model_data) {
   m_data = *(model_data);
-  int points = 2;
-  if (m_data.round) points = 0;
+  QLocale rus(QLocale::Russian, QLocale::Russia);
+  rus.setNumberOptions(QLocale::DefaultNumberOptions);
   ui->monthlyPaymentLabel->setText(
-      QString::number(m_data.monthly_payment, 'f', points));
-  ui->overPaymentLabel->setText(
-      QString::number(m_data.overpayment, 'f', points));
-  ui->totalPaymentLabel->setText(
-      QString::number(m_data.total_payment, 'f', points));
+      rus.toCurrencyString(m_data.monthly_payment));
+  ui->overPaymentLabel->setText(rus.toCurrencyString(m_data.overpayment));
+  ui->totalPaymentLabel->setText(rus.toCurrencyString(m_data.total_payment));
   ui->resultFrame->setEnabled(true);
 }
 

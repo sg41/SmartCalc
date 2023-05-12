@@ -19,7 +19,9 @@ int main(int argc, char *argv[]) {
   //      break;
   //    }
   //  }
-  setlocale(LC_ALL, "en_US.UTF-8");
+  QLocale l = QLocale::c();
+  l.setNumberOptions(QLocale::DefaultNumberOptions);
+  QLocale::setDefault(l);
   MainWindow w;
   // Setup Icon
   QIcon ic(":/icon/calc_icon_64.png");
