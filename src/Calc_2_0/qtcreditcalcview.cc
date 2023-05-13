@@ -38,7 +38,10 @@ void QtCreditCalcView::observer_update(const CreditModelData *model_data) {
   QLocale rus(QLocale::Russian, QLocale::Russia);
   rus.setNumberOptions(QLocale::DefaultNumberOptions);
   ui->monthlyPaymentLabel->setText(
-      rus.toCurrencyString(m_data.monthly_payment));
+      rus.toCurrencyString(m_data.monthly_payment) +
+      ((m_data.type == m_data.DIFFERENTIATED)
+           ? " ... " + rus.toCurrencyString(m_data.monthly_payment_min)
+           : ""));
   ui->overPaymentLabel->setText(rus.toCurrencyString(m_data.overpayment));
   ui->totalPaymentLabel->setText(rus.toCurrencyString(m_data.total_payment));
   ui->resultFrame->setEnabled(true);

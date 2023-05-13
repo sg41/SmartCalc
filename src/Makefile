@@ -11,10 +11,10 @@ TXT_APP = txt.app
 TXT_C = main.cc views/consoleView.cc
 TXT_O = $(TXT_C:.cc=.o)
 TXT_H = views/consoleView.h controllers/exampleController.h 
-MODELS=models/*.h
+MODELS=models/*.h 
 CONTROLLERS=controllers/*.h
 VIEWS=views/*.h views/*.cc
-NEW_TEST_C = tests/new_test.cc
+NEW_TEST_C = tests/new_test.cc models/*.cc
 DOCKER_NAME=calc:1.01
 RELEASE_NAME=s21_SmartCalc-1.01
 TEXI2DVI=texi2dvi

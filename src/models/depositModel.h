@@ -1,6 +1,7 @@
 #ifndef _DEPOSITMODEL_H_
 #define _DEPOSITMODEL_H_
 
+#include <chrono>
 #include <vector>
 
 #include "../rpn_cpp/core.h"
@@ -19,6 +20,7 @@ class DepositModelData : public CreditModelData {
   double tax;
   bool int_cap;
   double interest;
+  std::vector<double> interests;
   std::vector<double> replenishment;
   std::vector<double> withdrawal;
 
@@ -48,9 +50,6 @@ class DepositModel : public AbstractModel<DepositModelData> {
   long double calc_simple_daily_interest(long double sum, int startday,
                                          int days);
   double complex_interest_calc();
-
-  //  protected:
-  //   CalcCore c;
 };
 }  // namespace s21
 #endif  //_DEPOSITMODEL_H_

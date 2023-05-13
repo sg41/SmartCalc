@@ -55,7 +55,7 @@ long double bank_round(long double value) {
   if (value >= 0) {
     if (value < 2147483647.5) {
       long double dif = value - result;
-      if (dif > 0.5 || dif == 0.5 && (result & 1) != 0) result++;
+      if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0)) result++;
     }
   }
   return result;
@@ -93,13 +93,13 @@ int get_days_per_year(int days) {
   return result;
 }
 
-int has_new_year(int start_day, int end_day) {
+int has_new_year(int start_day, int days) {
   int result = 0;
   time_t start_time, future_time;
   /* Obtain current time. */
   start_time = time(NULL);
   start_time += start_day * SECOND_PER_DAY;
-  future_time = start_time + end_day * SECOND_PER_DAY;
+  future_time = start_time + days * SECOND_PER_DAY;
   struct tm start_date = *localtime(&start_time);
   struct tm future_date = *localtime(&future_time);
   if (future_date.tm_year != start_date.tm_year) result = 1;
@@ -114,7 +114,7 @@ int get_days_until_new_year(int start_day) {
   start_time += start_day * SECOND_PER_DAY;
   struct tm start_date = *localtime(&start_time);
   struct tm future_date = start_date;
-  future_date.tm_mon = 12;
+  future_date.tm_mon = 11;
   future_date.tm_mday = 31;
 
   future_time = mktime(&future_date);
@@ -125,20 +125,39 @@ int get_days_until_new_year(int start_day) {
 long double DepositModel::calc_simple_daily_interest(long double sum,
                                                      int startday, int days) {
   long double res;
-  res =
-      bank_round(sum * data->rate * days / get_days_per_year(startday + days)) /
-      100.;
+  int days_to_new_year = get_days_until_new_year(startday);
+  if (days_to_new_year > days) {
+    res = round(sum * data->rate * days / get_days_per_year(startday + days)) /
+          100.;
+  } else {
+    //! recursive calculation gives bad accuracy
+    // res = round(sum * data->rate * days_to_new_year /
+    //             get_days_per_year(startday)) /
+    //           100. +
+    //       calc_simple_daily_interest(sum, startday + days_to_new_year + 1,
+    //                                  days - days_to_new_year);
+
+    res = bank_round(sum * data->rate * days_to_new_year /
+                         get_days_per_year(startday) +
+                     sum * data->rate * (days - days_to_new_year) /
+                         get_days_per_year(startday + days)) /
+          100.;
+  }
   return res;
 }
 
 double DepositModel::complex_interest_calc() {
   double res = data->amount;
   int term = get_days_per_period(data->duration);
+  if (data->pay_period > term) data->pay_period = term;
   int period = data->pay_period;
   int rest = term % period;
   double current_interest;
-  double replenishment=std::accumulate(data->replenishment.begin(), data->replenishment.end(), 0);
-  double withdrawal=std::accumulate(data->withdrawal.begin(), data->withdrawal.end(), 0);
+  data->interests.clear();
+  double replenishment = std::accumulate(data->replenishment.begin(),
+                                         data->replenishment.end(), 0);
+  double withdrawal =
+      std::accumulate(data->withdrawal.begin(), data->withdrawal.end(), 0);
   data->interest = 0;
 
   for (int i = 0, n = 0; i < term - rest; i += period, n++) {
@@ -149,7 +168,7 @@ double DepositModel::complex_interest_calc() {
         data->int_cap ? res : data->amount, i, period);
     data->interest += current_interest;
     res += current_interest;
-
+    data->interests.push_back(current_interest);
     if (i + period < term - rest || (data->pay_period == 7 && rest != 0)) {
       res += replenishment;
       if (res >= withdrawal) res -= withdrawal;
@@ -163,6 +182,7 @@ double DepositModel::complex_interest_calc() {
         data->int_cap ? res : data->amount, term - rest - 1, rest);
     data->interest += current_interest;
     res += current_interest;
+    data->interests.push_back(current_interest);
   }
 
   return res;

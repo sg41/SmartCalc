@@ -4,6 +4,7 @@
 #define MAX_X 1000000
 
 #include "../models/creditModel.h"
+#include "../models/depositModel.h"
 #include "../models/graphModel.h"
 #include "../rpn_cpp/core.h"
 
@@ -453,6 +454,113 @@ TEST(CreditTest, set_data) {
   calc.calculate();
   d = *calc.get_data();
   ASSERT_NEAR(d.monthly_payment, 1283, BaseCalcData::EPS);
+}
+
+TEST(DepositTest, no_cap) {
+  DepositModel calc;
+  DepositModelData d;
+  d.amount = 100000;
+  d.duration = 6;
+  d.rate = 9.5;
+  d.pay_period = 30;
+  int terms[]{1, 3, 6, 7, 8, 9, 12, 36, 60};
+  double expected_results[]{806.85,  2394.52, 4789.04,  5569.86, 6375.78,
+                            7180.42, 9516.48, 28499.97, 47516.45};
+  for (int i = 0; i < 7; i++) {
+    DBPRINT("%d, term=%d\n", i, terms[i]);
+    d.duration = terms[i];
+    calc.set_data(&d);
+    calc.calculate();
+    d = *calc.get_data();
+    ASSERT_NEAR(d.interest, expected_results[i], BaseCalcData::EPS);
+  }
+}
+
+TEST(DepositTest, cap) {
+  DepositModel calc;
+  DepositModelData d;
+  d.amount = 100000;
+  d.duration = 6;
+  d.rate = 9.5;
+  d.pay_period = 30;
+  d.int_cap = true;
+  int terms[]{1, 3, 6, 7, 8, 9, 12, 36, 60};
+  double expected_results[]{806.85,  2413.68, 4885.62,  5704.59, 6556.49,
+                            7413.89, 9942.74, 32826.95, 60527.02};
+  for (int i = 0; i < 7; i++) {
+    DBPRINT("%d, term=%d\n", i, terms[i]);
+    d.duration = terms[i];
+    calc.set_data(&d);
+    calc.calculate();
+    d = *calc.get_data();
+    ASSERT_NEAR(d.interest, expected_results[i], BaseCalcData::EPS);
+  }
+}
+
+TEST(DepositTest, pay_periods_no_cap) {
+  DepositModel calc;
+  DepositModelData d;
+  d.amount = 100000;
+  d.duration = 60;
+  d.rate = 9.5;
+  d.pay_period = 30;
+  int periods[]{1, 7, 30, 90, 180, 360};
+  double expected_results[]{47521.81, 47515.89, 47516.45, 47516.51,
+                            47516.51, 47516.50, 47516.50};
+  for (int i = 0; i < 6; i++) {
+    DBPRINT("%d, term=%d\n", i, periods[i]);
+    d.pay_period = periods[i];
+    calc.set_data(&d);
+    calc.calculate();
+    d = *calc.get_data();
+#ifndef NDEBUG
+    if (i == 3)
+      for (auto a : d.interests) std::cout << a << std::endl;
+#endif
+    ASSERT_NEAR(d.interest, expected_results[i], 0.009);
+  }
+}
+
+TEST(DepositTest, pay_periods_cap) {
+  DepositModel calc;
+  DepositModelData d;
+  d.amount = 100000;
+  d.duration = 60;
+  d.rate = 9.5;
+  d.pay_period = 30;
+  d.int_cap = true;
+  int periods[]{1, 7, 30, 90, 180, 360};
+  double expected_results[]{60818.37, 60758.53, 60527.02,
+                            59936.63, 59077.40, 57447.6};
+  for (int i = 0; i < 6; i++) {
+    DBPRINT("%d, term=%d\n", i, periods[i]);
+    d.pay_period = periods[i];
+    calc.set_data(&d);
+    calc.calculate();
+    d = *calc.get_data();
+    ASSERT_NEAR(d.interest, expected_results[i], 1);
+  }
+}
+
+TEST(DepositTest, wrong) {
+  DepositModel calc;
+  DepositModelData d;
+  d.amount = 100000;
+  d.duration = 3;
+  d.rate = 9.5;
+  d.pay_period = 90;
+  d.int_cap = true;
+  int periods[]{1, 7, 30, 90, 180, 360};
+  double expected_results[]{2423.10, 2421.21, 2413.68,
+                            2394.52, 2394.52, 2394.52};
+  for (int i = 0; i < 6; i++) {
+    DBPRINT("%d, term=%d\n", i, periods[i]);
+    d.pay_period = periods[i];
+    calc.set_data(&d);
+    calc.calculate();
+    d = *calc.get_data();
+    ASSERT_NEAR(d.interest, expected_results[i], BaseCalcData::EPS);
+  }
 }
 
 int main(int argc, char **argv) {

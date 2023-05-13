@@ -11,15 +11,6 @@ class CreditModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
   CreditModelData() { CreditModelData::init_data(); };
-  int validate_data() override {
-    int err = 0;
-    // if (MINX >= VERY_MIN_X && MINY >= VERY_MIN_Y && MAXX <= VERY_MAX_X &&
-    //     MAXY <= VERY_MAX_Y)
-    //   err = 0;
-    // else
-    //   err = 1;
-    return err;
-  };
 
  public:
   std::string str;

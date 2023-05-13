@@ -11,7 +11,7 @@ class GraphModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
   GraphModelData() { GraphModelData::init_data(); };
-  int validate_data() override {
+  int validate_data() {
     int err = 0;
     if (MINX >= VERY_MIN_X && MINY >= VERY_MIN_Y && MAXX <= VERY_MAX_X &&
         MAXY <= VERY_MAX_Y)

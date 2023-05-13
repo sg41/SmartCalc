@@ -16,7 +16,7 @@ class BaseCalcData {
     MAXI = 80;
     MAXJ = 25;
   };
-  virtual int validate_data() = 0;  //{ return 0; };
+  // virtual int validate_data() = 0;  //{ return 0; };
 
  public:
   static const int MAXSTR = 1024;
