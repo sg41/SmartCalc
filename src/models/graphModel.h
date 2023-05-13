@@ -58,10 +58,10 @@ class GraphModel : public AbstractModel<GraphModelData> {
     data->y_vect.clear();       // calculate Y vector for X range
     data->x_vect.clear();
     if (data->dx > 0) {
+      double visible_area = (data->MAXY - data->MINY);
       for (double x = data->MINX; x < data->MAXX; x += data->dx) {
         data->x_vect.push_back(x);
         double res = c.calc(x);
-        double visible_area = (data->MAXY - data->MINY);
         if (!data->y_vect.empty() &&
             (fabs(data->y_vect.back() - res) > visible_area &&
              (res * data->y_vect.back()) < 0)) {

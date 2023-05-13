@@ -13,6 +13,7 @@ SOURCES += \
     mainwindow.cpp \
     qcustomplot.cpp \
     qtcreditcalcview.cc \
+    qtdepositcalcview.cc \
     qtgraphcalcview.cc
 
 HEADERS += \
@@ -23,11 +24,13 @@ HEADERS += \
     myqtdoubleslider.h \
     qcustomplot.h \
     qtcreditcalcview.h \
+    qtdepositcalcview.h \
     qtgraphcalcview.h
 
 FORMS += \
     mainwindow.ui \
     qtcreditcalcview.ui \
+    qtdepositcalcview.ui \
     qtgraphcalcview.ui
 
 TRANSLATIONS += \
