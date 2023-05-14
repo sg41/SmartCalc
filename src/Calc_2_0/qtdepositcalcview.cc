@@ -54,6 +54,8 @@ void QtDepositCalcView::on_calculateButton_clicked() {
   m_data.rate = ui->interestRateSpinBox->value();
   m_data.tax_rate = ui->taxRateSpinBox->value();
   m_data.int_cap = ui->interestCapCheckBox->isChecked();
+  m_data.withdrawal = getAnyListSum(ui->withdrawalList);
+  m_data.replenishment = getAnyListSum(ui->replenishmentList);
   try {
     controller.user_action((BaseCalcData *)&m_data);
     emit showStatus("Success");
@@ -63,6 +65,16 @@ void QtDepositCalcView::on_calculateButton_clicked() {
   }
 };
 
+double QtDepositCalcView::getAnyListSum(QListWidget *l) {
+  QLocale rus(QLocale::Russian, QLocale::Russia);
+  rus.setNumberOptions(QLocale::DefaultNumberOptions);
+  double sum = 0;
+  for (auto item : l->findItems("*", Qt::MatchWildcard)) {
+    sum += rus.toDouble(item->text().left(item->text().size() - 2));
+  }
+  return sum;
+}
+
 void QtDepositCalcView::execCreateItemDialog(QListWidget *l,
                                              const QString &title,
                                              double maxBase) {
@@ -70,15 +82,10 @@ void QtDepositCalcView::execCreateItemDialog(QListWidget *l,
   rus.setNumberOptions(QLocale::DefaultNumberOptions);
   DepositChangeDialog dialog(this);
   dialog.setWindowTitle(title);
-  double sum = 0;
-  for (auto item : l->findItems("*", Qt::MatchWildcard)) {
-    sum += rus.toDouble(item->text().left(item->text().size() -
-                                          2));  // item->text().toDouble();
-  }
+  double sum = getAnyListSum(l);
   dialog.setMaxAmount(maxBase - sum);
   if (dialog.exec() == QDialog::Accepted && dialog.getAmount() > 0) {
-    l->addItem(rus.toCurrencyString(
-        dialog.getAmount()));  // QString::number(dialog.getAmount()));
+    l->addItem(rus.toCurrencyString(dialog.getAmount()));
   }
 }
 
@@ -92,8 +99,9 @@ void QtDepositCalcView::on_withdrawalList_customContextMenuRequested(
 void QtDepositCalcView::on_replenishmentList_customContextMenuRequested(
     const QPoint &pos) {
   Q_UNUSED(pos);
-  execCreateItemDialog(ui->replenishmentList, "Add new replenishment",
-                       100000000 - ui->depositAmountSpinBox->value());
+  execCreateItemDialog(
+      ui->replenishmentList, "Add new replenishment",
+      ui->depositAmountSpinBox->maximum() - ui->depositAmountSpinBox->value());
 }
 
 void QtDepositCalcView::on_QtDepositCalcView_anyList_itemDoubleClicked(

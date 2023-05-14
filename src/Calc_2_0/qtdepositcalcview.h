@@ -32,6 +32,8 @@ class QtDepositCalcView : public QWidget,
   void execCreateItemDialog(QListWidget *l, const QString &title,
                             double maxBase);
 
+  double getAnyListSum(QListWidget *l);
+
  private slots:
   void on_calculateButton_clicked();
 

@@ -21,8 +21,10 @@ class DepositModelData : public CreditModelData {
   bool int_cap;
   double interest;
   std::vector<double> interests;
-  std::vector<double> replenishment;
-  std::vector<double> withdrawal;
+  std::vector<double> replenishments;
+  std::vector<double> withdrawals;
+  double replenishment;
+  double withdrawal;
 
   void init_data() override {
     CreditModelData::init_data();
@@ -30,8 +32,10 @@ class DepositModelData : public CreditModelData {
     tax = 0;
     int_cap = false;
     interest = 0;
-    withdrawal.clear();
-    replenishment.clear();
+    withdrawals.clear();
+    replenishments.clear();
+    withdrawal = 0;
+    replenishment = 0;
   };
 };
 

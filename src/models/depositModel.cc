@@ -154,10 +154,11 @@ double DepositModel::complex_interest_calc() {
   int rest = term % period;
   double current_interest;
   data->interests.clear();
-  double replenishment = std::accumulate(data->replenishment.begin(),
-                                         data->replenishment.end(), 0);
-  double withdrawal =
-      std::accumulate(data->withdrawal.begin(), data->withdrawal.end(), 0);
+  double replenishment = data->replenishment;
+  // std::accumulate(data->replenishments.begin(),
+  //                                        data->replenishments.end(), 0);
+  double withdrawal = data->withdrawal;
+  // std::accumulate(data->withdrawals.begin(), data->withdrawals.end(), 0);
   data->interest = 0;
 
   for (int i = 0, n = 0; i < term - rest; i += period, n++) {
@@ -166,7 +167,6 @@ double DepositModel::complex_interest_calc() {
 
     current_interest = calc_simple_daily_interest(
         data->int_cap ? res : data->amount, i, period);
-    // if (data->round) current_interest = round(current_interest * 100) / 100.;
     data->interest += current_interest;
     res += current_interest;
     data->interests.push_back(current_interest);
