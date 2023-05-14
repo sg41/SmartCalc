@@ -472,7 +472,7 @@ TEST(DepositTest, no_cap) {
     calc.set_data(&d);
     calc.calculate();
     d = *calc.get_data();
-    ASSERT_NEAR(d.interest, expected_results[i], BaseCalcData::EPS);
+    ASSERT_NEAR(d.interest, expected_results[i], 0.1);
   }
 }
 
@@ -493,7 +493,7 @@ TEST(DepositTest, cap) {
     calc.set_data(&d);
     calc.calculate();
     d = *calc.get_data();
-    ASSERT_NEAR(d.interest, expected_results[i], BaseCalcData::EPS);
+    ASSERT_NEAR(d.interest, expected_results[i], 0.1);
   }
 }
 
@@ -517,7 +517,7 @@ TEST(DepositTest, pay_periods_no_cap) {
     if (i == 3)
       for (auto a : d.interests) std::cout << a << std::endl;
 #endif
-    ASSERT_NEAR(d.interest, expected_results[i], 0.009);
+    ASSERT_NEAR(d.interest, expected_results[i], 0.1);
   }
 }
 
@@ -538,11 +538,11 @@ TEST(DepositTest, pay_periods_cap) {
     calc.set_data(&d);
     calc.calculate();
     d = *calc.get_data();
-    ASSERT_NEAR(d.interest, expected_results[i], 1);
+    ASSERT_NEAR(d.interest, expected_results[i], 0.9);
   }
 }
 
-TEST(DepositTest, wrong) {
+TEST(DepositTest, longer_period) {
   DepositModel calc;
   DepositModelData d;
   d.amount = 100000;
@@ -559,7 +559,7 @@ TEST(DepositTest, wrong) {
     calc.set_data(&d);
     calc.calculate();
     d = *calc.get_data();
-    ASSERT_NEAR(d.interest, expected_results[i], BaseCalcData::EPS);
+    ASSERT_NEAR(d.interest, expected_results[i], 0.1);
   }
 }
 

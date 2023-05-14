@@ -16,50 +16,10 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="6" column="0">
-      <widget class="MyQtDoubleSlider" name="interestRateSlider">
-       <property name="maximum">
-        <number>200</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QDoubleSpinBox" name="taxRateSpinBox">
-       <property name="suffix">
-        <string> %</string>
-       </property>
-       <property name="minimum">
-        <double>0.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>100.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label">
+     <item row="10" column="1">
+      <widget class="QLabel" name="label_9">
        <property name="text">
-        <string>Deposit amount</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QCheckBox" name="round">
-       <property name="text">
-        <string>Round to rubles</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0" colspan="2">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>payment period</string>
+        <string>Replenishments list</string>
        </property>
       </widget>
      </item>
@@ -67,80 +27,6 @@
       <widget class="MyQtDoubleSlider" name="taxRateSlider">
        <property name="maximum">
         <number>100</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Withdrawal list</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Tax Rate</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QCheckBox" name="interestCapCheckBox">
-       <property name="text">
-        <string>Interest capitalisation</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0" colspan="2">
-      <widget class="QComboBox" name="depositTypeComboBox">
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <item>
-        <property name="text">
-         <string>Daily</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Weekly</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Monthly</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Quarterly</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Semiannually</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Once a year</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="MyQtDoubleSlider" name="depositAmountSlider">
-       <property name="minimum">
-        <number>1000</number>
-       </property>
-       <property name="maximum">
-        <number>100000000</number>
-       </property>
-       <property name="singleStep">
-        <number>10000</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -176,16 +62,23 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QSpinBox" name="depositTermSpinBox">
+     <item row="3" column="1">
+      <widget class="QSlider" name="depositTermSlider">
        <property name="minimum">
         <number>1</number>
        </property>
        <property name="maximum">
-        <number>360</number>
+        <number>60</number>
        </property>
-       <property name="value">
-        <number>12</number>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QListWidget" name="replenishmentList">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
        </property>
       </widget>
      </item>
@@ -196,13 +89,74 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QSlider" name="depositTermSlider">
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="depositTermSpinBox">
        <property name="minimum">
         <number>1</number>
        </property>
        <property name="maximum">
-        <number>360</number>
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>12</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="2">
+      <widget class="QComboBox" name="paymentPeriodComboBox">
+       <property name="currentIndex">
+        <number>2</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>Daily</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Weekly</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Monthly</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quarterly</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Semiannually</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Once a year</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Tax Rate</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="2">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>payment period</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="MyQtDoubleSlider" name="interestRateSlider">
+       <property name="maximum">
+        <number>200</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -225,18 +179,65 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-      <widget class="QListView" name="withdrawalList"/>
-     </item>
-     <item row="10" column="1">
-      <widget class="QLabel" name="label_9">
+     <item row="9" column="0">
+      <widget class="QCheckBox" name="interestCapCheckBox">
        <property name="text">
-        <string>Replenishments list</string>
+        <string>Interest capitalisation</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
-      <widget class="QListView" name="replenishmentList"/>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Withdrawal list</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="MyQtDoubleSlider" name="depositAmountSlider">
+       <property name="minimum">
+        <number>1000</number>
+       </property>
+       <property name="maximum">
+        <number>100000000</number>
+       </property>
+       <property name="singleStep">
+        <number>10000</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Deposit amount</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QDoubleSpinBox" name="taxRateSpinBox">
+       <property name="suffix">
+        <string> %</string>
+       </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QListWidget" name="withdrawalList">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -327,7 +328,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLabel" name="interetsAccruedLabel">
+         <widget class="QLabel" name="interestAccruedLabel">
           <property name="font">
            <font>
             <pointsize>15</pointsize>
@@ -421,5 +422,43 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>withdrawalList</sender>
+   <signal>itemDoubleClicked(QListWidgetItem*)</signal>
+   <receiver>QtDepositCalcView</receiver>
+   <slot>on_QtDepositCalcView_anyList_itemDoubleClicked(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>124</x>
+     <y>302</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replenishmentList</sender>
+   <signal>itemDoubleClicked(QListWidgetItem*)</signal>
+   <receiver>QtDepositCalcView</receiver>
+   <slot>on_QtDepositCalcView_anyList_itemDoubleClicked(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>361</x>
+     <y>302</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <signal>showStatus(std::string)</signal>
+  <signal>anyList_itemDoubleClicked(QListWidgetItem*)</signal>
+  <slot>on_QtDepositCalcView_anyList_itemDoubleClicked(QListWidgetItem*)</slot>
+ </slots>
 </ui>

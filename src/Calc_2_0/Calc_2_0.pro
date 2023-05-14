@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     ../models/depositModel.cc \
+    depositchangedialog.cc \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
     ../models/creditModel.h \
     ../models/depositModel.h \
     ../models/graphModel.h \
+    depositchangedialog.h \
     mainwindow.h \
     myqtdoubleslider.h \
     qcustomplot.h \
@@ -30,6 +32,7 @@ HEADERS += \
     qtgraphcalcview.h
 
 FORMS += \
+    depositchangedialog.ui \
     mainwindow.ui \
     qtcreditcalcview.ui \
     qtdepositcalcview.ui \

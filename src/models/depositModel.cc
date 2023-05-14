@@ -166,6 +166,7 @@ double DepositModel::complex_interest_calc() {
 
     current_interest = calc_simple_daily_interest(
         data->int_cap ? res : data->amount, i, period);
+    // if (data->round) current_interest = round(current_interest * 100) / 100.;
     data->interest += current_interest;
     res += current_interest;
     data->interests.push_back(current_interest);
