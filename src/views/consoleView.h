@@ -12,8 +12,8 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
   ExampleController *controller = nullptr;
   GraphModelData data;
   void set_scale() {
-    data.dx = (double)(data.MAXX - data.MINX) / data.MAXI;
-    data.dy = (double)data.MAXJ / (data.MAXY - data.MINY);
+    data.dx = (double)(data.max_x - data.min_x) / data.max_console_width;
+    data.dy = (double)data.max_console_height / (data.max_y - data.min_y);
   };
   void draw_txt_graph();
   void displayMenu();
@@ -24,7 +24,7 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
  public:
   explicit ConsoleView(ExampleController *c) : controller(c) { set_scale(); };
   void startEventLoop();
-  void observer_update(const GraphModelData *model_data) override {
+  void observerUpdate(const GraphModelData *model_data) override {
     data = *(model_data);
     std::cout << "Current result for X=" << data.x << " is: " << data.y
               << std::endl;

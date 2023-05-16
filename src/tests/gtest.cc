@@ -5,7 +5,7 @@
 #include "../rpr/expr.h"
 #include "../rpr/llist.h"
 #include "../rpr/stack.h"
-#define EPS 1e-6
+#define kEpsilon 1e-6
 #define MIN_X -1000000
 #define MAX_X 1000000
 #include <float.h>
@@ -33,7 +33,7 @@ TEST(CalcTest, ll_list_1) {
   expected_result = 1;
   actual_result = l->state;
   ASSERT_EQ(expected_result, actual_result);
-  ASSERT_TRUE(fabs(2.2 - l->datum) < EPS);
+  ASSERT_TRUE(fabs(2.2 - l->datum) < kEpsilon);
   ll_destroy_list(l);
 }
 
@@ -44,7 +44,7 @@ TEST(CalcTest, ll_list_2) {
   expected_result = 55;
   actual_result = l->state;
   ASSERT_EQ(expected_result, actual_result);
-  ASSERT_TRUE(fabs(-99.99 - l->datum) < EPS);
+  ASSERT_TRUE(fabs(-99.99 - l->datum) < kEpsilon);
   ll_destroy_list(l);
 }
 
@@ -56,8 +56,8 @@ TEST(CalcTest, ll_list_3) {
   actual_result = l->state;
   ASSERT_EQ(expected_result, actual_result);
   ASSERT_EQ(l->next->state, 55);
-  ASSERT_TRUE(fabs(2.2 - l->datum) < EPS);
-  ASSERT_TRUE(fabs(-99.99 - l->next->datum) < EPS);
+  ASSERT_TRUE(fabs(2.2 - l->datum) < kEpsilon);
+  ASSERT_TRUE(fabs(-99.99 - l->next->datum) < kEpsilon);
   ll_destroy_list(l);
 }
 
@@ -67,7 +67,7 @@ TEST(CalcTest, ll_list_4) {
   expected_result = 1;
   actual_result = l->state;
   ASSERT_EQ(expected_result, actual_result);
-  ASSERT_TRUE(fabs(2.2 - l->datum) < EPS);
+  ASSERT_TRUE(fabs(2.2 - l->datum) < kEpsilon);
   ll_node_destroy(&l);
 }
 
@@ -160,7 +160,7 @@ TEST(CalcTest, stack_5) {
   actual_result = stk_peek_status(s);
   ASSERT_EQ(expected_result, actual_result);
   ASSERT_NE(s->top, nullptr);
-  ASSERT_TRUE(fabs(-5.45 - stk_peek(s)) < EPS);
+  ASSERT_TRUE(fabs(-5.45 - stk_peek(s)) < kEpsilon);
   stk_destroy(&s);
 
   /*
@@ -195,7 +195,7 @@ TEST(CalcTest, expr_2) {
   ASSERT_NE(e->head, nullptr);
   ASSERT_EQ(expected_result, actual_result);
   ASSERT_EQ(e->head->state, 77);
-  ASSERT_TRUE(fabs(DBL_MAX - e->head->datum) < EPS);
+  ASSERT_TRUE(fabs(DBL_MAX - e->head->datum) < kEpsilon);
   expr_destroy(&e);
 }
 
@@ -210,7 +210,7 @@ TEST(CalcTest, expr_3) {
   ASSERT_NE(e->head, nullptr);
   ASSERT_EQ(expected_result, actual_result);
   ASSERT_EQ(e->head->state, 0);
-  ASSERT_TRUE(fabs(DBL_MAX - e->head->datum) < EPS);
+  ASSERT_TRUE(fabs(DBL_MAX - e->head->datum) < kEpsilon);
   expr_destroy(&e);
 }
 
@@ -472,10 +472,10 @@ TEST(CalcTest, core_functions) {
       actual_result = rpn_reduce(r, x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= EPS ||
+        if (fabs(expected_result - actual_result) >= kEpsilon ||
             !isfinite(actual_result))
           D("e:%f a:%f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) < kEpsilon);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -550,10 +550,10 @@ TEST(CalcTest, core_random_expressions) {
       actual_result = rpn_reduce(r, x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= EPS ||
+        if (fabs(expected_result - actual_result) >= kEpsilon ||
             !isfinite(actual_result))
           D("e:%.7f a:%.7f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) < kEpsilon);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -630,10 +630,10 @@ TEST(CalcTest, core_calc) {
       actual_result = calc(str[i], x, &good);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= EPS ||
+        if (fabs(expected_result - actual_result) >= kEpsilon ||
             !isfinite(actual_result))
           D("e:%.7f a:%.7f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) < kEpsilon);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -649,9 +649,9 @@ TEST(CalcTest, core_credit_calc) {
   double actual_result = calc(
       (char *)"100000*(9.5/100/12*(9.5/100/12+1)^12/((1+9.5/100/12)^12-1))", 0,
       &good);
-  if (fabs(expected_result - actual_result) > EPS)
+  if (fabs(expected_result - actual_result) > kEpsilon)
     D("e:%.7f a:%.7f\n", expected_result, actual_result);
-  ASSERT_TRUE(fabs(expected_result - actual_result) < EPS);
+  ASSERT_TRUE(fabs(expected_result - actual_result) < kEpsilon);
 }
 
 TEST(CalcTest, core_calc_nan) {

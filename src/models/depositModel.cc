@@ -14,7 +14,7 @@ int check_long_year(int days) {
   time_t current_time, future_time;
   /* Obtain current time. */
   current_time = time(NULL);
-  future_time = current_time + days * SECOND_PER_DAY;
+  future_time = current_time + days * kSecondsPerDay;
   struct tm current_date = *localtime(&current_time);
   struct tm future_date = *localtime(&future_time);
   for (int i = current_date.tm_year; i <= future_date.tm_year; i++) {
@@ -37,8 +37,8 @@ int accurate_days_per_period(int startday, int period) {
   start_time = time(NULL);
   struct tm start_date = *localtime(&start_time);
   int mday = start_date.tm_mday;
-  if (mday > 28) start_time -= 3 * SECOND_PER_DAY;
-  start_time += startday * SECOND_PER_DAY;
+  if (mday > 28) start_time -= 3 * kSecondsPerDay;
+  start_time += startday * kSecondsPerDay;
   start_date = *localtime(&start_time);
   struct tm future_date = start_date;
   future_date.tm_year =
@@ -46,7 +46,7 @@ int accurate_days_per_period(int startday, int period) {
   future_date.tm_mon = (start_date.tm_mon + period) % 12;
 
   future_time = mktime(&future_date);
-  result = round(difftime(future_time, start_time) / SECOND_PER_DAY);
+  result = round(difftime(future_time, start_time) / kSecondsPerDay);
   return result;
 }
 
@@ -84,7 +84,7 @@ int get_days_per_year(int days) {
   time_t current_time, future_time;
   /* Obtain current time. */
   current_time = time(NULL);
-  future_time = current_time + days * SECOND_PER_DAY;
+  future_time = current_time + days * kSecondsPerDay;
   struct tm future_date = *localtime(&future_time);
   if (future_date.tm_year % 4 == 0)
     result = 366;
@@ -98,8 +98,8 @@ int has_new_year(int start_day, int days) {
   time_t start_time, future_time;
   /* Obtain current time. */
   start_time = time(NULL);
-  start_time += start_day * SECOND_PER_DAY;
-  future_time = start_time + days * SECOND_PER_DAY;
+  start_time += start_day * kSecondsPerDay;
+  future_time = start_time + days * kSecondsPerDay;
   struct tm start_date = *localtime(&start_time);
   struct tm future_date = *localtime(&future_time);
   if (future_date.tm_year != start_date.tm_year) result = 1;
@@ -111,79 +111,79 @@ int get_days_until_new_year(int start_day) {
   time_t start_time, future_time;
   /* Obtain current time. */
   start_time = time(NULL);
-  start_time += start_day * SECOND_PER_DAY;
+  start_time += start_day * kSecondsPerDay;
   struct tm start_date = *localtime(&start_time);
   struct tm future_date = start_date;
   future_date.tm_mon = 11;
   future_date.tm_mday = 31;
 
   future_time = mktime(&future_date);
-  result = round(difftime(future_time, start_time) / SECOND_PER_DAY);
+  result = round(difftime(future_time, start_time) / kSecondsPerDay);
   return result;
 }
 
-long double DepositModel::calc_simple_daily_interest(long double sum,
-                                                     int startday, int days) {
+long double DepositModel::calcSimpleDailyInterest(long double sum, int startday,
+                                                  int days) {
   long double res;
   int days_to_new_year = get_days_until_new_year(startday);
   if (days_to_new_year > days) {
-    res = round(sum * data->rate * days / get_days_per_year(startday + days)) /
+    res = round(sum * data_->rate * days / get_days_per_year(startday + days)) /
           100.;
   } else {
     //! recursive calculation gives bad accuracy
-    // res = round(sum * data->rate * days_to_new_year /
+    // res = round(sum * data_->rate * days_to_new_year /
     //             get_days_per_year(startday)) /
     //           100. +
-    //       calc_simple_daily_interest(sum, startday + days_to_new_year + 1,
+    //       calcSimpleDailyInterest(sum, startday + days_to_new_year + 1,
     //                                  days - days_to_new_year);
 
-    res = bank_round(sum * data->rate * days_to_new_year /
+    res = bank_round(sum * data_->rate * days_to_new_year /
                          get_days_per_year(startday) +
-                     sum * data->rate * (days - days_to_new_year) /
+                     sum * data_->rate * (days - days_to_new_year) /
                          get_days_per_year(startday + days)) /
           100.;
   }
   return res;
 }
 
-double DepositModel::complex_interest_calc() {
-  double res = data->amount;
-  int term = get_days_per_period(data->duration);
-  if (data->pay_period > term) data->pay_period = term;
-  int period = data->pay_period;
+double DepositModel::calcComplexInterest() {
+  double res = data_->amount;
+  int term = get_days_per_period(data_->duration);
+  if (data_->pay_period > term) data_->pay_period = term;
+  int period = data_->pay_period;
   int rest = term % period;
   double current_interest;
-  data->interests.clear();
-  double replenishment = data->replenishment;
-  // std::accumulate(data->replenishments.begin(),
-  //                                        data->replenishments.end(), 0);
-  double withdrawal = data->withdrawal;
-  // std::accumulate(data->withdrawals.begin(), data->withdrawals.end(), 0);
-  data->interest = 0;
+  data_->interests.clear();
+  double replenishment = data_->replenishment;
+  // std::accumulate(data_->replenishments.begin(),
+  //                                        data_->replenishments.end(), 0);
+  double withdrawal = data_->withdrawal;
+  // std::accumulate(data_->withdrawals.begin(), data_->withdrawals.end(), 0);
+  data_->interest = 0;
 
   for (int i = 0, n = 0; i < term - rest; i += period, n++) {
-    if (data->pay_period >= 30)
-      period = accurate_days_per_period(i, data->pay_period / 30);
+    if (data_->pay_period >= 30)
+      period = accurate_days_per_period(i, data_->pay_period / 30);
 
-    current_interest = calc_simple_daily_interest(
-        data->int_cap ? res : data->amount, i, period);
-    data->interest += current_interest;
+    current_interest = calcSimpleDailyInterest(
+        data_->int_cap ? res : data_->amount, i, period);
+    data_->interest += current_interest;
     res += current_interest;
-    data->interests.push_back(current_interest);
-    if (i + period < term - rest || (data->pay_period == 7 && rest != 0)) {
+    data_->interests.push_back(current_interest);
+    if (i + period < term - rest || (data_->pay_period == 7 && rest != 0)) {
       res += replenishment;
       if (res >= withdrawal) res -= withdrawal;
-      data->amount += replenishment;
-      if (data->amount >= withdrawal) data->amount -= withdrawal;
+      data_->amount += replenishment;
+      if (data_->amount >= withdrawal) data_->amount -= withdrawal;
     }
   }
 
-  if (data->pay_period == 7) {
-    current_interest = calc_simple_daily_interest(
-        data->int_cap ? res : data->amount, term - rest - 1, rest);
-    data->interest += current_interest;
+  if (data_->pay_period == 7) {
+    current_interest = calcSimpleDailyInterest(
+        data_->int_cap ? res : data_->amount, term - rest - 1, rest);
+    data_->interest += current_interest;
     res += current_interest;
-    data->interests.push_back(current_interest);
+    data_->interests.push_back(current_interest);
   }
 
   return res;

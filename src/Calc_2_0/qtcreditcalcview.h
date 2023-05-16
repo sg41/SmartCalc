@@ -19,7 +19,7 @@ class QtCreditCalcView : public QWidget,
   explicit QtCreditCalcView(QWidget *parent = nullptr);
   ~QtCreditCalcView();
   // Observer staff
-  void observer_update(const CreditModelData *model_data) override;
+  void observerUpdate(const CreditModelData *model_data) override;
   CreditModelData m_data;
 
  private slots:

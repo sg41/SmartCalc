@@ -7,7 +7,7 @@
 #include "baseModel.h"
 
 namespace s21 {
-class CreditModelData : public BaseCalcData {
+struct CreditModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
   CreditModelData() { CreditModelData::initData(); };
@@ -27,6 +27,8 @@ class CreditModelData : public BaseCalcData {
   bool round;
   int int_cap;
   std::vector<double> monthly_payments;
+  static const int kAnnuity = 0;
+  static const int kDifferentiated = 1;
 
   void initData() override {
     BaseCalcData::initData();
@@ -51,47 +53,49 @@ class CreditModel : public AbstractModel<CreditModelData> {
   using AbstractModel<CreditModelData>::AbstractModel;
 
   void calculate() override {
-    if (data->type == data->ANNUITET) {
+    if (data_->type == data_->kAnnuity) {
       std::string monthly_payment_expr =
-          std::to_string(data->amount) + "*(x/100/12*(x/100/12+1)^" +
-          std::to_string(data->duration) + "/((1+x/100/12)^" +
-          std::to_string(data->duration) + "-1))";
-      c.makeRpnExpr(monthly_payment_expr);
-      data->monthly_payment = round(c.calc(data->rate) * 100.) / 100.;
+          std::to_string(data_->amount) + "*(x/100/12*(x/100/12+1)^" +
+          std::to_string(data_->duration) + "/((1+x/100/12)^" +
+          std::to_string(data_->duration) + "-1))";
+      calculator_.makeRpnExpr(monthly_payment_expr);
+      data_->monthly_payment =
+          round(calculator_.calc(data_->rate) * 100.) / 100.;
       //! maybe to change to throw
-      if (data->round && data->monthly_payment < 1) {
-        data->error = 2;
-        data->error_message = "Incorrect input data - can't calculate";
+      if (data_->round && data_->monthly_payment < 1) {
+        data_->error = 2;
+        data_->error_message = "Incorrect input data - can't calculate";
       }
-      if (data->round) data->monthly_payment = round(data->monthly_payment);
-      data->total_payment = data->monthly_payment * data->duration;
+      if (data_->round) data_->monthly_payment = round(data_->monthly_payment);
+      data_->total_payment = data_->monthly_payment * data_->duration;
     } else {  // DIFFERENTIATED
       std::string monthly_payment_expr =
-          std::to_string(data->amount) + "/" + std::to_string(data->duration) +
-          "+(" + std::to_string(data->amount) + "-(" +
-          std::to_string(data->amount) + "/" + std::to_string(data->duration) +
-          ")*x)*(" + std::to_string(data->rate) + "/100/12)";
+          std::to_string(data_->amount) + "/" +
+          std::to_string(data_->duration) + "+(" +
+          std::to_string(data_->amount) + "-(" + std::to_string(data_->amount) +
+          "/" + std::to_string(data_->duration) + ")*x)*(" +
+          std::to_string(data_->rate) + "/100/12)";
 
-      c.makeRpnExpr(monthly_payment_expr);
-      data->monthly_payments.clear();
-      data->total_payment = 0;
-      for (int m = 0; m < data->duration; m++) {
-        data->monthly_payments.push_back(round(c.calc((double)m) * 100.) /
-                                         100.);
-        if (data->round) {
-          data->monthly_payments[m] = round(data->monthly_payments[m]);
+      calculator_.makeRpnExpr(monthly_payment_expr);
+      data_->monthly_payments.clear();
+      data_->total_payment = 0;
+      for (int m = 0; m < data_->duration; m++) {
+        data_->monthly_payments.push_back(
+            round(calculator_.calc((double)m) * 100.) / 100.);
+        if (data_->round) {
+          data_->monthly_payments[m] = round(data_->monthly_payments[m]);
         }
-        data->total_payment += data->monthly_payments[m];
+        data_->total_payment += data_->monthly_payments[m];
       }
-      data->monthly_payment = data->monthly_payments[0];
-      data->monthly_payment_min = data->monthly_payments[data->duration - 1];
+      data_->monthly_payment = data_->monthly_payments[0];
+      data_->monthly_payment_min = data_->monthly_payments[data_->duration - 1];
     }
-    data->overpayment = data->total_payment - data->amount;
-    notify_observers();
+    data_->overpayment = data_->total_payment - data_->amount;
+    notifyObservers();
   };
 
  protected:
-  CalcCore c;
+  CalcCore calculator_;
 };
 }  // namespace s21
 #endif  //_SRC_MODELS_CREDITMODEL_H_

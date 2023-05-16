@@ -8,14 +8,13 @@
 #include "creditModel.h"
 
 namespace s21 {
-const static int SECOND_PER_DAY = 86400;
+const static int kSecondsPerDay = 86400;
 
-class DepositModelData : public CreditModelData {
+struct DepositModelData : public CreditModelData {
  public:
   using CreditModelData::CreditModelData;
   DepositModelData() { DepositModelData::initData(); };
 
- public:
   double tax_rate;
   double tax;
   bool int_cap;
@@ -34,6 +33,7 @@ class DepositModelData : public CreditModelData {
     interest = 0;
     withdrawals.clear();
     replenishments.clear();
+    interests.clear();
     withdrawal = 0;
     replenishment = 0;
   };
@@ -44,16 +44,15 @@ class DepositModel : public AbstractModel<DepositModelData> {
   using AbstractModel<DepositModelData>::AbstractModel;
 
   void calculate() override {
-    data->total_payment = complex_interest_calc();
-    data->tax = (data->interest) * (data->tax_rate / 100.);
-    data->total_payment -= data->tax;
-    notify_observers();
+    data_->total_payment = calcComplexInterest();
+    data_->tax = (data_->interest) * (data_->tax_rate / 100.);
+    data_->total_payment -= data_->tax;
+    notifyObservers();
   };
 
  protected:
-  long double calc_simple_daily_interest(long double sum, int startday,
-                                         int days);
-  double complex_interest_calc();
+  long double calcSimpleDailyInterest(long double sum, int startday, int days);
+  double calcComplexInterest();
 };
 }  // namespace s21
 #endif  //_SRC_MODELS_DEPOSITMODEL_H_

@@ -3,7 +3,7 @@
 #include "../rpr/expr.h"
 #include "../rpr/llist.h"
 #include "../rpr/stack.h"
-#define EPS 1e-6
+#define kEpsilon 1e-6
 #define MIN_X -1000000
 #define MAX_X 1000000
 #include <float.h>
@@ -31,7 +31,7 @@ uint expected_result, actual_result;
 expected_result = 1;
 actual_result = l->state;
 ck_assert_uint_eq(expected_result, actual_result);
-ck_assert(fabs(2.2 - l->datum) < EPS);
+ck_assert(fabs(2.2 - l->datum) < kEpsilon);
 ll_destroy_list(l);
 
 #test ll_list_2
@@ -41,7 +41,7 @@ l = ll_node_prepend(l, 55, -99.99);
 expected_result = 55;
 actual_result = l->state;
 ck_assert_uint_eq(expected_result, actual_result);
-ck_assert(fabs(-99.99 - l->datum) < EPS);
+ck_assert(fabs(-99.99 - l->datum) < kEpsilon);
 ll_destroy_list(l);
 
 #test ll_list_3
@@ -52,8 +52,8 @@ expected_result = 1;
 actual_result = l->state;
 ck_assert_uint_eq(expected_result, actual_result);
 ck_assert_uint_eq(l->next->state, 55);
-ck_assert(fabs(2.2 - l->datum) < EPS);
-ck_assert(fabs(-99.99 - l->next->datum) < EPS);
+ck_assert(fabs(2.2 - l->datum) < kEpsilon);
+ck_assert(fabs(-99.99 - l->next->datum) < kEpsilon);
 ll_destroy_list(l);
 
 #test ll_list_4
@@ -62,7 +62,7 @@ uint expected_result, actual_result;
 expected_result = 1;
 actual_result = l->state;
 ck_assert_uint_eq(expected_result, actual_result);
-ck_assert(fabs(2.2 - l->datum) < EPS);
+ck_assert(fabs(2.2 - l->datum) < kEpsilon);
 ll_node_destroy(&l);
 
 #test ll_list_5
@@ -148,7 +148,7 @@ expected_result = 7;
 actual_result = stk_peek_status(s);
 ck_assert_uint_eq(expected_result, actual_result);
 ck_assert_ptr_ne(s->top, NULL);
-ck_assert(fabs(-5.45 - stk_peek(s)) < EPS);
+ck_assert(fabs(-5.45 - stk_peek(s)) < kEpsilon);
 stk_destroy(&s);
 
 /*
@@ -180,7 +180,7 @@ actual_result = e->length;
 ck_assert_ptr_ne(e->head, NULL);
 ck_assert_uint_eq(expected_result, actual_result);
 ck_assert_uint_eq(e->head->state, 77);
-ck_assert(fabs(DBL_MAX - e->head->datum) < EPS);
+ck_assert(fabs(DBL_MAX - e->head->datum) < kEpsilon);
 expr_destroy(&e);
 
 #test expr_3
@@ -194,7 +194,7 @@ actual_result = e->length;
 ck_assert_ptr_ne(e->head, NULL);
 ck_assert_uint_eq(expected_result, actual_result);
 ck_assert_uint_eq(e->head->state, 0);
-ck_assert(fabs(DBL_MAX - e->head->datum) < EPS);
+ck_assert(fabs(DBL_MAX - e->head->datum) < kEpsilon);
 expr_destroy(&e);
 
 #test expr_4
@@ -445,10 +445,10 @@ for (int i = 0; i < 10; i++) {
     actual_result = rpn_reduce(r, x);
     expected_result = functions[i](x);
     if (isfinite(expected_result)) {
-      if (fabs(expected_result - actual_result) >= EPS ||
+      if (fabs(expected_result - actual_result) >= kEpsilon ||
           !isfinite(actual_result))
         D("e:%f a:%f\n", expected_result, actual_result);
-      ck_assert(fabs(expected_result - actual_result) < EPS);
+      ck_assert(fabs(expected_result - actual_result) < kEpsilon);
     } else {
       ck_assert(!isfinite(actual_result));
     }
@@ -522,10 +522,10 @@ for (int i = 0; i < __N__; i++) {
     actual_result = rpn_reduce(r, x);
     expected_result = functions[i](x);
     if (isfinite(expected_result)) {
-      if (fabs(expected_result - actual_result) >= EPS ||
+      if (fabs(expected_result - actual_result) >= kEpsilon ||
           !isfinite(actual_result))
         D("e:%.7f a:%.7f\n", expected_result, actual_result);
-      ck_assert(fabs(expected_result - actual_result) < EPS);
+      ck_assert(fabs(expected_result - actual_result) < kEpsilon);
     } else {
       ck_assert(!isfinite(actual_result));
     }
@@ -600,10 +600,10 @@ for (int i = 0; i < 12; i++) {
     actual_result = calc(str[i], x, &good);
     expected_result = functions[i](x);
     if (isfinite(expected_result)) {
-      if (fabs(expected_result - actual_result) >= EPS ||
+      if (fabs(expected_result - actual_result) >= kEpsilon ||
           !isfinite(actual_result))
         D("e:%.7f a:%.7f\n", expected_result, actual_result);
-      ck_assert(fabs(expected_result - actual_result) < EPS);
+      ck_assert(fabs(expected_result - actual_result) < kEpsilon);
     } else {
       ck_assert(!isfinite(actual_result));
     }
@@ -617,9 +617,9 @@ double expected_result =
               (pow(1 + 9.5 / 100 / 12, 12) - 1));
 double actual_result = calc(
     "100000*(9.5/100/12*(9.5/100/12+1)^12/((1+9.5/100/12)^12-1))", 0, &good);
-if (fabs(expected_result - actual_result) > EPS)
+if (fabs(expected_result - actual_result) > kEpsilon)
   D("e:%.7f a:%.7f\n", expected_result, actual_result);
-ck_assert(fabs(expected_result - actual_result) < EPS);
+ck_assert(fabs(expected_result - actual_result) < kEpsilon);
 
 #test core_calc_nan
 int good;

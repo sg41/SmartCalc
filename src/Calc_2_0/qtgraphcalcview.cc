@@ -11,7 +11,7 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
   showSizeDialog(false);
 
   // MVC staff
-  model.register_observer(this);
+  model.registerObserver(this);
 
   // Setup keyboard mapping
   QList<QPushButton *> buttons = ui->Keyboard->findChildren<QPushButton *>();
@@ -30,8 +30,8 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
   ui->X_Value->setValidator(xValidator);
 
   // Setup graph
-  ui->graph_area->xAxis->setRange(this->m_data.MINX, this->m_data.MAXX);
-  ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
+  ui->graph_area->xAxis->setRange(this->m_data.min_x, this->m_data.max_x);
+  ui->graph_area->yAxis->setRange(this->m_data.min_y, this->m_data.max_y);
   ui->graph_area->addGraph();
 }
 
@@ -40,21 +40,21 @@ QtGraphCalcView::~QtGraphCalcView() { delete ui; }
 void QtGraphCalcView::on_graph_area_customContextMenuRequested(
     const QPoint &pos) {
   Q_UNUSED(pos);
-  ui->spinBox_MAXX->setValue(this->m_data.MAXX);
-  ui->spinBox_MINX->setValue(this->m_data.MINX);
-  ui->spinBox_MAXY->setValue(this->m_data.MAXY);
-  ui->spinBox_MINY->setValue(this->m_data.MINY);
+  ui->spinBox_maxX_->setValue(this->m_data.max_x);
+  ui->spinBox_minX_->setValue(this->m_data.min_x);
+  ui->spinBox_maxY_->setValue(this->m_data.max_y);
+  ui->spinBox_minY_->setValue(this->m_data.min_y);
   showSizeDialog(true);
 }
 
 void QtGraphCalcView::on_buttonBox_accepted() {
-  this->m_data.MAXX = ui->spinBox_MAXX->value();
-  this->m_data.MINX = ui->spinBox_MINX->value();
-  this->m_data.MAXY = ui->spinBox_MAXY->value();
-  this->m_data.MINY = ui->spinBox_MINY->value();
+  this->m_data.max_x = ui->spinBox_maxX_->value();
+  this->m_data.min_x = ui->spinBox_minX_->value();
+  this->m_data.max_y = ui->spinBox_maxY_->value();
+  this->m_data.min_y = ui->spinBox_minY_->value();
 
-  ui->graph_area->xAxis->setRange(this->m_data.MINX, this->m_data.MAXX);
-  ui->graph_area->yAxis->setRange(this->m_data.MINY, this->m_data.MAXY);
+  ui->graph_area->xAxis->setRange(this->m_data.min_x, this->m_data.max_x);
+  ui->graph_area->yAxis->setRange(this->m_data.min_y, this->m_data.max_y);
   showSizeDialog(false);
   if (ui->graph_area->graph(0)->data()->size()) {
     try {
@@ -92,7 +92,7 @@ void QtGraphCalcView::showSizeDialog(bool on) {
   }
 }
 
-void QtGraphCalcView::observer_update(const GraphModelData *model_data) {
+void QtGraphCalcView::observerUpdate(const GraphModelData *model_data) {
   m_data = *(model_data);
   setupGraphData();
   ui->graph_area->replot();
@@ -141,10 +141,10 @@ void QtGraphCalcView::setupGeometry() {
   m_data.clip_x2 = ui->graph_area->geometry().right();
   m_data.clip_y1 = ui->graph_area->geometry().bottom();
   m_data.clip_y2 = ui->graph_area->geometry().top();
-  m_data.dx = (double)(m_data.MAXX - m_data.MINX) /
+  m_data.dx = (double)(m_data.max_x - m_data.min_x) /
               (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
   m_data.dy = 1. / ((double)(-m_data.clip_y2 + m_data.clip_y1) /
-                    (m_data.MAXY - m_data.MINY));
+                    (m_data.max_y - m_data.min_y));
   ui->graph_area->graph(0)->setName(QString(m_data.str.substr(0, 17).c_str()) +
                                     ((m_data.str.size() > 17) ? "..." : "") +
                                     "\nScale x=" + QString::number(m_data.dx) +

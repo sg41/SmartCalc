@@ -11,7 +11,7 @@
 using namespace s21;
 class TestObserver : public ModelObserverInterface<GraphModelData> {
  public:
-  void observer_update(const GraphModelData *d) override {
+  void observerUpdate(const GraphModelData *d) override {
     std::cout << "Updated" << std::endl;
     std::cout << d->clip_x1 << std::endl;
   };
@@ -20,28 +20,28 @@ class TestObserver : public ModelObserverInterface<GraphModelData> {
 TEST(CalcTest, model) {
   TestObserver o;
   GraphModel m1;
-  m1.register_observer(&o);
-  m1.notify_observers();
-  m1.remove_observer(&o);
-  m1.notify_observers();
+  m1.registerObserver(&o);
+  m1.notifyObservers();
+  m1.removeObserver(&o);
+  m1.notifyObservers();
   GraphModelData *d = (GraphModelData *)m1.getData();
-  EXPECT_EQ(m1.validate_data(), 0);
-  d->MAXX = GraphModelData::VERY_MAX_X + 10;
-  EXPECT_GT(d->MAXX, GraphModelData::VERY_MAX_X + 0);
-  EXPECT_NE(m1.validate_data(), 0);
+  EXPECT_EQ(m1.validateData(), 0);
+  d->max_x = GraphModelData::kVeryMaxX + 10;
+  EXPECT_GT(d->max_x, GraphModelData::kVeryMaxX + 0);
+  EXPECT_NE(m1.validateData(), 0);
   GraphModel m2(m1);
   GraphModelData *d2 = (GraphModelData *)m2.getData();
-  EXPECT_GT(d2->MAXX, GraphModelData::VERY_MAX_X + 0);
+  EXPECT_GT(d2->max_x, GraphModelData::kVeryMaxX + 0);
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
-  m2.clear_data();
+  m2.clearData();
   d2->initData();
   d2->x = 1;
   d2->str = "sin(x)";
-  m2.set_data(d2);
+  m2.setData(d2);
   EXPECT_NO_THROW(m2.calculate());
-  EXPECT_NEAR(m2.getData()->y, 0.841471, BaseCalcData::EPS);
-  m1.clear_data();
+  EXPECT_NEAR(m2.getData()->y, 0.841471, BaseCalcData::kEpsilon);
+  m1.clearData();
   m1 = m2;
   EXPECT_EQ(m1.getData()->str, "sin(x)");
   m1 = GraphModel();
@@ -49,7 +49,7 @@ TEST(CalcTest, model) {
   m1 = std::move(m2);
   EXPECT_EQ(m1.getData()->str, "sin(x)");
   GraphModel m3(std::move(GraphModel()));
-  EXPECT_EQ(m3.getData()->MINY, -1);
+  EXPECT_EQ(m3.getData()->min_y, -1);
 }
 
 TEST(CalcTest, regex_5) {
@@ -273,10 +273,11 @@ TEST(CalcTest, core_functions) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= BaseCalcData::EPS ||
+        if (fabs(expected_result - actual_result) >= BaseCalcData::kEpsilon ||
             !isfinite(actual_result))
           DBPRINT("e:%f a:%f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < BaseCalcData::EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) <
+                    BaseCalcData::kEpsilon);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -288,7 +289,7 @@ TEST(CalcTest, expr_calc) {
   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
   CalcCore c;
   c.makeRpnExpr(str);
-  EXPECT_TRUE(c.calc(1) - 0.7919175265 < BaseCalcData::EPS);
+  EXPECT_TRUE(c.calc(1) - 0.7919175265 < BaseCalcData::kEpsilon);
 }
 
 #ifdef NDEBUG
@@ -373,10 +374,11 @@ TEST(CalcTest, core_random_expressions) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
-        if (fabs(expected_result - actual_result) >= BaseCalcData::EPS ||
+        if (fabs(expected_result - actual_result) >= BaseCalcData::kEpsilon ||
             !isfinite(actual_result))
           DBPRINT("e:%f a:%f\n", expected_result, actual_result);
-        ASSERT_TRUE(fabs(expected_result - actual_result) < BaseCalcData::EPS);
+        ASSERT_TRUE(fabs(expected_result - actual_result) <
+                    BaseCalcData::kEpsilon);
       } else {
         ASSERT_TRUE(!isfinite(actual_result));
       }
@@ -388,72 +390,73 @@ TEST(CalcTest, core_random_expressions) {
 TEST(CreditTest, ann) {
   CreditModel calc;
   CreditModelData *d = (CreditModelData *)calc.getData();
-  d->type = d->ANNUITET;
+  d->type = d->kAnnuity;
   d->amount = 123456;
   d->duration = 120;
   d->rate = 4.56;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 153966.00, BaseCalcData::EPS);
-  ASSERT_NEAR(d->overpayment, 30510.00, BaseCalcData::EPS);
-  ASSERT_NEAR(d->monthly_payment, 1283.05, BaseCalcData::EPS);
+  ASSERT_NEAR(d->total_payment, 153966.00, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d->overpayment, 30510.00, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d->monthly_payment, 1283.05, BaseCalcData::kEpsilon);
   d->round = true;
   calc.calculate();
-  ASSERT_NEAR(d->monthly_payment, 1283, BaseCalcData::EPS);
+  ASSERT_NEAR(d->monthly_payment, 1283, BaseCalcData::kEpsilon);
 }
 
 TEST(CreditTest, ann_banki) {
   CreditModel calc;
   CreditModelData *d = (CreditModelData *)calc.getData();
-  d->type = d->ANNUITET;
+  d->type = d->kAnnuity;
   d->amount = 50000;
   d->duration = 6;
   d->rate = 14;
   d->round = true;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 52062, BaseCalcData::EPS);
-  ASSERT_NEAR(d->overpayment, 2062, BaseCalcData::EPS);
-  ASSERT_NEAR(d->monthly_payment, 8677, BaseCalcData::EPS);
+  ASSERT_NEAR(d->total_payment, 52062, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d->overpayment, 2062, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d->monthly_payment, 8677, BaseCalcData::kEpsilon);
 }
 
 TEST(CreditTest, diff) {
   CreditModel calc;
   CreditModelData *d = (CreditModelData *)calc.getData();
-  d->type = d->DIFFERENTIATED;
+  d->type = d->kDifferentiated;
   d->amount = 100000;
   d->duration = 6;
   d->rate = 12.5;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 103645.83, BaseCalcData::EPS);
-  ASSERT_NEAR(d->overpayment, 3645.83, BaseCalcData::EPS);
+  ASSERT_NEAR(d->total_payment, 103645.83, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d->overpayment, 3645.83, BaseCalcData::kEpsilon);
   std::vector<double> expected_mp = {17708.33, 17534.72, 17361.11,
                                      17187.50, 17013.89, 16840.28};
   for (int i = 0; i < 6; ++i) {
-    ASSERT_NEAR(d->monthly_payments[i], expected_mp.at(i), BaseCalcData::EPS);
+    ASSERT_NEAR(d->monthly_payments[i], expected_mp.at(i),
+                BaseCalcData::kEpsilon);
   }
   d->round = true;
   calc.calculate();
-  ASSERT_NEAR(d->total_payment, 103646, BaseCalcData::EPS);
-  ASSERT_NEAR(d->overpayment, 3646, BaseCalcData::EPS);
+  ASSERT_NEAR(d->total_payment, 103646, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d->overpayment, 3646, BaseCalcData::kEpsilon);
 }
 
-TEST(CreditTest, set_data) {
+TEST(CreditTest, setData) {
   CreditModel calc;
   CreditModelData d;
-  d.type = d.ANNUITET;
+  d.type = d.kAnnuity;
   d.amount = 123456;
   d.duration = 120;
   d.rate = 4.56;
-  calc.set_data(&d);
+  calc.setData(&d);
   calc.calculate();
   d = *calc.getData();
-  ASSERT_NEAR(d.total_payment, 153966.00, BaseCalcData::EPS);
-  ASSERT_NEAR(d.overpayment, 30510.00, BaseCalcData::EPS);
-  ASSERT_NEAR(d.monthly_payment, 1283.05, BaseCalcData::EPS);
+  ASSERT_NEAR(d.total_payment, 153966.00, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d.overpayment, 30510.00, BaseCalcData::kEpsilon);
+  ASSERT_NEAR(d.monthly_payment, 1283.05, BaseCalcData::kEpsilon);
   d.round = true;
-  calc.set_data(&d);
+  calc.setData(&d);
   calc.calculate();
   d = *calc.getData();
-  ASSERT_NEAR(d.monthly_payment, 1283, BaseCalcData::EPS);
+  ASSERT_NEAR(d.monthly_payment, 1283, BaseCalcData::kEpsilon);
 }
 
 TEST(DepositTest, no_cap) {
@@ -469,7 +472,7 @@ TEST(DepositTest, no_cap) {
   for (int i = 0; i < 7; i++) {
     DBPRINT("%d, term=%d\n", i, terms[i]);
     d.duration = terms[i];
-    calc.set_data(&d);
+    calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
@@ -490,7 +493,7 @@ TEST(DepositTest, cap) {
   for (int i = 0; i < 7; i++) {
     DBPRINT("%d, term=%d\n", i, terms[i]);
     d.duration = terms[i];
-    calc.set_data(&d);
+    calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
@@ -510,7 +513,7 @@ TEST(DepositTest, pay_periods_no_cap) {
   for (int i = 0; i < 6; i++) {
     DBPRINT("%d, term=%d\n", i, periods[i]);
     d.pay_period = periods[i];
-    calc.set_data(&d);
+    calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
 #ifndef NDEBUG
@@ -535,7 +538,7 @@ TEST(DepositTest, pay_periods_cap) {
   for (int i = 0; i < 6; i++) {
     DBPRINT("%d, term=%d\n", i, periods[i]);
     d.pay_period = periods[i];
-    calc.set_data(&d);
+    calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
@@ -556,7 +559,7 @@ TEST(DepositTest, longer_period) {
   for (int i = 0; i < 6; i++) {
     DBPRINT("%d, term=%d\n", i, periods[i]);
     d.pay_period = periods[i];
-    calc.set_data(&d);
+    calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);

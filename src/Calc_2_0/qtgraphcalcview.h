@@ -25,7 +25,7 @@ class QtGraphCalcView : public QWidget,
   ~QtGraphCalcView();
 
   // Observer staff
-  void observer_update(const GraphModelData *model_data) override;
+  void observerUpdate(const GraphModelData *model_data) override;
   GraphModelData m_data;
 
  private slots:

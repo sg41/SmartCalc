@@ -24,7 +24,7 @@
 
 namespace s21 {
 
-enum token_type {
+enum TokenType {
   kOperandToken,
   kOperatorToken,
   kUnaryOperatorToken,
@@ -35,7 +35,7 @@ enum token_type {
   kErrorToken
 };
 
-enum precedence {
+enum Precedence {
   kNoScore = 0,
   kAddScore = 2,
   kSubScore = 2,
@@ -52,8 +52,8 @@ using FuncType = double (*)(double, double);
 
 typedef struct {
  public:
-  token_type t;
-  precedence p;
+  TokenType t;
+  Precedence p;
   FuncType call;
 } TokenData;
 
@@ -61,23 +61,23 @@ class ExprToken {
  public:
   ExprToken(){};
   virtual ~ExprToken(){};
-  explicit ExprToken(token_type s, double d) : state_(s), data_(d){};
+  explicit ExprToken(TokenType s, double d) : state_(s), data_(d){};
   virtual double &data() { return data_; };
-  token_type state() const { return state_; };
-  void setState(token_type s) { state_ = s; };
+  TokenType state() const { return state_; };
+  void setState(TokenType s) { state_ = s; };
   virtual double func(double, double) { return data_; };
-  virtual precedence priority() { return kAddScore; };
+  virtual Precedence priority() { return kAddScore; };
   virtual std::string name() { return std::to_string(data_); };
 
  protected:
-  token_type state_ = kErrorToken;
+  TokenType state_ = kErrorToken;
   double data_ = 0;
 };
 
 class VarExprToken : public ExprToken {
  public:
   using ExprToken::ExprToken;
-  VarExprToken(token_type s, const std::string &n)
+  VarExprToken(TokenType s, const std::string &n)
       : ExprToken(s, 0.0), var_name_(n){};
   std::string name() override { return var_name_; };
 
@@ -89,9 +89,9 @@ class VarExprToken : public ExprToken {
 class FuncExprToken : public ExprToken {
  public:
   using ExprToken::ExprToken;
-  FuncExprToken(const std::string &n, token_type s, precedence p, FuncType f)
+  FuncExprToken(const std::string &n, TokenType s, Precedence p, FuncType f)
       : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
-  FuncExprToken(char c_name, token_type s, precedence p, FuncType f)
+  FuncExprToken(char c_name, TokenType s, Precedence p, FuncType f)
       : ExprToken(s, 0.0),
         priority_(p),
         fnc_(f),
@@ -103,11 +103,11 @@ class FuncExprToken : public ExprToken {
     return (fnc_ != nullptr) ? fnc_(a, b)
                              : throw std::invalid_argument("Wrong token");
   };
-  precedence priority() override { return priority_; };
+  Precedence priority() override { return priority_; };
   std::string name() override { return name_; };
 
  protected:
-  precedence priority_ = kAddScore;
+  Precedence priority_ = kAddScore;
   FuncType fnc_ = nullptr;
   std::string name_;
 };
@@ -125,10 +125,10 @@ class ExprSyntax {
                ? exact_operator_name.size()
                : 0;
   };
-  std::pair<int, token_type> isToken(const std::string &o);
+  std::pair<int, TokenType> isToken(const std::string &o);
 
   double getOperand(const std::string &s) { return std::atof(s.data()); };
-  const TokenData &getData(std::string s, token_type t) {
+  const TokenData &getData(std::string s, TokenType t) {
     return t == kUnaryOperatorToken ? unary_operators_[s] : operators_[s];
   };
 
@@ -222,8 +222,8 @@ class TokenList : public std::list<ExprToken *> {
   void makeInfixList(const std::string &str);
 
  protected:
-  ExprToken *createToken(const std::string &str, token_type t);
-  std::pair<int, token_type> findToken(const std::string &str);
+  ExprToken *createToken(const std::string &str, TokenType t);
+  std::pair<int, TokenType> findToken(const std::string &str);
   int skipSpaces(const std::string &str);
   void makeUnaryOperator();
   bool checkSyntax(bool);

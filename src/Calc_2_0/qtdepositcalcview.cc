@@ -8,7 +8,7 @@ QtDepositCalcView::QtDepositCalcView(QWidget *parent)
       ui(new Ui::QtDepositCalcView) {
   ui->setupUi(this);
   // MVC staff
-  model.register_observer(this);
+  model.registerObserver(this);
 
   // Setup sliders & spin boxes
   // Copy default values before connecting
@@ -37,7 +37,7 @@ QtDepositCalcView::QtDepositCalcView(QWidget *parent)
 
 QtDepositCalcView::~QtDepositCalcView() { delete ui; }
 
-void QtDepositCalcView::observer_update(const DepositModelData *model_data) {
+void QtDepositCalcView::observerUpdate(const DepositModelData *model_data) {
   m_data = *(model_data);
   QLocale rus(QLocale::Russian, QLocale::Russia);
   rus.setNumberOptions(QLocale::DefaultNumberOptions);

@@ -7,7 +7,7 @@ int main() {
   GraphModel model;
   ExampleController controller((BaseModel*)&model);
   ConsoleView view(&controller);
-  model.register_observer(&view);
+  model.registerObserver(&view);
   view.startEventLoop();
   return 0;
 }
