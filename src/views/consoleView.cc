@@ -14,8 +14,8 @@ void ConsoleView::displayMenu() {
   std::cout << "2. Enter formula (Current: \"" << this->data.str << "\")"
             << std::endl;
   std::cout << "3. Calculate formula" << std::endl;
-  std::cout << "4. Change x range (Current: from " << this->data.min_x << ", to "
-            << data.max_x << ")" << std::endl;
+  std::cout << "4. Change x range (Current: from " << this->data.min_x
+            << ", to " << data.max_x << ")" << std::endl;
   std::cout << "0. Quit" << std::endl << std::endl;
 }
 
@@ -44,7 +44,8 @@ void ConsoleView::draw_txt_graph() {
   int i, j;
   for (j = 0; j < data.max_console_height; j++) {
     for (i = 0; i < data.max_console_width; i++) {
-      if ((int)round(-data.y_vect[i] * data.dy + round(data.max_console_height / 2)) == j) {
+      if ((int)round(-data.y_vect[i] * data.dy +
+                     round(data.max_console_height / 2)) == j) {
         std::cout << ("*");
       } else {
         std::cout << (".");

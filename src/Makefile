@@ -87,7 +87,7 @@ tests: clean $(NEW_TEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(NEW_TEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
 	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
 
-check: $(SOURCES) graph.c $(HEADERS) graph.h
+check: $(SOURCES) $(HEADERS)
 	cp $(ROOT)/materials/linters/.clang-format ./
 	clang-format -i $(SOURCES)
 	clang-format -i $(HEADERS)
@@ -107,8 +107,8 @@ check: $(SOURCES) graph.c $(HEADERS) graph.h
 	clang-format -n $(VIEWS)
 check2: 
 	cppcheck --enable=all --suppress=syntaxError --suppress=missingInclude \
-	--suppress=unusedFunction --suppress=toomanyconfigs --suppress=unknownMacro \
-	--suppress=ConfigurationNotChecked --suppress=noValidConfiguration $(ROOT)src/
+	--suppress=unusedFunction \
+	-i $(ROOT)src/Calc_2_0/QCP -i $(ROOT)src/build* $(ROOT)src/
 
 .PHONY: all clean rebuild check2
 

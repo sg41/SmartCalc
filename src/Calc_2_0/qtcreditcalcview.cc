@@ -48,8 +48,8 @@ void QtCreditCalcView::observerUpdate(const CreditModelData *model_data) {
 }
 
 void QtCreditCalcView::on_calculateButton_pressed() {
-  m_data.type = ui->creditTypeComboBox->currentText() == "Annuitet"
-                    ? m_data.ANNUITET
+  m_data.type = ui->creditTypeComboBox->currentText() == "Annuity"
+                    ? m_data.kAnnuity
                     : m_data.kDifferentiated;
   m_data.amount = ui->creditAmountSpinBox->value();
   m_data.duration = ui->creditTermSpinBox->value();

@@ -136,7 +136,7 @@
     <widget class="QComboBox" name="creditTypeComboBox">
      <item>
       <property name="text">
-       <string>Annuitet</string>
+       <string>Annuity</string>
       </property>
      </item>
      <item>
