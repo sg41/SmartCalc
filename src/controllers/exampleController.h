@@ -1,5 +1,5 @@
-#ifndef EXAMPLECONTROLLER_H
-#define EXAMPLECONTROLLER_H
+#ifndef _SRC__CONTROLLERS_EXAMPLECONTROLLER_H
+#define _SRC__CONTROLLERS_EXAMPLECONTROLLER_H
 
 #include "../models/baseModel.h"
 namespace s21 {
@@ -17,4 +17,4 @@ class ExampleController {
   };
 };
 }  // namespace s21
-#endif
+#endif  //_SRC_CONTROLLERS_EXAMPLECONTROLLER_H

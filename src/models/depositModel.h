@@ -1,5 +1,5 @@
-#ifndef _DEPOSITMODEL_H_
-#define _DEPOSITMODEL_H_
+#ifndef _SRC_MODELS_DEPOSITMODEL_H_
+#define _SRC_MODELS_DEPOSITMODEL_H_
 
 #include <chrono>
 #include <vector>
@@ -13,7 +13,7 @@ const static int SECOND_PER_DAY = 86400;
 class DepositModelData : public CreditModelData {
  public:
   using CreditModelData::CreditModelData;
-  DepositModelData() { DepositModelData::init_data(); };
+  DepositModelData() { DepositModelData::initData(); };
 
  public:
   double tax_rate;
@@ -26,8 +26,8 @@ class DepositModelData : public CreditModelData {
   double replenishment;
   double withdrawal;
 
-  void init_data() override {
-    CreditModelData::init_data();
+  void initData() override {
+    CreditModelData::initData();
     tax_rate = 0;
     tax = 0;
     int_cap = false;
@@ -56,4 +56,4 @@ class DepositModel : public AbstractModel<DepositModelData> {
   double complex_interest_calc();
 };
 }  // namespace s21
-#endif  //_DEPOSITMODEL_H_
+#endif  //_SRC_MODELS_DEPOSITMODEL_H_

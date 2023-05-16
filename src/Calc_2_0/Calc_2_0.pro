@@ -20,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     ../controllers/exampleController.h \
+    ../models/baseModel.h \
     ../models/creditModel.h \
     ../models/depositModel.h \
     ../models/graphModel.h \

@@ -1,5 +1,5 @@
-#ifndef SRC_RPN_CPP_CORE_H_
-#define SRC_RPN_CPP_CORE_H_
+#ifndef _SRC_RPN_CPP_CORE_H_
+#define _SRC_RPN_CPP_CORE_H_
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
@@ -54,4 +54,4 @@ class CalcCore {
   ExprSyntax *syntax_ = nullptr;
 };
 }  // namespace s21
-#endif  // SRC_RPN_CPP_CORE_H_
+#endif  // _SRC_RPN_CPP_CORE_H_

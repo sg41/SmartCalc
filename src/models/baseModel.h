@@ -1,13 +1,13 @@
-#ifndef _CALCDATA_H_
-#define _CALCDATA_H_
+#ifndef _SRC_MODELS_BASEMODEL_H_
+#define _SRC_MODELS_BASEMODEL_H_
 #include <list>
 #include <string>
 namespace s21 {
 class BaseCalcData {
  public:
-  BaseCalcData() { this->init_data(); };
+  BaseCalcData() { this->initData(); };
   virtual ~BaseCalcData(){};
-  virtual void init_data() {
+  virtual void initData() {
     this->error = 0;
     MINX = -3;
     MAXX = 3;  // 4 * 3.14
@@ -95,11 +95,11 @@ class AbstractModel : public ModelObservableInterface<D> {
     if (d != nullptr) *data = *d;
   };
   const D *getData() const override { return static_cast<const D *>(data); };
-  void clear_data() { data->init_data(); };
+  void clear_data() { data->initData(); };
 
  protected:
   D *data = nullptr;
 };
 
 }  // namespace s21
-#endif  // _CALCDATA_H
+#endif  // _SRC_MODELS_BASEMODEL_H_

@@ -1,5 +1,5 @@
-#ifndef SRC_RPN_CPP_EXPR_H_
-#define SRC_RPN_CPP_EXPR_H_
+#ifndef _SRC_RPN_CPP_EXPR_H_
+#define _SRC_RPN_CPP_EXPR_H_
 
 #include <math.h>
 
@@ -234,4 +234,4 @@ class TokenList : public std::list<ExprToken *> {
   ExprSyntax *syntax_;
 };
 }  // namespace s21
-#endif  // SRC_RPN_CPP_EXPR_H_
+#endif  // _SRC_RPN_CPP_EXPR_H_

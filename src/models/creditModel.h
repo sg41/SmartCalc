@@ -1,5 +1,5 @@
-#ifndef _CREDITMODEL_H_
-#define _CREDITMODEL_H_
+#ifndef _SRC_MODELS_CREDITMODEL_H_
+#define _SRC_MODELS_CREDITMODEL_H_
 
 #include <vector>
 
@@ -10,7 +10,7 @@ namespace s21 {
 class CreditModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
-  CreditModelData() { CreditModelData::init_data(); };
+  CreditModelData() { CreditModelData::initData(); };
 
  public:
   std::string str;
@@ -28,8 +28,8 @@ class CreditModelData : public BaseCalcData {
   int int_cap;
   std::vector<double> monthly_payments;
 
-  void init_data() override {
-    BaseCalcData::init_data();
+  void initData() override {
+    BaseCalcData::initData();
     amount = 0;
     duration = 0;
     pay_period = 0;
@@ -94,4 +94,4 @@ class CreditModel : public AbstractModel<CreditModelData> {
   CalcCore c;
 };
 }  // namespace s21
-#endif  //_CREDITMODEL_H_
+#endif  //_SRC_MODELS_CREDITMODEL_H_

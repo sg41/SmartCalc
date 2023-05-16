@@ -35,7 +35,7 @@ TEST(CalcTest, model) {
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
   m2.clear_data();
-  d2->init_data();
+  d2->initData();
   d2->x = 1;
   d2->str = "sin(x)";
   m2.set_data(d2);

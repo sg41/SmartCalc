@@ -1,5 +1,5 @@
-#ifndef _GRAPHMODEL_H_
-#define _GRAPHMODEL_H_
+#ifndef _SRC_MODELS_GRAPHMODEL_H_
+#define _SRC_MODELS_GRAPHMODEL_H_
 
 #include <vector>
 
@@ -10,7 +10,7 @@ namespace s21 {
 class GraphModelData : public BaseCalcData {
  public:
   using BaseCalcData::BaseCalcData;
-  GraphModelData() { GraphModelData::init_data(); };
+  GraphModelData() { GraphModelData::initData(); };
   int validate_data() {
     int err = 0;
     if (MINX >= VERY_MIN_X && MINY >= VERY_MIN_Y && MAXX <= VERY_MAX_X &&
@@ -34,8 +34,8 @@ class GraphModelData : public BaseCalcData {
   std::vector<double> x_vect, y_vect;
   double y;
 
-  void init_data() override {
-    BaseCalcData::init_data();
+  void initData() override {
+    BaseCalcData::initData();
     x = 0;
     clip_x1 = 0;
     clip_x2 = 0;
@@ -86,4 +86,4 @@ class GraphModel : public AbstractModel<GraphModelData> {
   CalcCore c;
 };
 }  // namespace s21
-#endif  //_GRAPHMODEL_H_
+#endif  //_SRC_MODELS_GRAPHMODEL_H_
