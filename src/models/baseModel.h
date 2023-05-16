@@ -3,43 +3,13 @@
 #include <list>
 #include <string>
 namespace s21 {
-class BaseCalcData {
+struct BaseCalcData {
  public:
   BaseCalcData() { this->initData(); };
   virtual ~BaseCalcData(){};
-  virtual void initData() {
-    this->error = 0;
-    MINX = -3;
-    MAXX = 3;  // 4 * 3.14
-    MINY = -1;
-    MAXY = 1;
-    MAXI = 80;
-    MAXJ = 25;
-  };
-  // virtual int validate_data() = 0;  //{ return 0; };
-
- public:
-  static const int MAXSTR = 1024;
-  static const int SECOND_PER_DAY = 86400;
-  static const int ANNUITET = 0;
-  static const int DIFFERENTIATED = 1;
-  static const int DEFAULT_PAY_PERIOD = 30;
-  static const int DEFAULT_DURATION = 12;
-  static const int DEFAULT_AMOUNT = 100000;
-  static const int DEFAULT_RATE = 9.5;
-  int MINX = -3;
-  int MAXX = 3;  // 4 * 3.14
-  int MINY = -1;
-  int MAXY = 1;
-  static const int VERY_MIN_X = -1000000;
-  static const int VERY_MAX_X = 1000000;
-  static const int VERY_MIN_Y = -1000000;
-  static const int VERY_MAX_Y = 1000000;
-  static const double constexpr EPS = 1e-7;
-  int MAXI = 80;
-  int MAXJ = 25;
-
- public:
+  virtual void initData() { this->error = 0; };
+  static const int kMaxStr = 1024;
+  static const double constexpr kEpsilon = 1e-7;
   std::string error_message;
   int error;
 };
@@ -47,58 +17,58 @@ class BaseCalcData {
 template <class D>
 class ModelObserverInterface {
  public:
-  virtual void observer_update(const D *) = 0;
+  virtual void observerUpdate(const D *) = 0;
 };
 
 template <class D>
 class ModelObservableInterface {
  public:
-  void register_observer(ModelObserverInterface<D> *o) {
-    observers.push_back(o);
+  void registerObserver(ModelObserverInterface<D> *o) {
+    observers_.push_back(o);
   };
-  void remove_observer(ModelObserverInterface<D> *o) { observers.remove(o); };
-  void notify_observers() {
-    if (observers.size() > 0)
-      for (auto o : observers) o->observer_update(getData());
+  void removeObserver(ModelObserverInterface<D> *o) { observers_.remove(o); };
+  void notifyObservers() {
+    if (observers_.size() > 0)
+      for (auto o : observers_) o->observerUpdate(getData());
   };
   virtual const D *getData() const = 0;
 
  protected:
-  std::list<ModelObserverInterface<D> *> observers;
+  std::list<ModelObserverInterface<D> *> observers_;
 };
 
 template <class D>
 class AbstractModel : public ModelObservableInterface<D> {
  public:
-  AbstractModel() : data(new D){};
-  AbstractModel(const AbstractModel &m) : data(new D(*m.data)){};
+  AbstractModel() : data_(new D){};
+  AbstractModel(const AbstractModel &m) : data_(new D(*m.data_)){};
   AbstractModel(AbstractModel &&m) {
-    data = m.data;
-    m.data = nullptr;
+    data_ = m.data_;
+    m.data_ = nullptr;
   };
   AbstractModel &operator=(const AbstractModel &m) {
-    if (this != &m) set_data(m.data);
+    if (this != &m) setData(m.data_);
     return *this;
   }
   AbstractModel &operator=(AbstractModel &&m) {
     if (this != &m) {
-      delete data;
-      data = m.data;
-      m.data = nullptr;
+      delete data_;
+      data_ = m.data_;
+      m.data_ = nullptr;
     }
     return *this;
   }
-  virtual ~AbstractModel() { delete data; };
+  virtual ~AbstractModel() { delete data_; };
   virtual void calculate() = 0;
-  int validate_data() { return data->validate_data(); };
-  virtual void set_data(const D *d) {
-    if (d != nullptr) *data = *d;
+  int validateData() { return data_->validateData(); };
+  virtual void setData(const D *d) {
+    if (d != nullptr) *data_ = *d;
   };
-  const D *getData() const override { return static_cast<const D *>(data); };
-  void clear_data() { data->initData(); };
+  const D *getData() const override { return static_cast<const D *>(data_); };
+  void clearData() { data_->initData(); };
 
  protected:
-  D *data = nullptr;
+  D *data_ = nullptr;
 };
 
 }  // namespace s21

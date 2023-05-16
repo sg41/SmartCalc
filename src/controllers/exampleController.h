@@ -12,7 +12,7 @@ class ExampleController {
  public:
   explicit ExampleController(BaseModel *m) : model_(m){};
   void userAction(const BaseCalcData *d) {
-    model_->set_data(d);
+    model_->setData(d);
     model_->calculate();
   };
 };

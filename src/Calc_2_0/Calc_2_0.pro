@@ -56,11 +56,11 @@ else:unix: LIBS += -L$$PWD/../ -ls21_SmartCalc
 INCLUDEPATH += $$PWD/../rpn_cpp
 DEPENDPATH += $$PWD/../rpn_cpp
 
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../release/libs21_SmartCalc.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../debug/libs21_SmartCalc.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../release/s21_SmartCalc.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../debug/s21_SmartCalc.lib
-else:unix: PRE_TARGETDEPS += $$PWD/../libs21_SmartCalc.a
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDkEpsilon += $$PWD/../release/libs21_SmartCalc.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDkEpsilon += $$PWD/../debug/libs21_SmartCalc.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDkEpsilon += $$PWD/../release/s21_SmartCalc.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDkEpsilon += $$PWD/../debug/s21_SmartCalc.lib
+else:unix: PRE_TARGETDkEpsilon += $$PWD/../libs21_SmartCalc.a
 
 RESOURCES += \
     calc_2_0.qrc

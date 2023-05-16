@@ -85,7 +85,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSpinBox" name="spinBox_MINX">
+           <widget class="QSpinBox" name="spinBox_minX_">
             <property name="minimum">
              <number>-1000000</number>
             </property>
@@ -95,7 +95,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="spinBox_MAXX">
+           <widget class="QSpinBox" name="spinBox_maxX_">
             <property name="minimum">
              <number>-1000000</number>
             </property>
@@ -105,7 +105,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="spinBox_MINY">
+           <widget class="QSpinBox" name="spinBox_minY_">
             <property name="minimum">
              <number>-1000000</number>
             </property>
@@ -115,7 +115,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QSpinBox" name="spinBox_MAXY">
+           <widget class="QSpinBox" name="spinBox_maxY_">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>

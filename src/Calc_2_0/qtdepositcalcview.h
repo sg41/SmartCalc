@@ -21,7 +21,7 @@ class QtDepositCalcView : public QWidget,
   explicit QtDepositCalcView(QWidget *parent = nullptr);
   ~QtDepositCalcView();
   // Observer staff
-  void observer_update(const DepositModelData *model_data) override;
+  void observerUpdate(const DepositModelData *model_data) override;
   DepositModelData m_data;
 
  signals:

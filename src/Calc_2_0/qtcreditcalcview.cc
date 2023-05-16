@@ -9,7 +9,7 @@ QtCreditCalcView::QtCreditCalcView(QWidget *parent)
   ui->setupUi(this);
 
   // MVC staff
-  model.register_observer(this);
+  model.registerObserver(this);
 
   // Setup sliders & spin boxes
   // Copy default values before connecting
@@ -33,13 +33,13 @@ QtCreditCalcView::QtCreditCalcView(QWidget *parent)
 
 QtCreditCalcView::~QtCreditCalcView() { delete ui; }
 
-void QtCreditCalcView::observer_update(const CreditModelData *model_data) {
+void QtCreditCalcView::observerUpdate(const CreditModelData *model_data) {
   m_data = *(model_data);
   QLocale rus(QLocale::Russian, QLocale::Russia);
   rus.setNumberOptions(QLocale::DefaultNumberOptions);
   ui->monthlyPaymentLabel->setText(
       rus.toCurrencyString(m_data.monthly_payment) +
-      ((m_data.type == m_data.DIFFERENTIATED)
+      ((m_data.type == m_data.kDifferentiated)
            ? " ... " + rus.toCurrencyString(m_data.monthly_payment_min)
            : ""));
   ui->overPaymentLabel->setText(rus.toCurrencyString(m_data.overpayment));
@@ -50,7 +50,7 @@ void QtCreditCalcView::observer_update(const CreditModelData *model_data) {
 void QtCreditCalcView::on_calculateButton_pressed() {
   m_data.type = ui->creditTypeComboBox->currentText() == "Annuitet"
                     ? m_data.ANNUITET
-                    : m_data.DIFFERENTIATED;
+                    : m_data.kDifferentiated;
   m_data.amount = ui->creditAmountSpinBox->value();
   m_data.duration = ui->creditTermSpinBox->value();
   m_data.rate = ui->interestRateSpinBox->value();

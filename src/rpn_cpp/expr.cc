@@ -14,7 +14,7 @@ int ExprSyntax::isOperand(const std::string &o) {
   return res;
 };
 
-std::pair<int, token_type> ExprSyntax::isToken(const std::string &o) {
+std::pair<int, TokenType> ExprSyntax::isToken(const std::string &o) {
   int res = 0, len = 0;
   auto l = length_.rbegin();
   for (; res == 0 && l != length_.rend(); l++) {
@@ -93,13 +93,13 @@ int TokenList::skipSpaces(const std::string &str) {
   return i;
 };
 
-std::pair<int, token_type> TokenList::findToken(const std::string &str) {
+std::pair<int, TokenType> TokenList::findToken(const std::string &str) {
   int l = syntax_->isOperand(str);
-  token_type t = kOperandToken;
+  TokenType t = kOperandToken;
   return l != 0 ? std::make_pair(l, t) : syntax_->isToken(str);
 };
 
-ExprToken *TokenList::createToken(const std::string &str_token, token_type t) {
+ExprToken *TokenList::createToken(const std::string &str_token, TokenType t) {
   ExprToken *token;
 
   if (t == kOperatorToken || t == kUnaryOperatorToken || t == kFunctionToken ||
@@ -130,7 +130,7 @@ void TokenList::makeInfixList(const std::string &s) {
       i += skipSpaces(s.substr(i));  // Skip spaces
       if (i < s.size()) {
         int l;
-        token_type t;
+        TokenType t;
         std::tie(l, t) = findToken(s.substr(i));
         if (l) {
           push_back(createToken(s.substr(i, l), t));
