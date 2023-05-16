@@ -69,7 +69,7 @@ void ConsoleView::startEventLoop() {
 
       case CALC:
         try {
-          controller->user_action(&data);
+          controller->userAction(&data);
         } catch (const std::invalid_argument &e) {
           cout << "ERROR: " << e.what() << std::endl;
         };

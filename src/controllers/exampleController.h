@@ -7,13 +7,13 @@ using BaseModel = AbstractModel<BaseCalcData>;
 
 class ExampleController {
  private:
-  BaseModel *model;
+  BaseModel *model_;
 
  public:
-  explicit ExampleController(BaseModel *m) : model(m){};
-  void user_action(const BaseCalcData *d) {
-    model->set_data(d);
-    model->calculate();
+  explicit ExampleController(BaseModel *m) : model_(m){};
+  void userAction(const BaseCalcData *d) {
+    model_->set_data(d);
+    model_->calculate();
   };
 };
 }  // namespace s21

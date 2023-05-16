@@ -57,7 +57,7 @@ void QtDepositCalcView::on_calculateButton_clicked() {
   m_data.withdrawal = getAnyListSum(ui->withdrawalList);
   m_data.replenishment = getAnyListSum(ui->replenishmentList);
   try {
-    controller.user_action((BaseCalcData *)&m_data);
+    controller.userAction((BaseCalcData *)&m_data);
     emit showStatus("Success");
   } catch (std::invalid_argument &e) {
     ui->resultFrame->setEnabled(false);

@@ -56,7 +56,7 @@ void QtCreditCalcView::on_calculateButton_pressed() {
   m_data.rate = ui->interestRateSpinBox->value();
   m_data.round = ui->round->isChecked();
   try {
-    controller.user_action((BaseCalcData *)&m_data);
+    controller.userAction((BaseCalcData *)&m_data);
     emit showStatus("Success");
   } catch (std::invalid_argument &e) {
     ui->resultFrame->setEnabled(false);

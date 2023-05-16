@@ -59,7 +59,7 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   if (ui->graph_area->graph(0)->data()->size()) {
     try {
       setupGeometry();
-      controller.user_action(&m_data);
+      controller.userAction(&m_data);
     } catch (std::invalid_argument &e) {
       ui->graph_area->replot();
     }
@@ -102,7 +102,7 @@ void QtGraphCalcView::on_QtGraphCalcView_resultRequested() {
   try {
     setupGeometry();
     ui->graph_area->legend->setVisible(true);
-    controller.user_action(&m_data);
+    controller.userAction(&m_data);
     // make history record
     ui->listWidget->insertItem(
         0, ui->InputStr->text() + " = " + QString::number(m_data.y, 'g', 7));
