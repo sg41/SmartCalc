@@ -56,7 +56,7 @@ class CreditModel : public AbstractModel<CreditModelData> {
           std::to_string(data->amount) + "*(x/100/12*(x/100/12+1)^" +
           std::to_string(data->duration) + "/((1+x/100/12)^" +
           std::to_string(data->duration) + "-1))";
-      c.make_rpn_expr(monthly_payment_expr);
+      c.makeRpnExpr(monthly_payment_expr);
       data->monthly_payment = round(c.calc(data->rate) * 100.) / 100.;
       //! maybe to change to throw
       if (data->round && data->monthly_payment < 1) {
@@ -72,7 +72,7 @@ class CreditModel : public AbstractModel<CreditModelData> {
           std::to_string(data->amount) + "/" + std::to_string(data->duration) +
           ")*x)*(" + std::to_string(data->rate) + "/100/12)";
 
-      c.make_rpn_expr(monthly_payment_expr);
+      c.makeRpnExpr(monthly_payment_expr);
       data->monthly_payments.clear();
       data->total_payment = 0;
       for (int m = 0; m < data->duration; m++) {

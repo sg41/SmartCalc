@@ -1,5 +1,5 @@
-#ifndef SRC_RPR_CORE_H_
-#define SRC_RPR_CORE_H_
+#ifndef SRC_RPN_CPP_CORE_H_
+#define SRC_RPN_CPP_CORE_H_
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
@@ -11,45 +11,47 @@
 namespace s21 {
 class CalcCore {
  public:
-  CalcCore() : syntax(new ExprSyntax()){};
-  ~CalcCore() { delete syntax; };
-  CalcCore(const CalcCore &c) : syntax(new ExprSyntax(*c.syntax)){};
+  CalcCore() : syntax_(new ExprSyntax()){};
+  ~CalcCore() { delete syntax_; };
+  CalcCore(const CalcCore &c) : syntax_(new ExprSyntax(*c.syntax_)){};
   CalcCore(CalcCore &&c) {
-    syntax = c.syntax;
-    c.syntax = nullptr;
+    syntax_ = c.syntax_;
+    c.syntax_ = nullptr;
   };
   CalcCore &operator=(const CalcCore &c) {
-    if (this != &c) *syntax = *c.syntax;
+    if (this != &c) *syntax_ = *c.syntax_;
     return *this;
   }
   CalcCore &operator=(CalcCore &&c) {
     if (this != &c) {
-      delete syntax;
-      syntax = c.syntax;
-      c.syntax = nullptr;
+      delete syntax_;
+      syntax_ = c.syntax_;
+      c.syntax_ = nullptr;
     }
     return *this;
   }
-  void make_rpn_expr(const std::string &s) {
-    if (!rpn_expr_.empty()) rpn_expr_.clear_and_delete();
-    TokenList infix(syntax);
-    infix.make_infix_list(s);
-    move_infix_to_rpn(infix);
+  void makeRpnExpr(const std::string &s) {
+    if (!rpn_expr_.empty()) rpn_expr_.clearAndDelete();
+    TokenList infix(syntax_);
+    infix.makeInfixList(s);
+    moveInfixToRpn(infix);
   };
-  double calc(double x) { return (rpn_expr_.size() > 0) ? rpn_reduce(x) : 0; };
+  double calc(double x) {
+    return (rpn_expr_.size() > 0) ? rpnCalculate(x) : 0;
+  };
   int get_expr_size() { return rpn_expr_.size(); };
 
  protected:
-  double rpn_reduce(double x);
-  void move_infix_to_rpn(TokenList &infix);
-  void stack_to_rpn(std::stack<ExprToken *> &opstack) {
+  double rpnCalculate(double x);
+  void moveInfixToRpn(TokenList &infix);
+  void moveStackToRpn(std::stack<ExprToken *> &opstack) {
     rpn_expr_.push_back(opstack.top());
     opstack.pop();
   };
 
  protected:
   TokenList rpn_expr_;
-  ExprSyntax *syntax = nullptr;
+  ExprSyntax *syntax_ = nullptr;
 };
 }  // namespace s21
-#endif  // SRC_RPR_CORE_H_
+#endif  // SRC_RPN_CPP_CORE_H_

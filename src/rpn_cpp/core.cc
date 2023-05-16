@@ -5,55 +5,56 @@
 #include <stack>
 #include <stdexcept>
 using namespace s21;
-void CalcCore::move_infix_to_rpn(TokenList &infix) {
+void CalcCore::moveInfixToRpn(TokenList &infix) {
   if (&infix != &rpn_expr_) {
     std::stack<ExprToken *> opstack;
     TokenList brackets;
 
     for (auto i : infix) {
       switch (i->state()) {
-        case OPERAND:
-        case VARIABLE:
+        case kOperandToken:
+        case kVariableToken:
           rpn_expr_.push_back(i);
           break;
-        case L_BRACKET:
+        case kLBracketToken:
           opstack.push(i);
           brackets.push_back(i);  // store bracket token to be 'delete'd
           break;
-        case R_BRACKET:
-          while (opstack.top()->state() != L_BRACKET) stack_to_rpn(opstack);
+        case kRBracketToken:
+          while (opstack.top()->state() != kLBracketToken)
+            moveStackToRpn(opstack);
           opstack.pop();  // Забираем из стека открывающуюся скобку
           brackets.push_back(i);  // store bracket token to be 'delete'd
           break;
-        case FUNCTION:
-        case UNARYOPERATOR:
-        case OPERATOR:
+        case kFunctionToken:
+        case kUnaryOperatorToken:
+        case kOperatorToken:
           while (opstack.size() > 0 &&
                  opstack.top()->priority() >= i->priority() &&
-                 opstack.top()->state() != L_BRACKET)
-            stack_to_rpn(opstack);
+                 opstack.top()->state() != kLBracketToken)
+            moveStackToRpn(opstack);
           opstack.push(i);
           break;
-        case ERROR:
+        case kErrorToken:
         default:
           throw std::invalid_argument("Wrong infix list");
       }
     }
-    while (opstack.size() > 0) stack_to_rpn(opstack);
+    while (opstack.size() > 0) moveStackToRpn(opstack);
     infix.clear();
   }
 }
 
-double CalcCore::rpn_reduce(double x) {
+double CalcCore::rpnCalculate(double x) {
   std::stack<ExprToken> k;
   for (auto i : rpn_expr_) {
-    if (i->state() == OPERAND) {
+    if (i->state() == kOperandToken) {
       k.emplace(i->state(), i->data());
-    } else if (i->state() == VARIABLE) {
+    } else if (i->state() == kVariableToken) {
       k.emplace(i->state(), x);
     } else {
       double a, b = 0;
-      if (i->state() == OPERATOR) {
+      if (i->state() == kOperatorToken) {
         if (!k.empty()) {
           b = k.top().data();
           k.pop();
@@ -65,10 +66,11 @@ double CalcCore::rpn_reduce(double x) {
         k.pop();
       } else
         throw std::invalid_argument("Wrong function argument");
-      if (i->state() == OPERATOR)
-        k.emplace(OPERAND, i->func(a, b));
-      else if (i->state() == UNARYOPERATOR || i->state() == FUNCTION)
-        k.emplace(OPERAND, i->func(a, 0));
+      if (i->state() == kOperatorToken)
+        k.emplace(kOperandToken, i->func(a, b));
+      else if (i->state() == kUnaryOperatorToken ||
+               i->state() == kFunctionToken)
+        k.emplace(kOperandToken, i->func(a, 0));
       else
         throw std::invalid_argument("Wrong expression token");
     }

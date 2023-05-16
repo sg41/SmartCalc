@@ -59,9 +59,9 @@ class ModelObservableInterface {
   void remove_observer(ModelObserverInterface<D> *o) { observers.remove(o); };
   void notify_observers() {
     if (observers.size() > 0)
-      for (auto o : observers) o->observer_update(get_data());
+      for (auto o : observers) o->observer_update(getData());
   };
-  virtual const D *get_data() const = 0;
+  virtual const D *getData() const = 0;
 
  protected:
   std::list<ModelObserverInterface<D> *> observers;
@@ -94,7 +94,7 @@ class AbstractModel : public ModelObservableInterface<D> {
   virtual void set_data(const D *d) {
     if (d != nullptr) *data = *d;
   };
-  const D *get_data() const override { return static_cast<const D *>(data); };
+  const D *getData() const override { return static_cast<const D *>(data); };
   void clear_data() { data->init_data(); };
 
  protected:

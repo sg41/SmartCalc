@@ -24,13 +24,13 @@ TEST(CalcTest, model) {
   m1.notify_observers();
   m1.remove_observer(&o);
   m1.notify_observers();
-  GraphModelData *d = (GraphModelData *)m1.get_data();
+  GraphModelData *d = (GraphModelData *)m1.getData();
   EXPECT_EQ(m1.validate_data(), 0);
   d->MAXX = GraphModelData::VERY_MAX_X + 10;
   EXPECT_GT(d->MAXX, GraphModelData::VERY_MAX_X + 0);
   EXPECT_NE(m1.validate_data(), 0);
   GraphModel m2(m1);
-  GraphModelData *d2 = (GraphModelData *)m2.get_data();
+  GraphModelData *d2 = (GraphModelData *)m2.getData();
   EXPECT_GT(d2->MAXX, GraphModelData::VERY_MAX_X + 0);
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
@@ -40,40 +40,40 @@ TEST(CalcTest, model) {
   d2->str = "sin(x)";
   m2.set_data(d2);
   EXPECT_NO_THROW(m2.calculate());
-  EXPECT_NEAR(m2.get_data()->y, 0.841471, BaseCalcData::EPS);
+  EXPECT_NEAR(m2.getData()->y, 0.841471, BaseCalcData::EPS);
   m1.clear_data();
   m1 = m2;
-  EXPECT_EQ(m1.get_data()->str, "sin(x)");
+  EXPECT_EQ(m1.getData()->str, "sin(x)");
   m1 = GraphModel();
-  EXPECT_NE(m1.get_data()->str, "sin(x)");
+  EXPECT_NE(m1.getData()->str, "sin(x)");
   m1 = std::move(m2);
-  EXPECT_EQ(m1.get_data()->str, "sin(x)");
+  EXPECT_EQ(m1.getData()->str, "sin(x)");
   GraphModel m3(std::move(GraphModel()));
-  EXPECT_EQ(m3.get_data()->MINY, -1);
+  EXPECT_EQ(m3.getData()->MINY, -1);
 }
 
 TEST(CalcTest, regex_5) {
   char str[1000] = "2.365sdsdsd";
   uint expected_result, actual_result;
   ExprSyntax s;
-  actual_result = s.is_operand(str);
+  actual_result = s.isOperand(str);
   expected_result = 5;
   EXPECT_EQ(expected_result, actual_result);
   double a, b = 2.365;
-  a = s.get_operand(str);
+  a = s.getOperand(str);
   EXPECT_EQ(a, b);
   b = 1.890e4;
-  actual_result = s.is_operand("1.890e4fdj;alkf;");
+  actual_result = s.isOperand("1.890e4fdj;alkf;");
   expected_result = 7;
   EXPECT_EQ(expected_result, actual_result);
-  a = s.get_operand("1.890e4fdj;alkf;");
+  a = s.getOperand("1.890e4fdj;alkf;");
   EXPECT_EQ(a, b);
   b = 1.890E-4;
-  actual_result = s.is_operand("1.890E-4aslkdjalks147981asfja08--2344");
+  actual_result = s.isOperand("1.890E-4aslkdjalks147981asfja08--2344");
   expected_result = 8;
   EXPECT_EQ(expected_result, actual_result);
 
-  a = s.get_operand("1.890E-4aslkdjalks147981asfja08--2344");
+  a = s.getOperand("1.890E-4aslkdjalks147981asfja08--2344");
   EXPECT_EQ(a, b);
 }
 
@@ -82,7 +82,7 @@ TEST(CalcTest, expr_6) {
   uint expected_result, actual_result;
   ExprSyntax s;
   TokenList infix(&s);
-  infix.make_infix_list(str);
+  infix.makeInfixList(str);
   expected_result = 18;
   actual_result = infix.size();
   EXPECT_EQ(expected_result, actual_result);
@@ -129,7 +129,7 @@ TEST(CalcTest, expr_wrong_formula) {
   ExprSyntax s;
   TokenList infix(&s);
   for (int i = 0; i < __N__; i++) {
-    EXPECT_THROW(infix.make_infix_list(str[i]), std::invalid_argument);
+    EXPECT_THROW(infix.makeInfixList(str[i]), std::invalid_argument);
     actual_result = infix.size();
     EXPECT_EQ(expected_result[i], actual_result);
   }
@@ -160,7 +160,7 @@ TEST(CalcTest, expr_right_formula) {
   for (int i = 0; i < 13; i++) {
     ExprSyntax s;
     TokenList infix(&s);
-    EXPECT_NO_THROW(infix.make_infix_list(str[i]));
+    EXPECT_NO_THROW(infix.makeInfixList(str[i]));
     actual_result = infix.size();
     EXPECT_EQ(expected_result[i], actual_result);
   }
@@ -169,7 +169,7 @@ TEST(CalcTest, expr_right_formula) {
 TEST(CalcTest, shunt_1) {
   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   int expected_result = 12;
   int actual_result = c.get_expr_size();
   ASSERT_EQ(expected_result, actual_result);
@@ -178,7 +178,7 @@ TEST(CalcTest, shunt_1) {
 TEST(CalcTest, shunt_2) {
   char str[1000] = "45/8";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   int expected_result = 3;
   int actual_result = c.get_expr_size();
   ASSERT_EQ(expected_result, actual_result);
@@ -187,7 +187,7 @@ TEST(CalcTest, shunt_2) {
 TEST(CalcTest, shunt_3) {
   char str[1000] = "45+234*(55+40/8)";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   int expected_result = 9;
   int actual_result = c.get_expr_size();
   ASSERT_EQ(expected_result, actual_result);
@@ -196,7 +196,7 @@ TEST(CalcTest, shunt_3) {
 TEST(CalcTest, shunt_4) {
   char str[1000] = "sin(cos(x^2)^(1*-100))*x   *tan(X)+sqrt(x/2)-log(x mod 2)";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   int expected_result = 37 - 12;
   int actual_result = c.get_expr_size();
   ASSERT_EQ(expected_result, actual_result);
@@ -205,7 +205,7 @@ TEST(CalcTest, shunt_4) {
 TEST(CalcTest, shunt_5) {
   char str[1000] = "x+1-x+x+x-x/2-x*0.01-x*2";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   int expected_result = 21;
   int actual_result = c.get_expr_size();
   ASSERT_EQ(expected_result, actual_result);
@@ -214,7 +214,7 @@ TEST(CalcTest, shunt_5) {
 TEST(CalcTest, shunt_6) {
   char str[1000] = "x+1-x+(x+(x-x/2)-x*0.01-x*2)";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   int expected_result = 21;
   int actual_result = c.get_expr_size();
   ASSERT_EQ(expected_result, actual_result);
@@ -250,7 +250,7 @@ TEST(CalcTest, expr_shunt_right_formula) {
   uint actual_result;
   CalcCore c;
   for (int i = 0; i < 13; i++) {
-    c.make_rpn_expr(str[i]);
+    c.makeRpnExpr(str[i]);
     actual_result = c.get_expr_size();
     EXPECT_EQ(expected_result[i] - count_brackets(str[i]), actual_result);
   }
@@ -267,7 +267,7 @@ TEST(CalcTest, core_functions) {
   CalcCore c;
 
   for (int i = 0; i < 10; i++) {
-    c.make_rpn_expr(str[i]);
+    c.makeRpnExpr(str[i]);
     DBPRINT("i:%d func:%s\n", i, str[i]);
     for (double x = MIN_X; x <= MAX_X; x += 100) {
       actual_result = c.calc(x);
@@ -287,7 +287,7 @@ TEST(CalcTest, core_functions) {
 TEST(CalcTest, expr_calc) {
   char str[1000] = "sin(cos(x^2)^(1*-100))*x";
   CalcCore c;
-  c.make_rpn_expr(str);
+  c.makeRpnExpr(str);
   EXPECT_TRUE(c.calc(1) - 0.7919175265 < BaseCalcData::EPS);
 }
 
@@ -295,7 +295,7 @@ TEST(CalcTest, expr_calc) {
 TEST(CalcTest, expr_calc_1) {
   char str[1000] = "sin()";
   CalcCore c;
-  ASSERT_ANY_THROW(c.make_rpn_expr(str));
+  ASSERT_ANY_THROW(c.makeRpnExpr(str));
 }
 #endif
 
@@ -303,7 +303,7 @@ TEST(CalcTest, expr_data_1) {
   ExprToken t;
   t.data() = 3;
   EXPECT_EQ(t.func(1.2, 2.3), 3);
-  EXPECT_EQ(t.priority(), ADD_SCORE);
+  EXPECT_EQ(t.priority(), kAddScore);
   EXPECT_EQ(t.name(), "3.000000");
   VarExprToken v;
   EXPECT_EQ(v.name(), "x");
@@ -367,7 +367,7 @@ TEST(CalcTest, core_random_expressions) {
   double expected_result, actual_result;
   CalcCore c;
   for (int i = 0; i < __N__; i++) {
-    c.make_rpn_expr(str[i]);
+    c.makeRpnExpr(str[i]);
     DBPRINT("i:%d func:%s\n", i, str[i]);
     for (double x = MIN_X; x <= MAX_X; x += 1000) {
       actual_result = c.calc(x);
@@ -387,7 +387,7 @@ TEST(CalcTest, core_random_expressions) {
 
 TEST(CreditTest, ann) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.get_data();
+  CreditModelData *d = (CreditModelData *)calc.getData();
   d->type = d->ANNUITET;
   d->amount = 123456;
   d->duration = 120;
@@ -403,7 +403,7 @@ TEST(CreditTest, ann) {
 
 TEST(CreditTest, ann_banki) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.get_data();
+  CreditModelData *d = (CreditModelData *)calc.getData();
   d->type = d->ANNUITET;
   d->amount = 50000;
   d->duration = 6;
@@ -417,7 +417,7 @@ TEST(CreditTest, ann_banki) {
 
 TEST(CreditTest, diff) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.get_data();
+  CreditModelData *d = (CreditModelData *)calc.getData();
   d->type = d->DIFFERENTIATED;
   d->amount = 100000;
   d->duration = 6;
@@ -445,14 +445,14 @@ TEST(CreditTest, set_data) {
   d.rate = 4.56;
   calc.set_data(&d);
   calc.calculate();
-  d = *calc.get_data();
+  d = *calc.getData();
   ASSERT_NEAR(d.total_payment, 153966.00, BaseCalcData::EPS);
   ASSERT_NEAR(d.overpayment, 30510.00, BaseCalcData::EPS);
   ASSERT_NEAR(d.monthly_payment, 1283.05, BaseCalcData::EPS);
   d.round = true;
   calc.set_data(&d);
   calc.calculate();
-  d = *calc.get_data();
+  d = *calc.getData();
   ASSERT_NEAR(d.monthly_payment, 1283, BaseCalcData::EPS);
 }
 
@@ -471,7 +471,7 @@ TEST(DepositTest, no_cap) {
     d.duration = terms[i];
     calc.set_data(&d);
     calc.calculate();
-    d = *calc.get_data();
+    d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
   }
 }
@@ -492,7 +492,7 @@ TEST(DepositTest, cap) {
     d.duration = terms[i];
     calc.set_data(&d);
     calc.calculate();
-    d = *calc.get_data();
+    d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
   }
 }
@@ -512,7 +512,7 @@ TEST(DepositTest, pay_periods_no_cap) {
     d.pay_period = periods[i];
     calc.set_data(&d);
     calc.calculate();
-    d = *calc.get_data();
+    d = *calc.getData();
 #ifndef NDEBUG
     if (i == 3)
       for (auto a : d.interests) std::cout << a << std::endl;
@@ -537,7 +537,7 @@ TEST(DepositTest, pay_periods_cap) {
     d.pay_period = periods[i];
     calc.set_data(&d);
     calc.calculate();
-    d = *calc.get_data();
+    d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
   }
 }
@@ -558,7 +558,7 @@ TEST(DepositTest, longer_period) {
     d.pay_period = periods[i];
     calc.set_data(&d);
     calc.calculate();
-    d = *calc.get_data();
+    d = *calc.getData();
     ASSERT_NEAR(d.interest, expected_results[i], 1);
   }
 }

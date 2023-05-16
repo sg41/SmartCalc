@@ -83,7 +83,7 @@ lib$(LIB).a: $(OBJECTS)
 $(TXT_APP): clean $(TXT_O) $(TXT_H) $(LIB) 
 	$(CC) $(CCOPTS) $(TXT_O) -o $@ $(LDOPTS) -l$(LIB) $(LDOPTS)
 
-tests: $(NEW_TEST_C) $(LIB)
+tests: clean $(NEW_TEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(NEW_TEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
 	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
 

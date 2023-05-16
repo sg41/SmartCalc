@@ -79,7 +79,7 @@ class GraphModel : public AbstractModel<GraphModelData> {
 
   void set_data(const GraphModelData *d) override {
     AbstractModel::set_data(d);
-    c.make_rpn_expr(data->str);
+    c.makeRpnExpr(data->str);
   };
 
  protected:

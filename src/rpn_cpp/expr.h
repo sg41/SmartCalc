@@ -1,5 +1,5 @@
-#ifndef SRC_RPR_EXPR_H_
-#define SRC_RPR_EXPR_H_
+#ifndef SRC_RPN_CPP_EXPR_H_
+#define SRC_RPN_CPP_EXPR_H_
 
 #include <math.h>
 
@@ -25,37 +25,37 @@
 namespace s21 {
 
 enum token_type {
-  OPERAND,
-  OPERATOR,
-  UNARYOPERATOR,
-  FUNCTION,
-  VARIABLE,
-  L_BRACKET,
-  R_BRACKET,
-  ERROR
+  kOperandToken,
+  kOperatorToken,
+  kUnaryOperatorToken,
+  kFunctionToken,
+  kVariableToken,
+  kLBracketToken,
+  kRBracketToken,
+  kErrorToken
 };
 
 enum precedence {
-  NO_SCORE = 0,
-  ADD_SCORE = 2,
-  SUB_SCORE = 2,
-  MUL_SCORE = 4,
-  DIV_SCORE = 4,
-  FUN_SCORE = 10,
-  EXP_SCORE = 6,
-  UOP_SCORE = 8,
-  L_SCORE = 12,
-  R_SCORE = 12,
+  kNoScore = 0,
+  kAddScore = 2,
+  kSubScore = 2,
+  kMulScore = 4,
+  kDivScore = 4,
+  kFunctionScore = 10,
+  kExponentScore = 6,
+  kUnaryOperatorScore = 8,
+  kLBracketScore = 12,
+  kRBracketScore = 12,
 };
 
-using func_type = double (*)(double, double);
+using FuncType = double (*)(double, double);
 
-class TokenData {
+typedef struct {
  public:
   token_type t;
   precedence p;
-  func_type call;
-};
+  FuncType call;
+} TokenData;
 
 class ExprToken {
  public:
@@ -66,11 +66,11 @@ class ExprToken {
   token_type state() const { return state_; };
   void setState(token_type s) { state_ = s; };
   virtual double func(double, double) { return data_; };
-  virtual precedence priority() { return ADD_SCORE; };
+  virtual precedence priority() { return kAddScore; };
   virtual std::string name() { return std::to_string(data_); };
 
  protected:
-  token_type state_ = ERROR;
+  token_type state_ = kErrorToken;
   double data_ = 0;
 };
 
@@ -89,9 +89,9 @@ class VarExprToken : public ExprToken {
 class FuncExprToken : public ExprToken {
  public:
   using ExprToken::ExprToken;
-  FuncExprToken(const std::string &n, token_type s, precedence p, func_type f)
+  FuncExprToken(const std::string &n, token_type s, precedence p, FuncType f)
       : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
-  FuncExprToken(char c_name, token_type s, precedence p, func_type f)
+  FuncExprToken(char c_name, token_type s, precedence p, FuncType f)
       : ExprToken(s, 0.0),
         priority_(p),
         fnc_(f),
@@ -107,33 +107,33 @@ class FuncExprToken : public ExprToken {
   std::string name() override { return name_; };
 
  protected:
-  precedence priority_ = ADD_SCORE;
-  func_type fnc_ = nullptr;
+  precedence priority_ = kAddScore;
+  FuncType fnc_ = nullptr;
   std::string name_;
 };
 
 class ExprSyntax {
  public:
-  ExprSyntax() { count_length(); };
-  int is_operand(const std::string &o);
-  int is_space(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
-  int is_space(const std::string &o) {
+  ExprSyntax() { countLength(); };
+  int isOperand(const std::string &o);
+  int isSpace(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
+  int isSpace(const std::string &o) {
     return spaces_.find(o[0]) != std::string::npos ? 1 : 0;
   };
-  int is_unary_operator(const std::string &exact_operator_name) {
+  int isUnaryOperator(const std::string &exact_operator_name) {
     return unary_operators_.count(exact_operator_name)
                ? exact_operator_name.size()
                : 0;
   };
-  std::pair<int, token_type> is_token(const std::string &o);
+  std::pair<int, token_type> isToken(const std::string &o);
 
-  double get_operand(const std::string &s) { return std::atof(s.data()); };
-  const TokenData &get_data(std::string s, token_type t) {
-    return t == UNARYOPERATOR ? unary_operators_[s] : operators_[s];
+  double getOperand(const std::string &s) { return std::atof(s.data()); };
+  const TokenData &getData(std::string s, token_type t) {
+    return t == kUnaryOperatorToken ? unary_operators_[s] : operators_[s];
   };
 
  protected:
-  void count_length() {
+  void countLength() {
     for (auto i : operators_) length_.insert(i.first.size());
   };
 
@@ -141,38 +141,68 @@ class ExprSyntax {
   std::string spaces_ = " \t\n\r";
   std::string operand_mask_ = "([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?).*";
   std::map<std::string, TokenData> unary_operators_{
-      {"+", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return a; }}},
-      {"-", {UNARYOPERATOR, UOP_SCORE, [](double a, double) { return -a; }}}};
+      {"+",
+       {kUnaryOperatorToken, kUnaryOperatorScore,
+        [](double a, double) { return a; }}},
+      {"-", {kUnaryOperatorToken, kUnaryOperatorScore, [](double a, double) {
+               return -a;
+             }}}};
   std::map<std::string, TokenData> operators_{
-      {"+", {OPERATOR, ADD_SCORE, [](double a, double b) { return a + b; }}},
-      {"-", {OPERATOR, SUB_SCORE, [](double a, double b) { return a - b; }}},
+      {"+",
+       {kOperatorToken, kAddScore, [](double a, double b) { return a + b; }}},
+      {"-",
+       {kOperatorToken, kSubScore, [](double a, double b) { return a - b; }}},
       {"/",
-       {OPERATOR, DIV_SCORE,
+       {kOperatorToken, kDivScore,
         [](double a, double b) { return (b != 0) ? a / b : NAN; }}},
-      {"*", {OPERATOR, MUL_SCORE, [](double a, double b) { return a * b; }}},
+      {"*",
+       {kOperatorToken, kMulScore, [](double a, double b) { return a * b; }}},
       {"%",
-       {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
+       {kOperatorToken, kDivScore,
+        [](double a, double b) { return fmod(a, b); }}},
       {"mod",
-       {OPERATOR, DIV_SCORE, [](double a, double b) { return fmod(a, b); }}},
+       {kOperatorToken, kDivScore,
+        [](double a, double b) { return fmod(a, b); }}},
       {"^",
-       {OPERATOR, EXP_SCORE, [](double a, double b) { return pow(a, b); }}},
+       {kOperatorToken, kExponentScore,
+        [](double a, double b) { return pow(a, b); }}},
       // map<std::string, TokenData> functions_{
-      {"abs", {FUNCTION, FUN_SCORE, [](double a, double) { return fabs(a); }}},
-      {"sin", {FUNCTION, FUN_SCORE, [](double a, double) { return sin(a); }}},
-      {"cos", {FUNCTION, FUN_SCORE, [](double a, double) { return cos(a); }}},
-      {"tan", {FUNCTION, FUN_SCORE, [](double a, double) { return tan(a); }}},
-      {"log", {FUNCTION, FUN_SCORE, [](double a, double) { return log10(a); }}},
-      {"ln", {FUNCTION, FUN_SCORE, [](double a, double) { return log(a); }}},
-      {"sqrt", {FUNCTION, FUN_SCORE, [](double a, double) { return sqrt(a); }}},
-      {"asin", {FUNCTION, FUN_SCORE, [](double a, double) { return asin(a); }}},
-      {"acos", {FUNCTION, FUN_SCORE, [](double a, double) { return acos(a); }}},
-      {"atan", {FUNCTION, FUN_SCORE, [](double a, double) { return atan(a); }}},
+      {"abs",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return fabs(a); }}},
+      {"sin",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return sin(a); }}},
+      {"cos",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return cos(a); }}},
+      {"tan",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return tan(a); }}},
+      {"log",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return log10(a); }}},
+      {"ln",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return log(a); }}},
+      {"sqrt",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return sqrt(a); }}},
+      {"asin",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return asin(a); }}},
+      {"acos",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return acos(a); }}},
+      {"atan",
+       {kFunctionToken, kFunctionScore,
+        [](double a, double) { return atan(a); }}},
       // Variables
-      {"x", {VARIABLE, NO_SCORE, nullptr}},
-      {"X", {VARIABLE, NO_SCORE, nullptr}},
+      {"x", {kVariableToken, kNoScore, nullptr}},
+      {"X", {kVariableToken, kNoScore, nullptr}},
       // Brackets
-      {"(", {L_BRACKET, L_SCORE, nullptr}},
-      {")", {R_BRACKET, R_SCORE, nullptr}},
+      {"(", {kLBracketToken, kLBracketScore, nullptr}},
+      {")", {kRBracketToken, kRBracketScore, nullptr}},
 
   };
 };
@@ -181,27 +211,27 @@ class TokenList : public std::list<ExprToken *> {
  public:
   using std::list<ExprToken *>::list;
   explicit TokenList(ExprSyntax *s) {
-    syntax = s;
-    brackets = 0;
+    syntax_ = s;
+    brackets_ = 0;
   };
-  ~TokenList() { clear_and_delete(); };
-  void clear_and_delete() {
+  ~TokenList() { clearAndDelete(); };
+  void clearAndDelete() {
     for (auto t : *this) delete t;
     list::clear();
   };
-  void make_infix_list(const std::string &str);
+  void makeInfixList(const std::string &str);
 
  protected:
-  ExprToken *create_token(const std::string &str, token_type t);
-  std::pair<int, token_type> find_token(const std::string &str);
-  int skip_spaces(const std::string &str);
-  void make_unary_operator();
-  bool check_syntax(bool);
-  ExprToken *before_back() {
+  ExprToken *createToken(const std::string &str, token_type t);
+  std::pair<int, token_type> findToken(const std::string &str);
+  int skipSpaces(const std::string &str);
+  void makeUnaryOperator();
+  bool checkSyntax(bool);
+  ExprToken *beforeBack() {
     return (back() == front()) ? nullptr : *(prev(end(), 2));
   };
-  int brackets = 0;
-  ExprSyntax *syntax;
+  int brackets_ = 0;
+  ExprSyntax *syntax_;
 };
 }  // namespace s21
-#endif  // SRC_RPR_EXPR_H_
+#endif  // SRC_RPN_CPP_EXPR_H_
