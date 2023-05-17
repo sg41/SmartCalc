@@ -1,57 +1,57 @@
-LDOPTS = -L.
-CCOPTS = -Wall -Werror -Wextra -DNDEBUG -g
-GTK_OPTS = -g -rdynamic `pkg-config --cflags gtk+-3.0`
-GTK_LIBS = `pkg-config --libs gtk+-3.0`
-CC = g++
-APP_ARGS = "sin(cos(x^2)^(1*-100))*x"
-TEST_APP = test.app
-TEST_C = tests/test.c
-GTEST_C = tests/gtest.cc
-TXT_APP = txt.app
-TXT_C = main.cc views/consoleview.cc
-TXT_O = $(TXT_C:.cc=.o)
-TXT_H = views/consoleview.h controllers/examplecontroller.h 
-MODELS=models/*.h 
-CONTROLLERS=controllers/*.h
-VIEWS=views/*.h views/*.cc
-NEW_TEST_C = tests/new_test.cc models/*.cc
-DOCKER_NAME=calc:1.01
-RELEASE_NAME=s21_SmartCalc-1.01
-TEXI2DVI=texi2dvi
+LDOPTS 				= -L.
+CCOPTS 				= -Wall -Werror -Wextra -DNDEBUG -g
+GTK_OPTS 			= -g -rdynamic `pkg-config --cflags gtk+-3.0`
+GTK_LIBS 			= `pkg-config --libs gtk+-3.0`
+CC 					= g++
+APP_ARGS 			= "sin(cos(x^2)^(1*-100))*x"
+TEST_APP 			= test.app
+TXT_APP 			= txt.app
+TXT_C 				= main.cc views/consoleview.cc
+TXT_O 				= $(TXT_C:.cc=.o)
+TXT_H 				= views/consoleview.h controllers/examplecontroller.h 
+MODELS				= models/*.h 
+CONTROLLERS			= controllers/*.h
+VIEWS				= views/*.h views/*.cc
+NEW_TEST_C 			= tests/new_test.cc models/*.cc
+DOCKER_NAME			= calc:2.01
+RELEASE_NAME		= s21_SmartCalc_2_01
+TEXI2DVI			= texi2dvi
+CLEAN				= rm -rf
 .SUFFIXES:
 .SUFFIXES: .cc .o
-
-# ROOT := $(shell git rev-parse --show-toplevel)
-ROOT := ../
-GCOV=-fprofile-arcs -ftest-coverage
-OS=$(shell uname)
+ROOT 				:= ../
+GCOV				= -fprofile-arcs -ftest-coverage
+OS					= $(shell uname)
 ifeq ($(OS), Linux)
-	CHECK_LIBS=$(shell pkg-config --libs gtest) -lgtest -lm
-	LIBS=-lcheck -lpthread -lrt -lm -lsubunit
-	LEAKS=CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
+	CHECK_LIBS		= $(shell pkg-config --libs gtest) -lgtest -lm
+	LIBS			= -lcheck -lpthread -lrt -lm -lsubunit
+	LEAKS			= CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
 else
-	CHECK_LIBS= -lgtest -lm
-	LIBS=-lcheck
-	LEAKS=CK_FORK=no leaks --atExit -- 
+	CHECK_LIBS		= -lgtest -lm
+	LIBS			= -lcheck
+	LEAKS			= CK_FORK=no leaks --atExit -- 
 endif
 
-APP = graph.app
-LIB = s21_SmartCalc
-SRC_DIR=$(ROOT)/src
-OBJECTS = rpn_cpp/expr.o rpn_cpp/core.o
-SOURCES = $(OBJECTS:.o=.cc)
-HEADERS = $(OBJECTS:.o=.h)
-INST_DIR=../build
+LIB 				= s21_SmartCalc
+SRC_DIR				=$(ROOT)/src
+OBJECTS 			= rpn_cpp/expr.o rpn_cpp/core.o
+SOURCES 				= $(OBJECTS:.o=.cc)
+HEADERS 			= $(OBJECTS:.o=.h)
+INST_DIR			=../build
+NAME				= Calc_2_0
 
-# all:  graph gtk 
+all:  install
 
 .cc.o:
 	$(CC) -c $(CCOPTS) -o $@ $<
 
-dvi: doc.dvi
+dvi:
+	makeinfo -o $(INST_DIR) --html --no-warn --no-validate --force $(DOCUMENT).texi
 
-doc.dvi: doc.texi
-	$(TEXI2DVI) $(SRC_DIR)/doc.texi
+# dvi: doc.dvi
+
+# doc.dvi: doc.texi
+# 	$(TEXI2DVI) $(SRC_DIR)/doc.texi
 
 dist: clean $(SOURCES) graph.c graph.h gtk.c gtk.h
 	[ -d $(RELEASE_NAME) ] || mkdir $(RELEASE_NAME)
@@ -62,16 +62,17 @@ dist: clean $(SOURCES) graph.c graph.h gtk.c gtk.h
 	tar -czf $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
 	rm -rf $(RELEASE_NAME)
 	
-install: $(INST_DIR)/gtk.app
+install: lib
+	qmake CONFIG+=release -o $(INST_DIR)/Makefile $(NAME)/$(NAME).pro
+	-cd $(INST_DIR); make
+	-cd $(INST_DIR); make clean
+	$(CLEAN) $(INST_DIR)/Makefile
+	$(CLEAN) $(INST_DIR)/.qmake.stash
+	$(CLEAN) $(INST_DIR)/qmake_qmake_qm_files.qrc
+	$(CLEAN) $(INST_DIR)/.qm
 
-$(INST_DIR)/gtk.app: gtk $(APP)
-	[ -d $(INST_DIR) ] || mkdir $(INST_DIR)
-	cp gtk.app newversion-v9.ui $(APP) $(INST_DIR)
-	cp run.sh $(INST_DIR)
-
-uninstall: 
-	rm -rf $(INST_DIR)/gtk.app $(INST_DIR)/newversion-v9.ui $(INST_DIR)/$(APP) $(INST_DIR)/run.sh
-	-[ `ls -a $(INST_DIR)| wc -l` -eq 2 ] && rm -rf $(INST_DIR)
+uninstall: clean
+	$(CLEAN) $(INST_DIR)	
 
 lib: $(LIB)
 
@@ -108,7 +109,7 @@ check: $(SOURCES) $(HEADERS)
 	clang-format -n Calc_2_0/*.cc
 	clang-format -n Calc_2_0/*.h
 check2: 
-	cppcheck --enable=all --suppress=syntaxError --suppress=missingInclude \
+	cppcheck --std=c++17 --enable=all --language=c++ --suppress=missingInclude \
 	--suppress=unusedFunction \
 	-i $(ROOT)src/Calc_2_0/QCP -i $(ROOT)src/build* $(ROOT)src/
 
@@ -118,7 +119,7 @@ clean:
 	rm -rf $(OBJECTS) $(TXT_O) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
 	rm -rf *.o $(TEST_APP) lib$(LIB).a $(OBJECTS) *.a *.gcno *.gcda *.gcov *.info CPPLINT.cfg .clang-format *.app *.log *.aux *.dvi *.toc report
 
-rebuild: clean all
+rebuild: clean uninstall all
 
 leaks: $(TXT_APP)
 	$(LEAKS) ./$(TXT_APP) $(APP_ARGS)
@@ -138,30 +139,3 @@ gcov_report: clean $(NEW_TEST_C)
 	[ -d $(ROOT)/src/report ] || mkdir $(ROOT)/src/report
 	genhtml -o $(ROOT)/src/report gcov_report.info
 	rm -rf *.o $(TEST_APP) lib$(LIB).a $(OBJECTS) *.a *.gcno *.gcda *.gcov *.info $(TEST_C)
-
-docker_build: clean
-ifeq ($(OS), Linux)
-		rm -rf report
-		sudo docker build . -t $(DOCKER_NAME)
-endif
-
-docker_run: clean
-ifeq ($(OS), Linux)
-		rm -rf report
-		sudo docker build . -t $(DOCKER_NAME)
-		sudo docker run -p 80:80 --rm $(DOCKER_NAME)
-else
-		rm -rf report
-		docker build . -t $(DOCKER_NAME)
-		docker run -p 80:80 --rm $(DOCKER_NAME)
-endif
-
-docker_bash: clean
-ifeq ($(OS), Linux)
-		rm -rf report
-		sudo docker build . -t $(DOCKER_NAME)
-		sudo docker run --rm -it -p 80:80 --entrypoint bash $(DOCKER_NAME)
-endif
-
-broadway: gtk
-	sudo ./run.sh
