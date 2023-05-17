@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-#include "../controllers/exampleController.h"
-#include "../models/creditModel.h"
+#include "../controllers/examplecontroller.h"
+#include "../models/creditmodel.h"
 using namespace s21;
 
 namespace Ui {

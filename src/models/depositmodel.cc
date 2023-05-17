@@ -1,27 +1,7 @@
-#include "depositModel.h"
+#include "depositmodel.h"
 
 #include <numeric>
 using namespace s21;
-
-/**
- * @brief check is any long year in period days from today
- *
- * @param days period length in days
- * @return int 0 if no long years >0 if it is
- */
-int check_long_year(int days) {
-  int result = 0;
-  time_t current_time, future_time;
-  /* Obtain current time. */
-  current_time = time(NULL);
-  future_time = current_time + days * kSecondsPerDay;
-  struct tm current_date = *localtime(&current_time);
-  struct tm future_date = *localtime(&future_time);
-  for (int i = current_date.tm_year; i <= future_date.tm_year; i++) {
-    if (i % 4 == 0) result++;
-  }
-  return result;
-}
 
 /**
  * @brief Get the number of days in the 'period' months from today+startday
@@ -93,19 +73,6 @@ int get_days_per_year(int days) {
   return result;
 }
 
-int has_new_year(int start_day, int days) {
-  int result = 0;
-  time_t start_time, future_time;
-  /* Obtain current time. */
-  start_time = time(NULL);
-  start_time += start_day * kSecondsPerDay;
-  future_time = start_time + days * kSecondsPerDay;
-  struct tm start_date = *localtime(&start_time);
-  struct tm future_date = *localtime(&future_time);
-  if (future_date.tm_year != start_date.tm_year) result = 1;
-  return result;
-}
-
 int get_days_until_new_year(int start_day) {
   int result = 0;
   time_t start_time, future_time;
@@ -130,13 +97,6 @@ long double DepositModel::calcSimpleDailyInterest(long double sum, int startday,
     res = round(sum * data_->rate * days / get_days_per_year(startday + days)) /
           100.;
   } else {
-    //! recursive calculation gives bad accuracy
-    // res = round(sum * data_->rate * days_to_new_year /
-    //             get_days_per_year(startday)) /
-    //           100. +
-    //       calcSimpleDailyInterest(sum, startday + days_to_new_year + 1,
-    //                                  days - days_to_new_year);
-
     res = bank_round(sum * data_->rate * days_to_new_year /
                          get_days_per_year(startday) +
                      sum * data_->rate * (days - days_to_new_year) /
@@ -155,10 +115,7 @@ double DepositModel::calcComplexInterest() {
   double current_interest;
   data_->interests.clear();
   double replenishment = data_->replenishment;
-  // std::accumulate(data_->replenishments.begin(),
-  //                                        data_->replenishments.end(), 0);
   double withdrawal = data_->withdrawal;
-  // std::accumulate(data_->withdrawals.begin(), data_->withdrawals.end(), 0);
   data_->interest = 0;
 
   for (int i = 0, n = 0; i < term - rest; i += period, n++) {

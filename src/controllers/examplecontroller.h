@@ -1,7 +1,7 @@
 #ifndef _SRC__CONTROLLERS_EXAMPLECONTROLLER_H
 #define _SRC__CONTROLLERS_EXAMPLECONTROLLER_H
 
-#include "../models/baseModel.h"
+#include "../models/basemodel.h"
 namespace s21 {
 using BaseModel = AbstractModel<BaseCalcData>;
 

@@ -145,10 +145,10 @@ void QtGraphCalcView::setupGeometry() {
               (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
   m_data.dy = 1. / ((double)(-m_data.clip_y2 + m_data.clip_y1) /
                     (m_data.max_y - m_data.min_y));
-  ui->graph_area->graph(0)->setName(QString(m_data.str.substr(0, 17).c_str()) +
-                                    ((m_data.str.size() > 17) ? "..." : "") +
-                                    "\nScale x=" + QString::number(m_data.dx) +
-                                    "\nScale y=" + QString::number(m_data.dy));
+  ui->graph_area->graph(0)->setName(
+      QString(m_data.str.substr(0, kMaxLegendTextLen).c_str()) +
+      ((m_data.str.size() > kMaxLegendTextLen) ? "..." : "") + "\nScale x=" +
+      QString::number(m_data.dx) + "\nScale y=" + QString::number(m_data.dy));
 }
 
 void QtGraphCalcView::resizeEvent(QResizeEvent *event) {

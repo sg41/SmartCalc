@@ -8,9 +8,9 @@ TEST_APP = test.app
 TEST_C = tests/test.c
 GTEST_C = tests/gtest.cc
 TXT_APP = txt.app
-TXT_C = main.cc views/consoleView.cc
+TXT_C = main.cc views/consoleview.cc
 TXT_O = $(TXT_C:.cc=.o)
-TXT_H = views/consoleView.h controllers/exampleController.h 
+TXT_H = views/consoleview.h controllers/examplecontroller.h 
 MODELS=models/*.h 
 CONTROLLERS=controllers/*.h
 VIEWS=views/*.h views/*.cc
@@ -105,6 +105,8 @@ check: $(SOURCES) $(HEADERS)
 	clang-format -n $(MODELS)
 	clang-format -n $(CONTROLLERS)
 	clang-format -n $(VIEWS)
+	clang-format -n Calc_2_0/*.cc
+	clang-format -n Calc_2_0/*.h
 check2: 
 	cppcheck --enable=all --suppress=syntaxError --suppress=missingInclude \
 	--suppress=unusedFunction \

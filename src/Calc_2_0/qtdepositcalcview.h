@@ -4,8 +4,8 @@
 #include <QListWidgetItem>
 #include <QWidget>
 
-#include "../controllers/exampleController.h"
-#include "../models/depositModel.h"
+#include "../controllers/examplecontroller.h"
+#include "../models/depositmodel.h"
 #include "depositchangedialog.h"
 using namespace s21;
 

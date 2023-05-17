@@ -1,5 +1,5 @@
-#include "controllers/exampleController.h"
-#include "views/consoleView.h"
+#include "controllers/examplecontroller.h"
+#include "views/consoleview.h"
 
 using namespace s21;
 

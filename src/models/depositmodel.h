@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../rpn_cpp/core.h"
-#include "creditModel.h"
+#include "creditmodel.h"
 
 namespace s21 {
 const static int kSecondsPerDay = 86400;

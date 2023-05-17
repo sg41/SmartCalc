@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "../rpn_cpp/core.h"
-#include "baseModel.h"
+#include "basemodel.h"
 
 namespace s21 {
 struct GraphModelData : public BaseCalcData {

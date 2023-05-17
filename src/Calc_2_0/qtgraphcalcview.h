@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-#include "../controllers/exampleController.h"
-#include "../models/graphModel.h"
+#include "../controllers/examplecontroller.h"
+#include "../models/graphmodel.h"
 #include "qcustomplot.h"  // the header file of QCustomPlot. Don't forget to add it to your project, if you use an IDE, so it gets compiled.
 using namespace s21;
 
@@ -27,6 +27,7 @@ class QtGraphCalcView : public QWidget,
   // Observer staff
   void observerUpdate(const GraphModelData *model_data) override;
   GraphModelData m_data;
+  static const int kMaxLegendTextLen = 17;
 
  private slots:
   void on_graph_area_customContextMenuRequested(const QPoint &pos);

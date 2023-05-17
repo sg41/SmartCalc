@@ -9,7 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ../models/depositModel.cc \
+    ../models/depositmodel.cc \
     QCP/qcustomplot.cpp \
     depositchangedialog.cc \
     main.cc \
@@ -19,11 +19,11 @@ SOURCES += \
     qtgraphcalcview.cc
 
 HEADERS += \
-    ../controllers/exampleController.h \
-    ../models/baseModel.h \
-    ../models/creditModel.h \
-    ../models/depositModel.h \
-    ../models/graphModel.h \
+    ../controllers/examplecontroller.h \
+    ../models/basemodel.h \
+    ../models/creditmodel.h \
+    ../models/depositmodel.h \
+    ../models/graphmodel.h \
     QCP/qcustomplot.h \
     depositchangedialog.h \
     mainwindow.h \

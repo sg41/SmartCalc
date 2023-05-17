@@ -1,11 +1,8 @@
 #include <gtest/gtest.h>
 
-#define MIN_X -1000000
-#define MAX_X 1000000
-
-#include "../models/creditModel.h"
-#include "../models/depositModel.h"
-#include "../models/graphModel.h"
+#include "../models/creditmodel.h"
+#include "../models/depositmodel.h"
+#include "../models/graphmodel.h"
 #include "../rpn_cpp/core.h"
 
 using namespace s21;
@@ -16,6 +13,9 @@ class TestObserver : public ModelObserverInterface<GraphModelData> {
     std::cout << d->clip_x1 << std::endl;
   };
 };
+static const int kTestMinX = -1000000;
+static const int kTestMaxX = 1000000;
+static const int kTestFinanceEpsilon = 1;
 
 TEST(CalcTest, model) {
   TestObserver o;
@@ -50,6 +50,34 @@ TEST(CalcTest, model) {
   EXPECT_EQ(m1.getData()->str, "sin(x)");
   GraphModel m3(std::move(GraphModel()));
   EXPECT_EQ(m3.getData()->min_y, -1);
+}
+
+TEST(CalcTest, model_tan_calc) {
+  GraphModel m;
+  GraphModelData d;
+  d.str = "tan(X)";
+  d.dx = 0.0001;
+  m.setData(&d);
+  m.calculate();
+  bool res = false;
+  for (auto n : m.getData()->y_vect) {
+    if (isnan(n)) res = true;
+  }
+  EXPECT_TRUE(res);
+}
+
+TEST(CalcTest, model_1_x_calc) {
+  GraphModel m;
+  GraphModelData d;
+  d.str = "X^x";
+  d.dx = 0.0001;
+  m.setData(&d);
+  m.calculate();
+  bool res = false;
+  for (auto n : m.getData()->y_vect) {
+    if (isinf(n)) res = true;
+  }
+  EXPECT_TRUE(res);
 }
 
 TEST(CalcTest, regex_5) {
@@ -269,7 +297,7 @@ TEST(CalcTest, core_functions) {
   for (int i = 0; i < 10; i++) {
     c.makeRpnExpr(str[i]);
     DBPRINT("i:%d func:%s\n", i, str[i]);
-    for (double x = MIN_X; x <= MAX_X; x += 100) {
+    for (double x = kTestMinX; x <= kTestMaxX; x += 100) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
@@ -344,8 +372,9 @@ double ex11(double x) {
 }
 double ex12(double x) { return pow(-27, 1. / 3.) + x - x; }
 double ex13(double x) { return fabs(sin(fabs(x))); }
+double ex14(double x) { return sin(cos(tan(x))); }
 TEST(CalcTest, core_random_expressions) {
-#define __N__ 13
+#define __N__ 14
   char str[__N__][1000] = {
       "sin(cos(x^2)^(1*-100))*x   *tan(X)+sqrt(+x/2)-log(x % 2)",
       "sin(cos(x^2)^(1*-100))*x",
@@ -361,16 +390,17 @@ TEST(CalcTest, core_random_expressions) {
       " 3.14*sin(x)^2+3.14/2*sin(x)*cos(x)+3.14/4*cos(+x)^2",
       "13*cos(x)-5*cos(2*x)-2*cos(3*x)-cos(4*x)",
       "-27^(1/3)",
-      "abs(sin(abs(x)))"};
+      "abs(sin(abs(x)))",
+      "sin(cos(tan(x)))"};
   typedef double (*f_ptr)(double x);
-  f_ptr functions[__N__] = {ex1, ex2, ex3,  ex4,  ex5,  ex6, ex7,
-                            ex8, ex9, ex10, ex11, ex12, ex13};
+  f_ptr functions[__N__] = {ex1, ex2, ex3,  ex4,  ex5,  ex6,  ex7,
+                            ex8, ex9, ex10, ex11, ex12, ex13, ex14};
   double expected_result, actual_result;
   CalcCore c;
   for (int i = 0; i < __N__; i++) {
     c.makeRpnExpr(str[i]);
     DBPRINT("i:%d func:%s\n", i, str[i]);
-    for (double x = MIN_X; x <= MAX_X; x += 1000) {
+    for (double x = kTestMinX; x <= kTestMaxX; x += 1000) {
       actual_result = c.calc(x);
       expected_result = functions[i](x);
       if (isfinite(expected_result)) {
@@ -401,6 +431,18 @@ TEST(CreditTest, ann) {
   d->round = true;
   calc.calculate();
   ASSERT_NEAR(d->monthly_payment, 1283, BaseCalcData::kEpsilon);
+}
+
+TEST(CreditTest, small) {
+  CreditModel calc;
+  CreditModelData *d = (CreditModelData *)calc.getData();
+  d->type = d->kAnnuity;
+  d->amount = 1;
+  d->duration = 120;
+  d->rate = 0.001;
+  d->round = true;
+  calc.calculate();
+  ASSERT_NEAR(d->error, 2, BaseCalcData::kEpsilon);
 }
 
 TEST(CreditTest, ann_banki) {
@@ -463,7 +505,6 @@ TEST(DepositTest, no_cap) {
   DepositModel calc;
   DepositModelData d;
   d.amount = 100000;
-  // d.duration = 6;
   d.rate = 9.5;
   d.pay_period = 30;
   const int terms[]{1, 3, 6, 7, 8, 9, 12, 36, 60};
@@ -475,7 +516,7 @@ TEST(DepositTest, no_cap) {
     calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
-    ASSERT_NEAR(d.interest, expected_results[i], 1);
+    ASSERT_NEAR(d.interest, expected_results[i], kTestFinanceEpsilon);
   }
 }
 
@@ -483,7 +524,6 @@ TEST(DepositTest, cap) {
   DepositModel calc;
   DepositModelData d;
   d.amount = 100000;
-  // d.duration = 6;
   d.rate = 9.5;
   d.pay_period = 30;
   d.int_cap = true;
@@ -496,7 +536,7 @@ TEST(DepositTest, cap) {
     calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
-    ASSERT_NEAR(d.interest, expected_results[i], 1);
+    ASSERT_NEAR(d.interest, expected_results[i], kTestFinanceEpsilon);
   }
 }
 
@@ -506,7 +546,6 @@ TEST(DepositTest, pay_periods_no_cap) {
   d.amount = 100000;
   d.duration = 60;
   d.rate = 9.5;
-  // d.pay_period = 30;
   int const periods[]{1, 7, 30, 90, 180, 360};
   double expected_results[]{47521.81, 47515.89, 47516.45, 47516.51,
                             47516.51, 47516.50, 47516.50};
@@ -520,7 +559,7 @@ TEST(DepositTest, pay_periods_no_cap) {
     if (i == 3)
       for (auto a : d.interests) std::cout << a << std::endl;
 #endif
-    ASSERT_NEAR(d.interest, expected_results[i], 1);
+    ASSERT_NEAR(d.interest, expected_results[i], kTestFinanceEpsilon);
   }
 }
 
@@ -530,7 +569,6 @@ TEST(DepositTest, pay_periods_cap) {
   d.amount = 100000;
   d.duration = 60;
   d.rate = 9.5;
-  // d.pay_period = 30;
   d.int_cap = true;
   const int periods[]{1, 7, 30, 90, 180, 360};
   double expected_results[]{60818.37, 60758.53, 60527.02,
@@ -541,7 +579,7 @@ TEST(DepositTest, pay_periods_cap) {
     calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
-    ASSERT_NEAR(d.interest, expected_results[i], 1);
+    ASSERT_NEAR(d.interest, expected_results[i], kTestFinanceEpsilon);
   }
 }
 
@@ -551,7 +589,6 @@ TEST(DepositTest, longer_period) {
   d.amount = 100000;
   d.duration = 3;
   d.rate = 9.5;
-  // d.pay_period = 90;
   d.int_cap = true;
   int const periods[]{1, 7, 30, 90, 180, 360};
   double expected_results[]{2423.10, 2421.21, 2413.68,
@@ -562,7 +599,7 @@ TEST(DepositTest, longer_period) {
     calc.setData(&d);
     calc.calculate();
     d = *calc.getData();
-    ASSERT_NEAR(d.interest, expected_results[i], 1);
+    ASSERT_NEAR(d.interest, expected_results[i], kTestFinanceEpsilon);
   }
 }
 
