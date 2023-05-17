@@ -199,7 +199,7 @@ TEST(CalcTest, shunt_1) {
   CalcCore c;
   c.makeRpnExpr(str);
   int expected_result = 12;
-  int actual_result = c.get_expr_size();
+  int actual_result = c.getExprSize();
   ASSERT_EQ(expected_result, actual_result);
 }
 
@@ -208,7 +208,7 @@ TEST(CalcTest, shunt_2) {
   CalcCore c;
   c.makeRpnExpr(str);
   int expected_result = 3;
-  int actual_result = c.get_expr_size();
+  int actual_result = c.getExprSize();
   ASSERT_EQ(expected_result, actual_result);
 }
 
@@ -217,7 +217,7 @@ TEST(CalcTest, shunt_3) {
   CalcCore c;
   c.makeRpnExpr(str);
   int expected_result = 9;
-  int actual_result = c.get_expr_size();
+  int actual_result = c.getExprSize();
   ASSERT_EQ(expected_result, actual_result);
 }
 
@@ -226,7 +226,7 @@ TEST(CalcTest, shunt_4) {
   CalcCore c;
   c.makeRpnExpr(str);
   int expected_result = 37 - 12;
-  int actual_result = c.get_expr_size();
+  int actual_result = c.getExprSize();
   ASSERT_EQ(expected_result, actual_result);
 }
 
@@ -235,7 +235,7 @@ TEST(CalcTest, shunt_5) {
   CalcCore c;
   c.makeRpnExpr(str);
   int expected_result = 21;
-  int actual_result = c.get_expr_size();
+  int actual_result = c.getExprSize();
   ASSERT_EQ(expected_result, actual_result);
 }
 
@@ -244,7 +244,7 @@ TEST(CalcTest, shunt_6) {
   CalcCore c;
   c.makeRpnExpr(str);
   int expected_result = 21;
-  int actual_result = c.get_expr_size();
+  int actual_result = c.getExprSize();
   ASSERT_EQ(expected_result, actual_result);
 }
 
@@ -279,7 +279,7 @@ TEST(CalcTest, expr_shunt_right_formula) {
   CalcCore c;
   for (int i = 0; i < 13; i++) {
     c.makeRpnExpr(str[i]);
-    actual_result = c.get_expr_size();
+    actual_result = c.getExprSize();
     EXPECT_EQ(expected_result[i] - count_brackets(str[i]), actual_result);
   }
 }

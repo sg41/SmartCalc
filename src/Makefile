@@ -14,8 +14,9 @@ CONTROLLERS			= controllers/*.h
 VIEWS				= views/*.h views/*.cc
 NEW_TEST_C 			= tests/new_test.cc models/*.cc
 DOCKER_NAME			= calc:2.01
-RELEASE_NAME		= s21_SmartCalc_2_01
+RELEASE_NAME		= s21_SmartCalc-2.01
 TEXI2DVI			= texi2dvi
+DOC_NAME			= doc
 CLEAN				= rm -rf
 .SUFFIXES:
 .SUFFIXES: .cc .o
@@ -45,13 +46,11 @@ all:  install
 .cc.o:
 	$(CC) -c $(CCOPTS) -o $@ $<
 
-dvi:
-	makeinfo -o $(INST_DIR) --html --no-warn --no-validate --force $(DOCUMENT).texi
 
-# dvi: doc.dvi
+dvi: $(DOC_NAME).dvi
 
-# doc.dvi: doc.texi
-# 	$(TEXI2DVI) $(SRC_DIR)/doc.texi
+$(DOC_NAME).dvi: $(DOC_NAME).texi
+	$(TEXI2DVI) $(SRC_DIR)/$(DOC_NAME).texi
 
 dist: clean $(SOURCES) graph.c graph.h gtk.c gtk.h
 	[ -d $(RELEASE_NAME) ] || mkdir $(RELEASE_NAME)
@@ -109,8 +108,8 @@ check: $(SOURCES) $(HEADERS)
 	clang-format -n Calc_2_0/*.cc
 	clang-format -n Calc_2_0/*.h
 check2: 
-	cppcheck --std=c++17 --enable=all --language=c++ --suppress=missingInclude \
-	--suppress=unusedFunction \
+	cppcheck --std=c++17 --enable=all --language=c++ \
+	--suppress=missingInclude --suppress=unusedFunction \
 	-i $(ROOT)src/Calc_2_0/QCP -i $(ROOT)src/build* $(ROOT)src/
 
 .PHONY: all clean rebuild check2
