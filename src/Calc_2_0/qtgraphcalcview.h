@@ -5,7 +5,7 @@
 
 #include "../controllers/examplecontroller.h"
 #include "../models/graphmodel.h"
-#include "qcustomplot.h"  // the header file of QCustomPlot. Don't forget to add it to your project, if you use an IDE, so it gets compiled.
+#include "QCP/qcustomplot.h"
 using namespace s21;
 
 QT_BEGIN_NAMESPACE
