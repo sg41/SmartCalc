@@ -1,6 +1,7 @@
 #ifndef _SRC_MODELS_GRAPHMODEL_H_
 #define _SRC_MODELS_GRAPHMODEL_H_
 
+#include <limits>
 #include <vector>
 
 #include "../rpn_cpp/core.h"

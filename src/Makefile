@@ -5,13 +5,13 @@ GTK_LIBS 			= `pkg-config --libs gtk+-3.0`
 CC 					= g++
 APP_ARGS 			= "sin(cos(x^2)^(1*-100))*x"
 TEST_APP 			= test.app
-TXT_APP 			= txt.app
-TXT_C 				= main.cc views/consoleview.cc
+TXT_APP 			= console.app
+TXT_C 				= consoleapp.cc consoleview/consoleview.cc
 TXT_O 				= $(TXT_C:.cc=.o)
-TXT_H 				= views/consoleview.h controllers/examplecontroller.h 
+TXT_H 				= consoleview/consoleview.h controllers/examplecontroller.h 
 MODELS				= models/*.h 
 CONTROLLERS			= controllers/*.h
-VIEWS				= views/*.h views/*.cc
+VIEWS				= consoleview/*.h consoleview/*.cc
 NEW_TEST_C 			= tests/new_test.cc models/*.cc
 DOCKER_NAME			= calc:2.01
 RELEASE_NAME		= s21_SmartCalc-2.01
@@ -34,11 +34,11 @@ else
 endif
 
 LIB 				= s21_SmartCalc
-SRC_DIR				=$(ROOT)/src
+SRC_DIR				= $(ROOT)/src
 OBJECTS 			= rpn_cpp/expr.o rpn_cpp/core.o
-SOURCES 				= $(OBJECTS:.o=.cc)
+SOURCES 			= $(OBJECTS:.o=.cc)
 HEADERS 			= $(OBJECTS:.o=.h)
-INST_DIR			=../build
+INST_DIR			= $(ROOT)/build
 NAME				= Calc_2_0
 
 all:  install
@@ -52,7 +52,7 @@ dvi: $(DOC_NAME).dvi
 $(DOC_NAME).dvi: $(DOC_NAME).texi
 	$(TEXI2DVI) $(SRC_DIR)/$(DOC_NAME).texi
 
-dist: clean $(SOURCES) graph.c graph.h gtk.c gtk.h
+dist: clean $(SOURCES)
 	[ -d $(RELEASE_NAME) ] || mkdir $(RELEASE_NAME)
 	cp *.c *.h Makefile Dockerfile newversion-v9.ui run.sh ../LICENSE ../README.md $(RELEASE_NAME)/
 	mkdir $(RELEASE_NAME)/rpr
@@ -110,6 +110,7 @@ check: $(SOURCES) $(HEADERS)
 check2: 
 	cppcheck --std=c++17 --enable=all --language=c++ \
 	--suppress=missingInclude --suppress=unusedFunction \
+	--suppress=unknownMacro --suppress=knownConditionTrueFalse \
 	-i $(ROOT)src/Calc_2_0/QCP -i $(ROOT)src/build* $(ROOT)src/
 
 .PHONY: all clean rebuild check2
