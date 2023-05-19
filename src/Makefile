@@ -23,12 +23,12 @@ CLEAN				= rm -rf
 ROOT 				:= ../
 GCOV				= -fprofile-arcs -ftest-coverage
 OS					= $(shell uname)
+CHECK_LIBS			= $(shell pkg-config --libs gtest) -lgtest -lm
+
 ifeq ($(OS), Linux)
-	CHECK_LIBS		= $(shell pkg-config --libs gtest) -lgtest -lm
 	LIBS			= -lcheck -lpthread -lrt -lm -lsubunit
 	LEAKS			= CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
 else
-	CHECK_LIBS		=  $(shell pkg-config --libs gtest) -lgtest -lm 
 	LIBS			= -lcheck
 	LEAKS			= CK_FORK=no leaks --atExit -- 
 endif

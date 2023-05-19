@@ -24,13 +24,16 @@ TEST(CalcTest, model) {
   m1.notifyObservers();
   m1.removeObserver(&o);
   m1.notifyObservers();
-  GraphModelData *d = (GraphModelData *)m1.getData();
+  GraphModelData data = *(m1.getData());
+  GraphModelData *d = &data;
   EXPECT_EQ(m1.validateData(), 0);
   d->max_x = GraphModelData::kVeryMaxX + 10;
   EXPECT_GT(d->max_x, GraphModelData::kVeryMaxX + 0);
+  m1.setData(d);
   EXPECT_NE(m1.validateData(), 0);
   GraphModel m2(m1);
-  GraphModelData *d2 = (GraphModelData *)m2.getData();
+  GraphModelData data2 = *(m2.getData());
+  GraphModelData *d2 = &data2;
   EXPECT_GT(d2->max_x, GraphModelData::kVeryMaxX + 0);
   d2->x = 999;
   EXPECT_NE(d->x, d2->x);
@@ -421,41 +424,52 @@ TEST(CalcTest, core_random_expressions) {
 
 TEST(CreditTest, ann) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.getData();
+  CreditModelData data = *(calc.getData());
+  CreditModelData *d = &data;
   d->type = d->kAnnuity;
   d->amount = 123456;
   d->duration = 120;
   d->rate = 4.56;
+  calc.setData(d);
   calc.calculate();
+  data = *calc.getData();
   ASSERT_NEAR(d->total_payment, 153966.00, BaseCalcData::kEpsilon);
   ASSERT_NEAR(d->overpayment, 30510.00, BaseCalcData::kEpsilon);
   ASSERT_NEAR(d->monthly_payment, 1283.05, BaseCalcData::kEpsilon);
   d->round = true;
+  calc.setData(d);
   calc.calculate();
+  data = *calc.getData();
   ASSERT_NEAR(d->monthly_payment, 1283, BaseCalcData::kEpsilon);
 }
 
 TEST(CreditTest, small) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.getData();
+  CreditModelData data = *(calc.getData());
+  CreditModelData *d = &data;
   d->type = d->kAnnuity;
   d->amount = 1;
   d->duration = 120;
   d->rate = 0.001;
   d->round = true;
+  calc.setData(d);
   calc.calculate();
+  data = *calc.getData();
   ASSERT_NEAR(d->error, 2, BaseCalcData::kEpsilon);
 }
 
 TEST(CreditTest, ann_banki) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.getData();
+  CreditModelData data = *(calc.getData());
+  CreditModelData *d = &data;
   d->type = d->kAnnuity;
   d->amount = 50000;
   d->duration = 6;
   d->rate = 14;
   d->round = true;
+  calc.setData(d);
   calc.calculate();
+  data = *calc.getData();
   ASSERT_NEAR(d->total_payment, 52062, BaseCalcData::kEpsilon);
   ASSERT_NEAR(d->overpayment, 2062, BaseCalcData::kEpsilon);
   ASSERT_NEAR(d->monthly_payment, 8677, BaseCalcData::kEpsilon);
@@ -463,12 +477,15 @@ TEST(CreditTest, ann_banki) {
 
 TEST(CreditTest, diff) {
   CreditModel calc;
-  CreditModelData *d = (CreditModelData *)calc.getData();
+  CreditModelData data = *(calc.getData());
+  CreditModelData *d = &data;
   d->type = d->kDifferentiated;
   d->amount = 100000;
   d->duration = 6;
   d->rate = 12.5;
+  calc.setData(d);
   calc.calculate();
+  data = *calc.getData();
   ASSERT_NEAR(d->total_payment, 103645.83, BaseCalcData::kEpsilon);
   ASSERT_NEAR(d->overpayment, 3645.83, BaseCalcData::kEpsilon);
   std::vector<double> expected_mp = {17708.33, 17534.72, 17361.11,
@@ -478,7 +495,9 @@ TEST(CreditTest, diff) {
                 BaseCalcData::kEpsilon);
   }
   d->round = true;
+  calc.setData(d);
   calc.calculate();
+  data = *calc.getData();
   ASSERT_NEAR(d->total_payment, 103646, BaseCalcData::kEpsilon);
   ASSERT_NEAR(d->overpayment, 3646, BaseCalcData::kEpsilon);
 }
