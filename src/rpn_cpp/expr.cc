@@ -107,13 +107,13 @@ ExprToken *TokenList::createToken(const std::string &str_token, TokenType t) {
     token = new FuncExprToken(str_token, syntax_->getData(str_token, t));
   if (t == kLBracketToken) {
     brackets_++;
-  } else if ((t == kRBracketToken)) {
+  } else if (t == kRBracketToken) {
     brackets_--;
   }
-  if ((t == kOperandToken)) {
+  if (t == kOperandToken) {
     token = new ExprToken(t, syntax_->getOperand(str_token));
   }
-  if ((t == kVariableToken)) {
+  if (t == kVariableToken) {
     token = new VarExprToken(t, str_token);
   }
 

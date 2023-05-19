@@ -1,5 +1,5 @@
 LDOPTS 				= -L.
-CCOPTS 				= -Wall -Werror -Wextra -DNDEBUG -g
+CCOPTS 				= --std=c++17 -Wall -Werror -Wextra -DNDEBUG -g $(shell pkg-config --cflags gtest)
 GTK_OPTS 			= -g -rdynamic `pkg-config --cflags gtk+-3.0`
 GTK_LIBS 			= `pkg-config --libs gtk+-3.0`
 CC 					= g++
@@ -28,7 +28,7 @@ ifeq ($(OS), Linux)
 	LIBS			= -lcheck -lpthread -lrt -lm -lsubunit
 	LEAKS			= CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
 else
-	CHECK_LIBS		= -lgtest -lm
+	CHECK_LIBS		=  $(shell pkg-config --libs gtest) -lgtest -lm 
 	LIBS			= -lcheck
 	LEAKS			= CK_FORK=no leaks --atExit -- 
 endif

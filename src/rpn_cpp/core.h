@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <list>
+#include <stack>
 #include <string>
 
 #include "expr.h"

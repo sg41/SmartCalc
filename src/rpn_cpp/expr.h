@@ -51,7 +51,6 @@ enum Precedence {
 using FuncType = double (*)(double, double);
 
 typedef struct {
- public:
   TokenType t;
   Precedence p;
   FuncType call;

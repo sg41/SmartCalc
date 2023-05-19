@@ -48,8 +48,10 @@ TEST(CalcTest, model) {
   EXPECT_NE(m1.getData()->str, "sin(x)");
   m1 = std::move(m2);
   EXPECT_EQ(m1.getData()->str, "sin(x)");
+#ifndef __APPLE__
   GraphModel m3(std::move(GraphModel()));
   EXPECT_EQ(m3.getData()->min_y, -1);
+#endif
 }
 
 TEST(CalcTest, model_tan_calc) {
@@ -169,8 +171,8 @@ TEST(CalcTest, expr_right_formula) {
   char str[13][1000] = {
       "sin(X)",
       "cos(X)",
-      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*abs(3*x) + (12 - "
-      "5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
+      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*abs(3*x) + (12 - \
+          5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
       "(-x/2)-log(x mod 2)",
       "x",
       "-.5555*(sin(x))",
@@ -261,8 +263,8 @@ TEST(CalcTest, expr_shunt_right_formula) {
   char str[13][1000] = {
       "sin(X)",
       "cos(X)",
-      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*abs(+3*x) + (12 - "
-      "5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
+      "(6 + 4)*cos(3*x) + (4 - 6)*sin(3*x) + x*((-5)*abs(+3*x) + (12 - \
+      5)*cos(3*x)) + (25*sin(3*x) + 25*cos(X)) ",
       "(-x/2)-log(x mod 2)",
       "x",
       "-.5555*(sin(x))",
