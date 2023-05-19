@@ -57,7 +57,7 @@ dist: clean $(SOURCES)
 	[ -d $(RELEASE_NAME) ] || mkdir $(RELEASE_NAME)
 	cp -r ./ ../$(RELEASE_NAME)/
 	tar -czf $(RELEASE_NAME).tar.gz ../$(RELEASE_NAME)
-	# rm -rf ../$(RELEASE_NAME)
+	rm -rf ../$(RELEASE_NAME)
 	
 install: lib
 	qmake CONFIG+=release -o $(INST_DIR)/Makefile $(NAME)/$(NAME).pro
