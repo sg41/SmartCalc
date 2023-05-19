@@ -53,13 +53,11 @@ $(DOC_NAME).dvi: $(DOC_NAME).texi
 	$(TEXI2DVI) $(SRC_DIR)/$(DOC_NAME).texi
 
 dist: clean $(SOURCES)
+	find Calc_2_0/ -type d | grep -vE "(QCP)|(Calc_2_0/$$)" | xargs $(CLEAN)
 	[ -d $(RELEASE_NAME) ] || mkdir $(RELEASE_NAME)
-	cp *.c *.h Makefile Dockerfile newversion-v9.ui run.sh ../LICENSE ../README.md $(RELEASE_NAME)/
-	mkdir $(RELEASE_NAME)/rpr
-	cp rpr/*.c $(RELEASE_NAME)/rpr/
-	cp rpr/*.h $(RELEASE_NAME)/rpr/
-	tar -czf $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
-	rm -rf $(RELEASE_NAME)
+	cp -r ./ ../$(RELEASE_NAME)/
+	tar -czf $(RELEASE_NAME).tar.gz ../$(RELEASE_NAME)
+	rm -rf ../$(RELEASE_NAME)
 	
 install: lib
 	qmake CONFIG+=release -o $(INST_DIR)/Makefile $(NAME)/$(NAME).pro
@@ -116,7 +114,7 @@ check2:
 .PHONY: all clean rebuild check2
 
 clean:
-	rm -rf $(OBJECTS) $(TXT_O) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME)
+	rm -rf $(OBJECTS) $(TXT_O) $(OBJECTS:.o=.c.bak) $(OBJECTS:.o=.h.bak) $(APP) lib$(LIB).a $(TEST_APP) $(TEST_C) $(RELEASE_NAME).tar.gz $(RELEASE_NAME) ../$(RELEASE_NAME)
 	rm -rf *.o $(TEST_APP) lib$(LIB).a $(OBJECTS) *.a *.gcno *.gcda *.gcov *.info CPPLINT.cfg .clang-format *.app *.log *.aux *.dvi *.toc report
 
 rebuild: clean uninstall all
