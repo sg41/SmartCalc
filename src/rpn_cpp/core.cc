@@ -30,7 +30,9 @@ void CalcCore::moveInfixToRpn(TokenList &infix) {
         case kUnaryOperatorToken:
         case kOperatorToken:
           while (opstack.size() > 0 &&
-                 opstack.top()->priority() >= i->priority() &&
+                 (opstack.top()->priority() > i->priority() ||
+                  (opstack.top()->priority() == i->priority() &&
+                   i->ass() == kLeftAss)) &&
                  opstack.top()->state() != kLBracketToken)
             moveStackToRpn(opstack);
           opstack.push(i);

@@ -48,11 +48,14 @@ enum Precedence {
   kRBracketScore = 12,
 };
 
+enum Associative { kRightAss, kLeftAss };
+
 using FuncType = double (*)(double, double);
 
 typedef struct {
   TokenType t;
   Precedence p;
+  Associative a;
   FuncType call;
 } TokenData;
 
@@ -66,6 +69,7 @@ class ExprToken {
   void setState(TokenType s) { state_ = s; };
   virtual double func(double, double) { return data_; };
   virtual Precedence priority() { return kAddScore; };
+  virtual Associative ass() { return kLeftAss; };
   virtual std::string name() { return std::to_string(data_); };
 
  protected:
@@ -96,18 +100,24 @@ class FuncExprToken : public ExprToken {
         fnc_(f),
         name_(std::string("") + c_name){};
   FuncExprToken(const std::string &n, TokenData d)
-      : ExprToken(d.t, 0.0), priority_(d.p), fnc_(d.call), name_(n){};
+      : ExprToken(d.t, 0.0),
+        priority_(d.p),
+        fnc_(d.call),
+        ass_(d.a),
+        name_(n){};
 
   double func(double a, double b) override {
     return (fnc_ != nullptr) ? fnc_(a, b)
                              : throw std::invalid_argument("Wrong token");
   };
   Precedence priority() override { return priority_; };
+  Associative ass() override { return ass_; };
   std::string name() override { return name_; };
 
  protected:
   Precedence priority_ = kAddScore;
   FuncType fnc_ = nullptr;
+  Associative ass_ = kLeftAss;
   std::string name_;
 };
 
@@ -141,67 +151,70 @@ class ExprSyntax {
   std::string operand_mask_ = "([0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?).*";
   std::map<std::string, TokenData> unary_operators_{
       {"+",
-       {kUnaryOperatorToken, kUnaryOperatorScore,
+       {kUnaryOperatorToken, kUnaryOperatorScore, kLeftAss,
         [](double a, double) { return a; }}},
-      {"-", {kUnaryOperatorToken, kUnaryOperatorScore, [](double a, double) {
-               return -a;
-             }}}};
+      {"-",
+       {kUnaryOperatorToken, kUnaryOperatorScore, kLeftAss,
+        [](double a, double) { return -a; }}}};
   std::map<std::string, TokenData> operators_{
       {"+",
-       {kOperatorToken, kAddScore, [](double a, double b) { return a + b; }}},
+       {kOperatorToken, kAddScore, kLeftAss,
+        [](double a, double b) { return a + b; }}},
       {"-",
-       {kOperatorToken, kSubScore, [](double a, double b) { return a - b; }}},
+       {kOperatorToken, kSubScore, kLeftAss,
+        [](double a, double b) { return a - b; }}},
       {"/",
-       {kOperatorToken, kDivScore,
+       {kOperatorToken, kDivScore, kLeftAss,
         [](double a, double b) { return (b != 0) ? a / b : NAN; }}},
       {"*",
-       {kOperatorToken, kMulScore, [](double a, double b) { return a * b; }}},
+       {kOperatorToken, kMulScore, kLeftAss,
+        [](double a, double b) { return a * b; }}},
       {"%",
-       {kOperatorToken, kDivScore,
+       {kOperatorToken, kDivScore, kLeftAss,
         [](double a, double b) { return fmod(a, b); }}},
       {"mod",
-       {kOperatorToken, kDivScore,
+       {kOperatorToken, kDivScore, kLeftAss,
         [](double a, double b) { return fmod(a, b); }}},
       {"^",
-       {kOperatorToken, kExponentScore,
+       {kOperatorToken, kExponentScore, kRightAss,
         [](double a, double b) { return pow(a, b); }}},
       // map<std::string, TokenData> functions_{
       {"abs",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return fabs(a); }}},
       {"sin",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return sin(a); }}},
       {"cos",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return cos(a); }}},
       {"tan",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return tan(a); }}},
       {"log",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return log10(a); }}},
       {"ln",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return log(a); }}},
       {"sqrt",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return sqrt(a); }}},
       {"asin",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return asin(a); }}},
       {"acos",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return acos(a); }}},
       {"atan",
-       {kFunctionToken, kFunctionScore,
+       {kFunctionToken, kFunctionScore, kLeftAss,
         [](double a, double) { return atan(a); }}},
       // Variables
-      {"x", {kVariableToken, kNoScore, nullptr}},
-      {"X", {kVariableToken, kNoScore, nullptr}},
+      {"x", {kVariableToken, kNoScore, kLeftAss, nullptr}},
+      {"X", {kVariableToken, kNoScore, kLeftAss, nullptr}},
       // Brackets
-      {"(", {kLBracketToken, kLBracketScore, nullptr}},
-      {")", {kRBracketToken, kRBracketScore, nullptr}},
+      {"(", {kLBracketToken, kLBracketScore, kLeftAss, nullptr}},
+      {")", {kRBracketToken, kRBracketScore, kLeftAss, nullptr}},
 
   };
 };
