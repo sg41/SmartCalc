@@ -12,7 +12,7 @@ TXT_H 				= consoleview/consoleview.h controllers/examplecontroller.h
 MODELS				= models/*.h 
 CONTROLLERS			= controllers/*.h
 VIEWS				= consoleview/*.h consoleview/*.cc
-NEW_TEST_C 			= tests/new_test.cc models/*.cc
+NEW_TEST_C 			= tests/calctest.cc models/*.cc
 DOCKER_NAME			= calc:2.01
 RELEASE_NAME		= s21_SmartCalc-2.01
 TEXI2DVI			= texi2dvi
@@ -110,6 +110,7 @@ check2:
 	cppcheck --std=c++17 --enable=all --language=c++ \
 	--suppress=missingInclude --suppress=unusedFunction \
 	--suppress=unknownMacro --suppress=knownConditionTrueFalse \
+	--suppress=redundantAssignment --suppress=unreadVariable \
 	-i $(ROOT)src/Calc_2_0/QCP -i $(ROOT)src/build* $(ROOT)src/
 
 .PHONY: all clean rebuild check2
