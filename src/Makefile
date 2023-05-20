@@ -86,7 +86,9 @@ tests: clean $(NEW_TEST_C) $(LIB)
 	$(CC) $(CCOPTS) $(NEW_TEST_C) -o $(TEST_APP) $(LDOPTS) $(CHECK_LIBS) -l$(LIB)
 	-CK_TIMEOUT_MULTIPLIER=10 ./$(TEST_APP)
 
-check: $(SOURCES) $(HEADERS)
+check: clang-check linter leaks
+
+clang-check: $(SOURCES) $(HEADERS)
 	cp $(ROOT)/materials/linters/.clang-format ./
 	clang-format -i $(SOURCES)
 	clang-format -i $(HEADERS)
@@ -106,7 +108,10 @@ check: $(SOURCES) $(HEADERS)
 	clang-format -n $(VIEWS)
 	clang-format -n Calc_2_0/*.cc
 	clang-format -n Calc_2_0/*.h
-check2: 
+
+check2: linter
+
+linter: 
 	cppcheck --std=c++17 --enable=all --language=c++ \
 	--suppress=missingInclude --suppress=unusedFunction \
 	--suppress=unknownMacro --suppress=knownConditionTrueFalse \
@@ -121,12 +126,12 @@ clean:
 
 rebuild: clean uninstall all
 
-leaks: $(TXT_APP)
+leaks_console: $(TXT_APP)
 	$(LEAKS) ./$(TXT_APP) $(APP_ARGS)
 
-leaks_test: test_leaks
+leaks_test: leaks
 
-test_leaks: tests
+leaks: tests
 	$(LEAKS) ./$(TEST_APP) $(APP_ARGS)
 
 gcov_report: clean $(NEW_TEST_C)

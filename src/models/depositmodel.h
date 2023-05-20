@@ -11,7 +11,6 @@ namespace s21 {
 const static int kSecondsPerDay = 86400;
 
 struct DepositModelData : public CreditModelData {
- public:
   using CreditModelData::CreditModelData;
   DepositModelData() { DepositModelData::initData(); };
 

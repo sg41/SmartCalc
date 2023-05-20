@@ -8,11 +8,8 @@
 
 namespace s21 {
 struct CreditModelData : public BaseCalcData {
- public:
   using BaseCalcData::BaseCalcData;
   CreditModelData() { CreditModelData::initData(); };
-
- public:
   std::string str;
   double amount;
   int duration;

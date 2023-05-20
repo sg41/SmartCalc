@@ -66,8 +66,6 @@ class CalcCore {
     rpn_expr_.push_back(opstack.top());
     opstack.pop();
   };
-
- protected:
   TokenList rpn_expr_;            //< RPN expression list
   ExprSyntax *syntax_ = nullptr;  //< Expression syntax
 };

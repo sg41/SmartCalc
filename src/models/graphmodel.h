@@ -9,7 +9,6 @@
 
 namespace s21 {
 struct GraphModelData : public BaseCalcData {
- public:
   using BaseCalcData::BaseCalcData;
   GraphModelData() { GraphModelData::initData(); };
   int validateData() {

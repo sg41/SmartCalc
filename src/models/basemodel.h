@@ -4,7 +4,6 @@
 #include <string>
 namespace s21 {
 struct BaseCalcData {
- public:
   BaseCalcData() { this->initData(); };
   virtual ~BaseCalcData(){};
   virtual void initData() { this->error = 0; };

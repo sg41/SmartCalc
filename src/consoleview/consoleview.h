@@ -15,6 +15,16 @@ enum Choice {
 };
 
 class ConsoleView : public ModelObserverInterface<GraphModelData> {
+ public:
+  explicit ConsoleView(ExampleController *c) : controller(c) { setScale(); };
+  void startEventLoop();
+  void observerUpdate(const GraphModelData *model_data) override {
+    data_ = *(model_data);
+    std::cout << "Current result for X=" << data_.x << " is: " << data_.y
+              << std::endl;
+    drawTxtGraph();
+  };
+
  private:
   ExampleController *controller = nullptr;
   GraphModelData data_;
@@ -27,16 +37,6 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
   int performChoice();
   double performNumericInput();
   std::string performFormulaInput();
-
- public:
-  explicit ConsoleView(ExampleController *c) : controller(c) { setScale(); };
-  void startEventLoop();
-  void observerUpdate(const GraphModelData *model_data) override {
-    data_ = *(model_data);
-    std::cout << "Current result for X=" << data_.x << " is: " << data_.y
-              << std::endl;
-    drawTxtGraph();
-  };
 };
 }  // namespace s21
 #endif
