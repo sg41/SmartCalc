@@ -1,6 +1,7 @@
 #ifndef _SRC_MODELS_GRAPHMODEL_H_
 #define _SRC_MODELS_GRAPHMODEL_H_
 
+#include <cctype>
 #include <limits>
 #include <vector>
 
@@ -93,7 +94,10 @@ class GraphModel : public AbstractModel<GraphModelData> {
 
   void setData(const GraphModelData *d) override {
     AbstractModel::setData(d);
-    calculator_.makeRpnExpr(data_->str);
+    std::string lower_case = data_->str;
+    std::transform(data_->str.begin(), data_->str.end(), lower_case.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    calculator_.makeRpnExpr(lower_case);
   };
 
  protected:
