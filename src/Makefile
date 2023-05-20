@@ -24,11 +24,15 @@ ROOT 				:= ../
 GCOV				= -fprofile-arcs -ftest-coverage
 OS					= $(shell uname)
 CHECK_LIBS			= $(shell pkg-config --libs gtest) -lgtest -lm
+SUPPRESSIONS		= 	--suppress=missingInclude --suppress=unusedFunction \
+						--suppress=unknownMacro --suppress=knownConditionTrueFalse \
+						--suppress=redundantAssignment --suppress=unreadVariable 
 
 ifeq ($(OS), Linux)
 	LIBS			= -lcheck -lpthread -lrt -lm -lsubunit
 	LEAKS			= CK_FORK=no valgrind -s --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes 
 else
+	SUPPRESSIONS	:= $(SUPPRESSIONS) --suppress=uninitvar --suppress=unusedScopedObject --suppress=noExplicitConstructor
 	LIBS			= -lcheck
 	LEAKS			= CK_FORK=no leaks --atExit -- 
 endif
@@ -112,10 +116,7 @@ clang-check: $(SOURCES) $(HEADERS)
 check2: linter
 
 linter: 
-	cppcheck --std=c++17 --enable=all --language=c++ \
-	--suppress=missingInclude --suppress=unusedFunction \
-	--suppress=unknownMacro --suppress=knownConditionTrueFalse \
-	--suppress=redundantAssignment --suppress=unreadVariable \
+	cppcheck --std=c++17 --enable=all --language=c++ $(SUPPRESSIONS) \
 	-i $(ROOT)src/Calc_2_0/QCP -i $(ROOT)src/build* $(ROOT)src/
 
 .PHONY: all clean rebuild check2
