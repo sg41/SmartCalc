@@ -75,16 +75,17 @@ class GraphModel : public AbstractModel<GraphModelData> {
       double visible_area = (data_->max_y - data_->min_y);
       for (double x = data_->min_x; x < data_->max_x; x += data_->dx) {
         data_->x_vect.push_back(x);
-        double res = calculator_.calc(x);
+        double y = calculator_.calc(x);
         if (!data_->y_vect.empty() &&
-            (fabs(data_->y_vect.back() - res) > visible_area &&
-             (res * data_->y_vect.back()) < 0)) {
+            (fabs(data_->y_vect.back() - y) > visible_area &&
+             (y * data_->y_vect.back()) < 0)) {
           data_->y_vect.push_back(std::numeric_limits<double>::quiet_NaN());
+          data_->x_vect.push_back(x);
+          data_->y_vect.push_back(y);
         } else {
           data_->y_vect.push_back(
-              (res < GraphModelData::kVeryMaxY &&
-               res > GraphModelData::kVeryMinY)
-                  ? res
+              (y < GraphModelData::kVeryMaxY && y > GraphModelData::kVeryMinY)
+                  ? y
                   : std::numeric_limits<double>::infinity());
         }
       }

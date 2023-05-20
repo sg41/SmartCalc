@@ -21,13 +21,14 @@ QtGraphCalcView::QtGraphCalcView(QWidget *parent)
     signalMapper->setMapping(b, b->text());
     connect(b, SIGNAL(clicked()), signalMapper, SLOT(map()));
   }
-  connect(signalMapper, SIGNAL(mapped(const QString &)), this,
+  connect(signalMapper, SIGNAL(mappedString(const QString &)), this,
           SLOT(on_buttonPressed(const QString &)));
 
   // Setup X value validator
-  QRegExp rx("([-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?)");
-  QValidator *xValidator = new QRegExpValidator(rx, this);
-  ui->X_Value->setValidator(xValidator);
+  //  QRegExp rx("([-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?)");
+  //  QValidator *xValidator = new QRegExpValidator(rx, this);
+  //  ui->X_Value->setValidator(xValidator);
+  ui->X_Value->setValidator(new QDoubleValidator());
 
   // Setup graph
   ui->graph_area->xAxis->setRange(this->m_data.min_x, this->m_data.max_x);
