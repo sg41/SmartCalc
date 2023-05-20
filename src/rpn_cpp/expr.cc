@@ -94,27 +94,29 @@ int TokenList::skipSpaces(const std::string &str) {
 };
 
 std::pair<int, TokenType> TokenList::findToken(const std::string &str) {
-  int l = syntax_->isOperand(str);
-  TokenType t = kOperandToken;
-  return l != 0 ? std::make_pair(l, t) : syntax_->isToken(str);
+  int len = syntax_->isOperand(str);
+  TokenType type = kOperandToken;
+  return len != 0 ? std::make_pair(len, type) : syntax_->isToken(str);
 };
 
-ExprToken *TokenList::createToken(const std::string &str_token, TokenType t) {
+ExprToken *TokenList::createToken(const std::string &str_token,
+                                  TokenType type) {
   ExprToken *token;
 
-  if (t == kOperatorToken || t == kUnaryOperatorToken || t == kFunctionToken ||
-      t == kLBracketToken || t == kRBracketToken)
-    token = new FuncExprToken(str_token, syntax_->getData(str_token, t));
-  if (t == kLBracketToken) {
+  if (type == kOperatorToken || type == kUnaryOperatorToken ||
+      type == kFunctionToken || type == kLBracketToken ||
+      type == kRBracketToken)
+    token = new FuncExprToken(str_token, syntax_->getData(str_token, type));
+  if (type == kLBracketToken) {
     brackets_++;
-  } else if (t == kRBracketToken) {
+  } else if (type == kRBracketToken) {
     brackets_--;
   }
-  if (t == kOperandToken) {
-    token = new ExprToken(t, syntax_->getOperand(str_token));
+  if (type == kOperandToken) {
+    token = new ExprToken(type, syntax_->getOperand(str_token));
   }
-  if (t == kVariableToken) {
-    token = new VarExprToken(t, str_token);
+  if (type == kVariableToken) {
+    token = new VarExprToken(type, str_token);
   }
 
   return token;
@@ -129,14 +131,14 @@ void TokenList::makeInfixList(const std::string &s) {
     while (i < s.size() && good) {
       i += skipSpaces(s.substr(i));  // Skip spaces
       if (i < s.size()) {
-        int l;
-        TokenType t;
-        std::tie(l, t) = findToken(s.substr(i));
-        if (l) {
-          push_back(createToken(s.substr(i, l), t));
+        int len;
+        TokenType type;
+        std::tie(len, type) = findToken(s.substr(i));
+        if (len) {
+          push_back(createToken(s.substr(i, len), type));
           makeUnaryOperator();
           good = checkSyntax();
-          i += l;
+          i += len;
         } else {
           good = false;
         }
