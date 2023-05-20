@@ -57,7 +57,7 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   ui->graph_area->yAxis->setRange(this->m_data.min_y, this->m_data.max_y);
   showSizeDialog(false);
   setupDataGeometry();
-  if (m_data.dx > 1) {
+  if (m_data.dx > 0.1 || m_data.dy > 0.1) {
     QMessageBox::warning(
         this, "Calc",
         "Dimentions you selected "
