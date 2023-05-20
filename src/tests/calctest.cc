@@ -368,7 +368,7 @@ TEST(CalcTest, expr_data_1) {
   EXPECT_EQ(t.priority(), kAddScore);
   EXPECT_EQ(t.ass(), kLeftAss);
   EXPECT_EQ(t.name(), "3.000000");
-  VarToken v;
+  VariableToken v;
   EXPECT_EQ(v.name(), "x");
 }
 

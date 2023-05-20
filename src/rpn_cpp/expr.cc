@@ -34,7 +34,7 @@ void TokenList::makeUnaryOperator() {
       (before == nullptr || ((before->state() == kOperatorToken) ||
                              (before->state() == kLBracketToken)))) {
     pop_back();
-    push_back(new FuncToken(
+    push_back(new FunctionToken(
         last->name(), syntax_->getData(last->name(), kUnaryOperatorToken)));
     delete last;
   }
@@ -105,7 +105,7 @@ Token *TokenList::createToken(const std::string &str_token, TokenType type) {
   if (type == kOperatorToken || type == kUnaryOperatorToken ||
       type == kFunctionToken || type == kLBracketToken ||
       type == kRBracketToken)
-    token = new FuncToken(str_token, syntax_->getData(str_token, type));
+    token = new FunctionToken(str_token, syntax_->getData(str_token, type));
   if (type == kLBracketToken) {
     brackets_++;
   } else if (type == kRBracketToken) {
@@ -115,7 +115,7 @@ Token *TokenList::createToken(const std::string &str_token, TokenType type) {
     token = new Token(type, syntax_->getOperand(str_token));
   }
   if (type == kVariableToken) {
-    token = new VarToken(type, str_token);
+    token = new VariableToken(type, str_token);
   }
 
   return token;

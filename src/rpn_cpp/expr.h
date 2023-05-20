@@ -77,10 +77,11 @@ class Token {
   double data_ = 0;
 };
 
-class VarToken : public Token {
+class VariableToken : public Token {
  public:
   using Token::Token;
-  VarToken(TokenType s, const std::string &n) : Token(s, 0.0), var_name_(n){};
+  VariableToken(TokenType s, const std::string &n)
+      : Token(s, 0.0), var_name_(n){};
   std::string name() override { return var_name_; };
 
  protected:
@@ -88,14 +89,14 @@ class VarToken : public Token {
   std::string var_name_ = "x";
 };
 
-class FuncToken : public Token {
+class FunctionToken : public Token {
  public:
   using Token::Token;
-  FuncToken(const std::string &n, TokenType s, Precedence p, FuncType f)
+  FunctionToken(const std::string &n, TokenType s, Precedence p, FuncType f)
       : Token(s, 0.0), priority_(p), fnc_(f), name_(n){};
-  FuncToken(char c_name, TokenType s, Precedence p, FuncType f)
+  FunctionToken(char c_name, TokenType s, Precedence p, FuncType f)
       : Token(s, 0.0), priority_(p), fnc_(f), name_(std::string("") + c_name){};
-  FuncToken(const std::string &n, TokenData d)
+  FunctionToken(const std::string &n, TokenData d)
       : Token(d.t, 0.0), priority_(d.p), fnc_(d.call), ass_(d.a), name_(n){};
 
   double func(double a, double b) override {
