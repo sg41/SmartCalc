@@ -80,8 +80,6 @@ class GraphModel : public AbstractModel<GraphModelData> {
             (fabs(data_->y_vect.back() - y) > visible_area &&
              (y * data_->y_vect.back()) < 0)) {
           data_->y_vect.push_back(std::numeric_limits<double>::quiet_NaN());
-          data_->x_vect.push_back(x);
-          data_->y_vect.push_back(y);
         } else {
           data_->y_vect.push_back(
               (y < GraphModelData::kVeryMaxY && y > GraphModelData::kVeryMinY)
