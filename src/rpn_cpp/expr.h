@@ -89,14 +89,14 @@ class VariableToken : public Token {
   std::string var_name_ = "x";
 };
 
-class FunctionToken : public Token {
+class OperatorToken : public Token {
  public:
   using Token::Token;
-  FunctionToken(const std::string &n, TokenType s, Precedence p, FuncType f)
+  OperatorToken(const std::string &n, TokenType s, Precedence p, FuncType f)
       : Token(s, 0.0), priority_(p), fnc_(f), name_(n){};
-  FunctionToken(char c_name, TokenType s, Precedence p, FuncType f)
+  OperatorToken(char c_name, TokenType s, Precedence p, FuncType f)
       : Token(s, 0.0), priority_(p), fnc_(f), name_(std::string("") + c_name){};
-  FunctionToken(const std::string &n, TokenData d)
+  OperatorToken(const std::string &n, TokenData d)
       : Token(d.t, 0.0), priority_(d.p), fnc_(d.call), ass_(d.a), name_(n){};
 
   double func(double a, double b) override {
