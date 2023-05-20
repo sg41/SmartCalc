@@ -4,7 +4,7 @@
 
 using namespace s21;
 
-int ExprSyntax::isOperand(const std::string &o) {
+int Syntax::isOperand(const std::string &o) {
   int res = 0;
   static const std::regex base_regex(operand_mask_);
   std::smatch base_match;
@@ -14,7 +14,7 @@ int ExprSyntax::isOperand(const std::string &o) {
   return res;
 };
 
-std::pair<int, TokenType> ExprSyntax::isToken(const std::string &o) {
+std::pair<int, TokenType> Syntax::isToken(const std::string &o) {
   int res = 0, len = 0;
   auto l = length_.rbegin();
   for (; res == 0 && l != length_.rend(); l++) {
@@ -26,23 +26,23 @@ std::pair<int, TokenType> ExprSyntax::isToken(const std::string &o) {
 };
 
 void TokenList::makeUnaryOperator() {
-  ExprToken *last = back();
-  ExprToken *before = beforeBack();
+  Token *last = back();
+  Token *before = beforeBack();
 
   if ((last->state() == kOperatorToken &&
        syntax_->isUnaryOperator(last->name())) &&
       (before == nullptr || ((before->state() == kOperatorToken) ||
                              (before->state() == kLBracketToken)))) {
     pop_back();
-    push_back(new FuncExprToken(
+    push_back(new FuncToken(
         last->name(), syntax_->getData(last->name(), kUnaryOperatorToken)));
     delete last;
   }
 }
 
 bool TokenList::checkSyntax(bool last_check = false) {
-  ExprToken *last = back();
-  ExprToken *before = beforeBack();
+  Token *last = back();
+  Token *before = beforeBack();
 
   bool good = true;
   if (before != nullptr) {
@@ -99,24 +99,23 @@ std::pair<int, TokenType> TokenList::findToken(const std::string &str) {
   return len != 0 ? std::make_pair(len, type) : syntax_->isToken(str);
 };
 
-ExprToken *TokenList::createToken(const std::string &str_token,
-                                  TokenType type) {
-  ExprToken *token;
+Token *TokenList::createToken(const std::string &str_token, TokenType type) {
+  Token *token;
 
   if (type == kOperatorToken || type == kUnaryOperatorToken ||
       type == kFunctionToken || type == kLBracketToken ||
       type == kRBracketToken)
-    token = new FuncExprToken(str_token, syntax_->getData(str_token, type));
+    token = new FuncToken(str_token, syntax_->getData(str_token, type));
   if (type == kLBracketToken) {
     brackets_++;
   } else if (type == kRBracketToken) {
     brackets_--;
   }
   if (type == kOperandToken) {
-    token = new ExprToken(type, syntax_->getOperand(str_token));
+    token = new Token(type, syntax_->getOperand(str_token));
   }
   if (type == kVariableToken) {
-    token = new VarExprToken(type, str_token);
+    token = new VarToken(type, str_token);
   }
 
   return token;

@@ -23,9 +23,10 @@ int main(int argc, char *argv[]) {
     l.setNumberOptions(QLocale::DefaultNumberOptions);
     QLocale::setDefault(l);
     MainWindow w;
-    // Setup Icon
+    // Setup Icon and Title
     QIcon ic(":/icon/calc_icon_64.png");
     w.setWindowIcon(ic);
+    w.setWindowTitle("Calc");
     w.show();
     res = a.exec();
   } else {

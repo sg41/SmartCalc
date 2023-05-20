@@ -107,7 +107,7 @@ TEST(CalcTest, model_1_x_calc) {
 TEST(CalcTest, regex_5) {
   char str[1000] = "2.365sdsdsd";
   uint expected_result, actual_result;
-  ExprSyntax s;
+  Syntax s;
   actual_result = s.isOperand(str);
   expected_result = 5;
   EXPECT_EQ(expected_result, actual_result);
@@ -132,7 +132,7 @@ TEST(CalcTest, regex_5) {
 TEST(CalcTest, expr_6) {
   char str[1000] = "sin( cos(x^2)^(1*-100))*x";
   uint expected_result, actual_result;
-  ExprSyntax s;
+  Syntax s;
   TokenList infix(&s);
   infix.makeInfixList(str);
   expected_result = 18;
@@ -178,7 +178,7 @@ TEST(CalcTest, expr_wrong_formula) {
                                  3, 2, 2, 5, 5, 2, 5, 2, 1, 1, 3, 2, 2, 2},
        actual_result;
 
-  ExprSyntax s;
+  Syntax s;
   TokenList infix(&s);
   for (int i = 0; i < __N__; i++) {
     EXPECT_THROW(infix.makeInfixList(str[i]), std::invalid_argument);
@@ -210,7 +210,7 @@ TEST(CalcTest, expr_right_formula) {
        actual_result;
 
   for (int i = 0; i < 13; i++) {
-    ExprSyntax s;
+    Syntax s;
     TokenList infix(&s);
     EXPECT_NO_THROW(infix.makeInfixList(str[i]));
     actual_result = infix.size();
@@ -362,13 +362,13 @@ TEST(CalcTest, expr_calc_1) {
 #endif
 
 TEST(CalcTest, expr_data_1) {
-  ExprToken t;
+  Token t;
   t.data() = 3;
   EXPECT_EQ(t.func(1.2, 2.3), 3);
   EXPECT_EQ(t.priority(), kAddScore);
   EXPECT_EQ(t.ass(), kLeftAss);
   EXPECT_EQ(t.name(), "3.000000");
-  VarExprToken v;
+  VarToken v;
   EXPECT_EQ(v.name(), "x");
 }
 

@@ -56,9 +56,17 @@ void QtGraphCalcView::on_buttonBox_accepted() {
   ui->graph_area->xAxis->setRange(this->m_data.min_x, this->m_data.max_x);
   ui->graph_area->yAxis->setRange(this->m_data.min_y, this->m_data.max_y);
   showSizeDialog(false);
+  setupDataGeometry();
+  if (m_data.dx > 1) {
+    QMessageBox::warning(
+        this, "Calc",
+        "Dimentions you selected "
+        "will cause some functions to be displayed incorrectly",
+        QMessageBox::Ok);
+  }
   if (ui->graph_area->graph(0)->data()->size()) {
     try {
-      setupGeometry();
+      setupLegend();
       controller.userAction(&m_data);
     } catch (std::invalid_argument &e) {
       ui->graph_area->replot();
@@ -100,7 +108,8 @@ void QtGraphCalcView::observerUpdate(const GraphModelData *model_data) {
 
 void QtGraphCalcView::on_QtGraphCalcView_resultRequested() {
   try {
-    setupGeometry();
+    setupDataGeometry();
+    setupLegend();
     ui->graph_area->legend->setVisible(true);
     controller.userAction(&m_data);
     // make history record
@@ -136,7 +145,7 @@ void QtGraphCalcView::setupGraphData() {
   }
 }
 
-void QtGraphCalcView::setupGeometry() {
+void QtGraphCalcView::setupDataGeometry() {
   m_data.clip_x1 = ui->graph_area->geometry().left();
   m_data.clip_x2 = ui->graph_area->geometry().right();
   m_data.clip_y1 = ui->graph_area->geometry().bottom();
@@ -145,6 +154,9 @@ void QtGraphCalcView::setupGeometry() {
               (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
   m_data.dy = 1. / ((double)(-m_data.clip_y2 + m_data.clip_y1) /
                     (m_data.max_y - m_data.min_y));
+}
+
+void QtGraphCalcView::setupLegend() {
   ui->graph_area->graph(0)->setName(
       QString(m_data.str.substr(0, kMaxLegendTextLen).c_str()) +
       ((m_data.str.size() > kMaxLegendTextLen) ? "..." : "") + "\nScale x=" +
@@ -153,5 +165,6 @@ void QtGraphCalcView::setupGeometry() {
 
 void QtGraphCalcView::resizeEvent(QResizeEvent *event) {
   QWidget::resizeEvent(event);
-  setupGeometry();
+  setupDataGeometry();
+  setupLegend();
 }

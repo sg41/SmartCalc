@@ -48,7 +48,9 @@ class QtGraphCalcView : public QWidget,
 
   void setupGraphData();
 
-  void setupGeometry();
+  void setupDataGeometry();
+
+  void setupLegend();
 
   void resizeEvent(QResizeEvent *event) override;
 

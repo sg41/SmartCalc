@@ -7,7 +7,7 @@
 using namespace s21;
 void CalcCore::moveInfixToRpn(TokenList &infix) {
   if (&infix != &rpn_expr_) {
-    std::stack<ExprToken *> opstack;
+    std::stack<Token *> opstack;
     TokenList brackets;
 
     for (auto i : infix) {
@@ -48,7 +48,7 @@ void CalcCore::moveInfixToRpn(TokenList &infix) {
 }
 
 double CalcCore::rpnCalculate(double x) {
-  std::stack<ExprToken> k;
+  std::stack<Token> k;
   for (auto i : rpn_expr_) {
     if (i->state() == kOperandToken) {
       k.emplace(i->state(), i->data());

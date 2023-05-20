@@ -16,11 +16,11 @@ namespace s21 {
 class CalcCore {
  public:
   /// @brief constructor creates expression syntax
-  CalcCore() : syntax_(new ExprSyntax()){};
+  CalcCore() : syntax_(new Syntax()){};
   ~CalcCore() { delete syntax_; };
   /// @brief  copy constructor
   /// @param c other CalcCore object to copy syntax from
-  CalcCore(const CalcCore &c) : syntax_(new ExprSyntax(*c.syntax_)){};
+  CalcCore(const CalcCore &c) : syntax_(new Syntax(*c.syntax_)){};
   /// @brief Move constructor
   /// @param c other CalcCore object to move syntax from
   CalcCore(CalcCore &&c) {
@@ -62,12 +62,12 @@ class CalcCore {
  protected:
   double rpnCalculate(double x);
   void moveInfixToRpn(TokenList &infix);
-  void moveStackToRpn(std::stack<ExprToken *> &opstack) {
+  void moveStackToRpn(std::stack<Token *> &opstack) {
     rpn_expr_.push_back(opstack.top());
     opstack.pop();
   };
-  TokenList rpn_expr_;            //< RPN expression list
-  ExprSyntax *syntax_ = nullptr;  //< Expression syntax
+  TokenList rpn_expr_;        //< RPN expression list
+  Syntax *syntax_ = nullptr;  //< Expression syntax
 };
 }  // namespace s21
 #endif  // _SRC_RPN_CPP_CORE_H_

@@ -59,11 +59,11 @@ typedef struct {
   FuncType call;
 } TokenData;
 
-class ExprToken {
+class Token {
  public:
-  ExprToken(){};
-  virtual ~ExprToken(){};
-  explicit ExprToken(TokenType s, double d) : state_(s), data_(d){};
+  Token(){};
+  virtual ~Token(){};
+  explicit Token(TokenType s, double d) : state_(s), data_(d){};
   virtual double &data() { return data_; };
   TokenType state() const { return state_; };
   void setState(TokenType s) { state_ = s; };
@@ -77,11 +77,10 @@ class ExprToken {
   double data_ = 0;
 };
 
-class VarExprToken : public ExprToken {
+class VarToken : public Token {
  public:
-  using ExprToken::ExprToken;
-  VarExprToken(TokenType s, const std::string &n)
-      : ExprToken(s, 0.0), var_name_(n){};
+  using Token::Token;
+  VarToken(TokenType s, const std::string &n) : Token(s, 0.0), var_name_(n){};
   std::string name() override { return var_name_; };
 
  protected:
@@ -89,22 +88,15 @@ class VarExprToken : public ExprToken {
   std::string var_name_ = "x";
 };
 
-class FuncExprToken : public ExprToken {
+class FuncToken : public Token {
  public:
-  using ExprToken::ExprToken;
-  FuncExprToken(const std::string &n, TokenType s, Precedence p, FuncType f)
-      : ExprToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
-  FuncExprToken(char c_name, TokenType s, Precedence p, FuncType f)
-      : ExprToken(s, 0.0),
-        priority_(p),
-        fnc_(f),
-        name_(std::string("") + c_name){};
-  FuncExprToken(const std::string &n, TokenData d)
-      : ExprToken(d.t, 0.0),
-        priority_(d.p),
-        fnc_(d.call),
-        ass_(d.a),
-        name_(n){};
+  using Token::Token;
+  FuncToken(const std::string &n, TokenType s, Precedence p, FuncType f)
+      : Token(s, 0.0), priority_(p), fnc_(f), name_(n){};
+  FuncToken(char c_name, TokenType s, Precedence p, FuncType f)
+      : Token(s, 0.0), priority_(p), fnc_(f), name_(std::string("") + c_name){};
+  FuncToken(const std::string &n, TokenData d)
+      : Token(d.t, 0.0), priority_(d.p), fnc_(d.call), ass_(d.a), name_(n){};
 
   double func(double a, double b) override {
     return (fnc_ != nullptr) ? fnc_(a, b)
@@ -121,9 +113,9 @@ class FuncExprToken : public ExprToken {
   std::string name_;
 };
 
-class ExprSyntax {
+class Syntax {
  public:
-  ExprSyntax() { countLength(); };
+  Syntax() { countLength(); };
   int isOperand(const std::string &o);
   int isSpace(char o) { return spaces_.find(o) != std::string::npos ? 1 : 0; };
   int isSpace(const std::string &o) {
@@ -219,10 +211,10 @@ class ExprSyntax {
   };
 };
 
-class TokenList : public std::list<ExprToken *> {
+class TokenList : public std::list<Token *> {
  public:
-  using std::list<ExprToken *>::list;
-  explicit TokenList(ExprSyntax *s) {
+  using std::list<Token *>::list;
+  explicit TokenList(Syntax *s) {
     syntax_ = s;
     brackets_ = 0;
   };
@@ -234,16 +226,16 @@ class TokenList : public std::list<ExprToken *> {
   void makeInfixList(const std::string &str);
 
  protected:
-  ExprToken *createToken(const std::string &str, TokenType t);
+  Token *createToken(const std::string &str, TokenType t);
   std::pair<int, TokenType> findToken(const std::string &str);
   int skipSpaces(const std::string &str);
   void makeUnaryOperator();
   bool checkSyntax(bool);
-  ExprToken *beforeBack() {
+  Token *beforeBack() {
     return (back() == front()) ? nullptr : *(prev(end(), 2));
   };
   int brackets_ = 0;
-  ExprSyntax *syntax_;
+  Syntax *syntax_;
 };
 }  // namespace s21
 #endif  // _SRC_RPN_CPP_EXPR_H_
