@@ -26,8 +26,8 @@ std::pair<int, TokenType> Syntax::isToken(const std::string &o) {
 };
 
 void TokenList::makeUnaryOperator() {
-  Token *last = back();
-  Token *before = beforeBack();
+  DataToken *last = back();
+  DataToken *before = beforeBack();
 
   if ((last->state() == kOperatorToken &&
        syntax_->isUnaryOperator(last->name())) &&
@@ -41,8 +41,8 @@ void TokenList::makeUnaryOperator() {
 }
 
 bool TokenList::checkSyntax(bool last_check = false) {
-  Token *last = back();
-  Token *before = beforeBack();
+  DataToken *last = back();
+  DataToken *before = beforeBack();
 
   bool good = true;
   if (before != nullptr) {
@@ -99,8 +99,9 @@ std::pair<int, TokenType> TokenList::findToken(const std::string &str) {
   return len != 0 ? std::make_pair(len, type) : syntax_->isToken(str);
 };
 
-Token *TokenList::createToken(const std::string &str_token, TokenType type) {
-  Token *token;
+DataToken *TokenList::createToken(const std::string &str_token,
+                                  TokenType type) {
+  DataToken *token;
 
   if (type == kOperatorToken || type == kUnaryOperatorToken ||
       type == kFunctionToken || type == kLBracketToken ||
@@ -112,7 +113,7 @@ Token *TokenList::createToken(const std::string &str_token, TokenType type) {
     brackets_--;
   }
   if (type == kOperandToken) {
-    token = new Token(type, syntax_->getOperand(str_token));
+    token = new DataToken(type, syntax_->getOperand(str_token));
   }
   if (type == kVariableToken) {
     token = new VariableToken(type, str_token);

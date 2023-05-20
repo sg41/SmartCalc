@@ -59,11 +59,11 @@ typedef struct {
   FuncType call;
 } TokenData;
 
-class Token {
+class DataToken {
  public:
-  Token(){};
-  virtual ~Token(){};
-  explicit Token(TokenType s, double d) : state_(s), data_(d){};
+  DataToken(){};
+  virtual ~DataToken(){};
+  explicit DataToken(TokenType s, double d) : state_(s), data_(d){};
   virtual double &data() { return data_; };
   TokenType state() const { return state_; };
   void setState(TokenType s) { state_ = s; };
@@ -77,11 +77,11 @@ class Token {
   double data_ = 0;
 };
 
-class VariableToken : public Token {
+class VariableToken : public DataToken {
  public:
-  using Token::Token;
+  using DataToken::DataToken;
   VariableToken(TokenType s, const std::string &n)
-      : Token(s, 0.0), var_name_(n){};
+      : DataToken(s, 0.0), var_name_(n){};
   std::string name() override { return var_name_; };
 
  protected:
@@ -89,15 +89,22 @@ class VariableToken : public Token {
   std::string var_name_ = "x";
 };
 
-class OperatorToken : public Token {
+class OperatorToken : public DataToken {
  public:
-  using Token::Token;
+  using DataToken::DataToken;
   OperatorToken(const std::string &n, TokenType s, Precedence p, FuncType f)
-      : Token(s, 0.0), priority_(p), fnc_(f), name_(n){};
+      : DataToken(s, 0.0), priority_(p), fnc_(f), name_(n){};
   OperatorToken(char c_name, TokenType s, Precedence p, FuncType f)
-      : Token(s, 0.0), priority_(p), fnc_(f), name_(std::string("") + c_name){};
+      : DataToken(s, 0.0),
+        priority_(p),
+        fnc_(f),
+        name_(std::string("") + c_name){};
   OperatorToken(const std::string &n, TokenData d)
-      : Token(d.t, 0.0), priority_(d.p), fnc_(d.call), ass_(d.a), name_(n){};
+      : DataToken(d.t, 0.0),
+        priority_(d.p),
+        fnc_(d.call),
+        ass_(d.a),
+        name_(n){};
 
   double func(double a, double b) override {
     return (fnc_ != nullptr) ? fnc_(a, b)
@@ -212,9 +219,9 @@ class Syntax {
   };
 };
 
-class TokenList : public std::list<Token *> {
+class TokenList : public std::list<DataToken *> {
  public:
-  using std::list<Token *>::list;
+  using std::list<DataToken *>::list;
   explicit TokenList(Syntax *s) {
     syntax_ = s;
     brackets_ = 0;
@@ -227,12 +234,12 @@ class TokenList : public std::list<Token *> {
   void makeInfixList(const std::string &str);
 
  protected:
-  Token *createToken(const std::string &str, TokenType t);
+  DataToken *createToken(const std::string &str, TokenType t);
   std::pair<int, TokenType> findToken(const std::string &str);
   int skipSpaces(const std::string &str);
   void makeUnaryOperator();
   bool checkSyntax(bool);
-  Token *beforeBack() {
+  DataToken *beforeBack() {
     return (back() == front()) ? nullptr : *(prev(end(), 2));
   };
   int brackets_ = 0;

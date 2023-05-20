@@ -62,7 +62,7 @@ class CalcCore {
  protected:
   double rpnCalculate(double x);
   void moveInfixToRpn(TokenList &infix);
-  void moveStackToRpn(std::stack<Token *> &opstack) {
+  void moveStackToRpn(std::stack<DataToken *> &opstack) {
     rpn_expr_.push_back(opstack.top());
     opstack.pop();
   };

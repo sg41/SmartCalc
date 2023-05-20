@@ -362,7 +362,7 @@ TEST(CalcTest, expr_calc_1) {
 #endif
 
 TEST(CalcTest, expr_data_1) {
-  Token t;
+  DataToken t;
   t.data() = 3;
   EXPECT_EQ(t.func(1.2, 2.3), 3);
   EXPECT_EQ(t.priority(), kAddScore);
