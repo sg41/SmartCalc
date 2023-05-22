@@ -86,7 +86,6 @@ void QtGraphCalcView::on_buttonPressed(const QString &str) {
     ui->InputStr->insert(str + QString("()"));
     ui->InputStr->cursorBackward(false);
   } else if (str == QString("=")) {
-    m_data.str = ui->InputStr->text().replace(',', ".").toStdString();
     emit resultRequested();
   } else {
     ui->InputStr->insert(str);
@@ -106,19 +105,24 @@ void QtGraphCalcView::observerUpdate(const GraphModelData *model_data) {
 };
 
 void QtGraphCalcView::on_QtGraphCalcView_resultRequested() {
+  std::string backup(m_data.str);  // Bacup old data in case if error
   try {
+    m_data.str = ui->InputStr->text().replace(',', ".").toStdString();
     setupDataGeometry();
     setupLegend();
-    ui->graph_area->legend->setVisible(true);
     controller.userAction(&m_data);
+    ui->graph_area->legend->setVisible(true);
     // make history record
     ui->listWidget->insertItem(
         0, ui->InputStr->text() + " = " + QString::number(m_data.y, 'g', 7));
     ui->listWidget->item(0)->setTextAlignment(Qt::AlignRight);
     ui->listWidget->setCurrentItem(ui->listWidget->item(0));
+    // Clear input string
     ui->InputStr->setText("");
+    // Show result
     emit showStatus(QString::number(m_data.y, 'g', 7).toStdString());
   } catch (std::invalid_argument &e) {
+    m_data.str = backup;  // restore old data
     emit showStatus(e.what());
   }
 }
@@ -150,7 +154,7 @@ void QtGraphCalcView::setupDataGeometry() {
   m_data.clip_y1 = ui->graph_area->geometry().bottom();
   m_data.clip_y2 = ui->graph_area->geometry().top();
   m_data.dx = (double)(m_data.max_x - m_data.min_x) /
-              (m_data.clip_x2 - m_data.clip_x1);  //! To be or not to be
+              (m_data.clip_x2 - m_data.clip_x1);  //! To vew internal use
   m_data.dy = 1. / ((double)(-m_data.clip_y2 + m_data.clip_y1) /
                     (m_data.max_y - m_data.min_y));
 }

@@ -688,6 +688,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>InputStr</sender>
+   <signal>editingFinished()</signal>
+   <receiver>QtGraphCalcView</receiver>
+   <slot>on_QtGraphCalcView_resultRequested()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>308</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>resultRequested()</signal>

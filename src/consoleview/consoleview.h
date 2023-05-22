@@ -16,7 +16,12 @@ enum Choice {
 
 class ConsoleView : public ModelObserverInterface<GraphModelData> {
  public:
-  explicit ConsoleView(ExampleController *c) : controller(c) { setScale(); };
+  explicit ConsoleView(ExampleController *c) : controller(c) {
+    data_.clip_x1 = 0;
+    data_.clip_x2 = data_.max_console_width;
+    data_.clip_y1 = 0;
+    data_.clip_y2 = data_.max_console_height;
+  };
   void startEventLoop();
   void observerUpdate(const GraphModelData *model_data) override {
     data_ = *(model_data);
@@ -28,10 +33,7 @@ class ConsoleView : public ModelObserverInterface<GraphModelData> {
  private:
   ExampleController *controller = nullptr;
   GraphModelData data_;
-  void setScale() {
-    data_.dx = (double)(data_.max_x - data_.min_x) / data_.max_console_width;
-    data_.dy = (double)data_.max_console_height / (data_.max_y - data_.min_y);
-  };
+
   void drawTxtGraph();
   void displayMenu();
   int performChoice();

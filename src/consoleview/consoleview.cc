@@ -44,7 +44,7 @@ void ConsoleView::drawTxtGraph() {
   int i, j;
   for (j = 0; j < data_.max_console_height; j++) {
     for (i = 0; i < data_.max_console_width; i++) {
-      if ((int)round(-data_.y_vect[i] * data_.dy +
+      if ((int)round(data_.y_vect[i] / data_.dy +
                      round(data_.max_console_height / 2)) == j) {
         std::cout << ("*");
       } else {
@@ -81,7 +81,7 @@ void ConsoleView::startEventLoop() {
         data_.min_x = performNumericInput();
         cout << "MAX X: ";
         data_.max_x = performNumericInput();
-        setScale();
+        // setScale();
         break;
       case kExit:
         done = true;

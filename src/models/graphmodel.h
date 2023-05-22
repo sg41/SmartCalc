@@ -55,8 +55,10 @@ struct GraphModelData : public BaseCalcData {
     max_y = 1;
     max_console_width = 80;
     max_console_height = 25;
-    dx = (double)(max_x - min_x) / max_console_width;  //! To be or not to be
-    dy = (double)max_console_height / (max_y - min_y);
+    // dx = (double)(max_x - min_x) / max_console_width;  //! To be or not to be
+    // dy = (double)max_console_height / (max_y - min_y);
+    dx = 0;
+    dy = 0;
     y = 0;
     y_vect.clear();
     x_vect.clear();
@@ -71,6 +73,12 @@ class GraphModel : public AbstractModel<GraphModelData> {
     data_->y = calculator_.calc(data_->x);  // calculate single Y for given X
     data_->y_vect.clear();                  // calculate Y vector for X range
     data_->x_vect.clear();
+    if (data_->dx == 0) {
+      data_->dx = (double)(data_->max_x - data_->min_x) /
+                  (data_->clip_x2 - data_->clip_x1);
+      data_->dy = 1. / ((double)(-data_->clip_y2 + data_->clip_y1) /
+                        (data_->max_y - data_->min_y));
+    }
     if (data_->dx > 0) {
       double visible_area = (data_->max_y - data_->min_y);
       for (double x = data_->min_x; x < data_->max_x; x += data_->dx) {
