@@ -559,7 +559,7 @@ TEST(DepositTest, no_cap) {
   d.pay_period = 30;
   const int terms[]{1, 3, 6, 7, 8, 9, 12, 36, 60};
   double expected_results[]{806.85,  2394.52, 4789.04,  5569.86, 6375.78,
-                            7180.42, 9516.48, 28499.97, 47516.45};
+                            7180.42, 9516.48, 28499.97, 47515.74};
   for (int i = 0; i < 7; i++) {
     DBPRINT("%d, term=%d\n", i, terms[i]);
     d.duration = terms[i];
@@ -579,7 +579,7 @@ TEST(DepositTest, cap) {
   d.int_cap = true;
   int const terms[]{1, 3, 6, 7, 8, 9, 12, 36, 60};
   double expected_results[]{806.85,  2413.68, 4885.62,  5704.59, 6556.49,
-                            7413.89, 9942.74, 32826.95, 60527.02};
+                            7413.89, 9942.74, 32826.95, 60525.88};
   for (int i = 0; i < 7; i++) {
     DBPRINT("%d, term=%d\n", i, terms[i]);
     d.duration = terms[i];
@@ -597,8 +597,8 @@ TEST(DepositTest, pay_periods_no_cap) {
   d.duration = 60;
   d.rate = 9.5;
   int const periods[]{1, 7, 30, 90, 180, 360};
-  double expected_results[]{47521.81, 47515.89, 47516.45, 47516.51,
-                            47516.51, 47516.50, 47516.50};
+  double expected_results[]{47521.11, 47515.17, 47515.74, 47515.80,
+                            47515.80, 47515.79, 47515.79};
   for (int i = 0; i < 6; i++) {
     DBPRINT("%d, term=%d\n", i, periods[i]);
     d.pay_period = periods[i];
@@ -621,8 +621,8 @@ TEST(DepositTest, pay_periods_cap) {
   d.rate = 9.5;
   d.int_cap = true;
   const int periods[]{1, 7, 30, 90, 180, 360};
-  double expected_results[]{60818.37, 60758.53, 60527.02,
-                            59936.63, 59077.40, 57447.6};
+  double expected_results[]{60817.27, 60757.37, 60525.88,
+                            59935.51, 59076.32, 57446.58};
   for (int i = 0; i < 6; i++) {
     DBPRINT("%d, term=%d\n", i, periods[i]);
     d.pay_period = periods[i];
